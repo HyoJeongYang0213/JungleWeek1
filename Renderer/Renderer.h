@@ -136,7 +136,6 @@ public:
 		Vector3 Offset;
 		float padding1; 
 		Vector3 scale;
-		float padding2; 
 		float rotation;
 	};
 

@@ -340,6 +340,15 @@ void Renderer::Tick(float dt)
 				}
 			}
 
+			// 2. 원 - 사각형 충돌 
+			if (PrimitiveList[i]->GetCollider().GetColliderType() == ColliderType_Sphere && PrimitiveList[j]->GetCollider().GetColliderType() == ColliderType_Box)
+			{
+				if (CollisionDetector::FindCollision(static_cast<SphereCollider&>(PrimitiveList[i]->GetCollider()), static_cast<BoxCollider&>(PrimitiveList[j]->GetCollider()), static_cast<BoxCollider&>(PrimitiveList[j]->GetCollider()).GetRigidBody().GetRotation(), manifold))
+				{
+					CollisionResolver::ResolveCollision(manifold);
+				}
+			}
+
 		}
 	}
 

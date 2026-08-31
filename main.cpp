@@ -133,6 +133,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
