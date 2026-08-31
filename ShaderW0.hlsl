@@ -14,16 +14,16 @@ struct PS_INPUT
 cbuffer constants : register(b0)
 {
 	float3 Offset;
-	float scale;
+	float3 scale;
 	float rotationAngle;
-	float3 pad; 
+	float pad; 
 }
 
 PS_INPUT mainVS(VS_INPUT input)
 {
 	PS_INPUT output;
 
-	float2 scaledPosition = input.position.xy * scale;
+    float2 scaledPosition = float2(input.position.x * scale.x, input.position.y * scale.y);
 
 	float s = sin(rotationAngle);
 	float c = cos(rotationAngle);

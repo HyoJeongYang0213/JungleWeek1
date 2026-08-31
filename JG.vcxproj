@@ -135,6 +135,7 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\CollisionDetector.cpp" />
     <ClCompile Include="Physics\CollisionResolver.cpp" />
@@ -158,20 +159,21 @@
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="Map\MapGlobals.hpp" />
+    <ClInclude Include="Map\Platform.h" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\CollisionDetector.h" />
     <ClInclude Include="Physics\CollisionManifold.hpp" />
     <ClInclude Include="Physics\CollisionResolver.h" />
-    <ClInclude Include="Physics\Math.hpp" />
     <ClInclude Include="Physics\PhysicsGlobals.hpp" />
     <ClInclude Include="Physics\RigidBody.h" />
     <ClInclude Include="Player\Ball.h" />
-    <ClInclude Include="Player\Primitive.hpp" />
     <ClInclude Include="Renderer\IRenderer.hpp" />
     <ClInclude Include="Renderer\Renderer.h" />
+    <ClInclude Include="Resource\Primitive.hpp" />
     <ClInclude Include="Resource\Sphere.h" />
     <ClInclude Include="Resource\Square.hpp" />
     <ClInclude Include="Resource\vertexSimple.hpp" />
+    <ClInclude Include="Utils\Math.hpp" />
     <ClInclude Include="Utils\Rnd.hpp" />
   </ItemGroup>
   <ItemGroup>
