@@ -1,6 +1,6 @@
 ﻿#include "CollisionDetector.h"
 
-bool CollisionDetector::FindCollision(Collider& Ca, Collider& Cb, CollisionManifold& OutManifold)
+bool CollisionDetector::FindCollision(SphereCollider& Ca, SphereCollider& Cb, CollisionManifold& OutManifold)
 {
 	Vector3 delta = Cb.GetCenter() - Ca.GetCenter();
 	float distanceSquared = delta.SquaredLength();
@@ -23,7 +23,7 @@ bool CollisionDetector::FindCollision(Collider& Ca, Collider& Cb, CollisionManif
 	return false;
 }
 
-bool CollisionDetector::FindCollision(Collider& c, StaticCollider& s, CollisionManifold& OutManifold)
+bool CollisionDetector::FindCollision(SphereCollider& c, StaticCollider& s, CollisionManifold& OutManifold)
 {
 	const Vector3 CircleToPlanePoint{ c.GetCenter() - s.GetPosition() };
 	const float SignedDistance{ CircleToPlanePoint.Dot(s.GetNormal()) };

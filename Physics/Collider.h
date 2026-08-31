@@ -1,19 +1,35 @@
 ﻿#pragma once 
 #include "RigidBody.h"
 
-class Collider
+enum ColliderType {
+	ColliderType_Sphere,
+	ColliderType_Box, 
+};
+
+
+class ICollider {
+public:
+	virtual ~ICollider() = default;
+
+public:
+	virtual ColliderType GetColliderType() const = 0;
+};
+
+class SphereCollider : public ICollider
 {
 public:
-	Collider(RigidBody& r, float& rad); 
-	~Collider() = default;
+	SphereCollider(RigidBody& r, float& rad); 
+	~SphereCollider() = default;
 
-	Collider(const Collider&) = delete;
-	Collider& operator=(const Collider&) = delete;
+	SphereCollider(const SphereCollider&) = delete;
+	SphereCollider& operator=(const SphereCollider&) = delete;
 
-	Collider(Collider&&) = default;
-	Collider& operator=(Collider&&) = default;
+	SphereCollider(SphereCollider&&) = default;
+	SphereCollider& operator=(SphereCollider&&) = default;
 
 public: 
+	virtual ColliderType GetColliderType() const override { return ColliderType_Sphere; }
+	
 	RigidBody& GetRigidBody();
 	const RigidBody& GetRigidBody() const;
 
@@ -23,6 +39,31 @@ public:
 private:
 	RigidBody& mRigidBody;
 	float& mRadius;
+};
+
+class BoxCollider : public ICollider
+{
+public:
+	BoxCollider(RigidBody& r, Vector3& halfExtents);
+	~BoxCollider() = default;
+	
+	BoxCollider(const BoxCollider&) = delete;
+	BoxCollider& operator=(const BoxCollider&) = delete;
+	
+	BoxCollider(BoxCollider&&) = default;
+	BoxCollider& operator=(BoxCollider&&) = default;
+
+public:
+	virtual ColliderType GetColliderType() const override { return ColliderType_Box; }
+
+	RigidBody& GetRigidBody();
+	const RigidBody& GetRigidBody() const;
+
+	const Vector3& GetHalfExtents() const;
+
+private:
+	RigidBody& mRigidBody;
+	Vector3& mHalfExtents;
 };
 
 class StaticCollider

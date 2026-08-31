@@ -276,7 +276,7 @@ void Renderer::ReleaseConstantBuffer()
 	}
 }
 
-void Renderer::UpdateConstant(Vector3 Offset, float scale, float rotation)
+void Renderer::UpdateConstant(Vector3 Offset, Vector3 scale, float rotation)
 {
 	if (ConstantBuffer)
 	{
@@ -331,10 +331,15 @@ void Renderer::Tick(float dt)
 		for (size_t j = i + 1; j < PrimitiveCount; ++j)
 		{
 			CollisionManifold manifold;
-			if (CollisionDetector::FindCollision(PrimitiveList[i]->GetCollider(), PrimitiveList[j]->GetCollider(), manifold))
+			// 1. 원 - 원 충돌 
+			if(PrimitiveList[i]->GetCollider().GetColliderType() == ColliderType_Sphere && PrimitiveList[j]->GetCollider().GetColliderType() == ColliderType_Sphere)
 			{
-				CollisionResolver::ResolveCollision(manifold);
+				if (CollisionDetector::FindCollision(static_cast<SphereCollider&>(PrimitiveList[i]->GetCollider()), static_cast<SphereCollider&>(PrimitiveList[j]->GetCollider()), manifold))
+				{
+					CollisionResolver::ResolveCollision(manifold);
+				}
 			}
+
 		}
 	}
 
@@ -351,15 +356,30 @@ void Renderer::Tick(float dt)
 
 		for (size_t PrimitiveIndex{ 0 }; PrimitiveIndex < PrimitiveCount; ++PrimitiveIndex)
 		{
-			Collider& Circle{ PrimitiveList[PrimitiveIndex]->GetCollider() };
+			ICollider& collider{ PrimitiveList[PrimitiveIndex]->GetCollider() };
+
 
 			for (size_t WallIndex{ 0 }; WallIndex < 4; ++WallIndex)
 			{
 				CollisionManifold Manifold{};
 
-				if (CollisionDetector::FindCollision(Circle, *Walls[WallIndex], Manifold))
+				switch (collider.GetColliderType())
 				{
-					CollisionResolver::ResolveCollision(Manifold);
+				case ColliderType_Sphere:
+				{
+					SphereCollider& Circle{ static_cast<SphereCollider&>(collider) };
+					if (CollisionDetector::FindCollision(Circle, *Walls[WallIndex], Manifold))
+					{
+						CollisionResolver::ResolveCollision(Manifold);
+					}
+				}
+				break;
+				case ColliderType_Box:
+				{
+					// BoxCollider& Box{ static_cast<BoxCollider&>(collider) };
+				}
+				default:
+					break;
 				}
 			}
 		}

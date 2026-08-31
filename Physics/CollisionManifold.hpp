@@ -1,7 +1,7 @@
 ﻿#pragma once 
 
 #include "RigidBody.h"
-#include "Math.hpp"
+#include "../Utils/Math.hpp"
 
 struct CollisionManifold
 {
