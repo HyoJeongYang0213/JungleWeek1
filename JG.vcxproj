@@ -137,12 +137,14 @@
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="ImGui\stb_image.cpp" />
     <ClCompile Include="InfiniteMap.cpp" />
     <ClCompile Include="InfiniteMap.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\CollisionDetector.cpp" />
+    <ClCompile Include="Physics\CollisionMask.cpp" />
     <ClCompile Include="Physics\CollisionResolver.cpp" />
     <ClCompile Include="Physics\Pick.cpp" />
     <ClCompile Include="Physics\RigidBody.cpp" />
@@ -168,6 +170,7 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="ImGui\stb_image.h" />
     <ClInclude Include="Map\MapGenerator.hpp" />
     <ClInclude Include="Map\MapGlobals.hpp" />
     <ClInclude Include="Map\Platform.h" />
@@ -176,6 +179,7 @@
     <ClInclude Include="Physics\ColliderType.hpp" />
     <ClInclude Include="Physics\CollisionDetector.h" />
     <ClInclude Include="Physics\CollisionManifold.hpp" />
+    <ClInclude Include="Physics\CollisionMask.h" />
     <ClInclude Include="Physics\CollisionResolver.h" />
     <ClInclude Include="Physics\PhysicsGlobals.hpp" />
     <ClInclude Include="Physics\Pick.h" />
