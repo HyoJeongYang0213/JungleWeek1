@@ -21,6 +21,7 @@
 
 #include "Utils/Math.hpp"
 #include "Physics/RigidBody.h"
+#include "Physics/CollisionMask.h"
 #include "Physics/Collider.h"
 #include "Physics/CollisionManifold.hpp"
 #include "Physics/CollisionDetector.h"
@@ -157,15 +158,53 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	LARGE_INTEGER startTime, endTime;
 	double elapsedTime = 0.0;
 
+	// Collision Mask 추가 부분
+
+	CollisionMask collisionMask;
+
+
+	if (!collisionMask.Load(
+		"Asset/stage1_collision_mask_1536x4000.png"
+	))
+	{
+		MessageBoxA(
+			hWnd,
+			"Failed to load CollisionMask.png",
+			"Collision Mask Error",
+			MB_OK | MB_ICONERROR
+		);
+	}
+
+
+	// Collision Mask에서
+	// Connected Component별 Platform Data 생성
+	std::vector<PlatformCollisionData>
+		platformData =
+		collisionMask.BuildPlatformsNDC();
+
+
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
+	// 실제 Platform 생성
+	for (const PlatformCollisionData& data :
+		platformData)
+	{
+		renderer.CreatePrimitive<Platform>(
+			vertexBufferCube,
+			numVerticesCube,
+			data.Center,
+			data.HalfExtents
+		);
+	}
+
+
 	Input input; 
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
 	ID3D11ShaderResourceView* mapSRV = TextureLoader::CreateTextureFromFile(renderer.Device, L"Map.png");
 	ID3D11SamplerState* mapSampler = TextureLoader::CreateSamplerState(renderer.Device);
