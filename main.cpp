@@ -16,7 +16,7 @@
 #include "imGui/imgui_impl_win32.h"
 
 
-#include "Physics/Math.hpp"
+#include "Utils/Math.hpp"
 #include "Physics/RigidBody.h"
 #include "Physics/Collider.h"
 #include "Physics/CollisionManifold.hpp"
@@ -32,6 +32,7 @@
 #include "Player/Ball.h"
 #include "Player/Input.h"
 #include "PlayerGlobals.hpp"
+#include "Map/Platform.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/WindowGlobals.hpp"
@@ -104,9 +105,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	UINT numVerticesTriangle = sizeof(triangle_vertices) / sizeof(VertexSimple);
 	UINT numVerticesSphere = sizeof(sphere_vertices) / sizeof(VertexSimple);
+	UINT numVerticesCube = sizeof(cube_vertices) / sizeof(VertexSimple);
 
 	ID3D11Buffer* vertexBufferTriangle = renderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
+	ID3D11Buffer* vertexBufferCube = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 
 	enum ETypePrimitive
 	{
@@ -128,6 +131,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
 	Input input; 
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -184,6 +191,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	renderer.ReleaseVertexBuffer(vertexBufferTriangle);
 	renderer.ReleaseVertexBuffer(vertexBufferSphere);
+	renderer.ReleaseVertexBuffer(vertexBufferCube);
 
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();

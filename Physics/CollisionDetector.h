@@ -5,6 +5,6 @@
 class CollisionDetector
 {
 public:
-	static bool FindCollision(Collider& Ca, Collider& Cb, CollisionManifold& OutManifold); 
-	static bool FindCollision(Collider& c, StaticCollider& s, CollisionManifold& OutManifold);
+	static bool FindCollision(SphereCollider& Ca, SphereCollider& Cb, CollisionManifold& OutManifold); 
+	static bool FindCollision(SphereCollider& c, StaticCollider& s, CollisionManifold& OutManifold);
 };

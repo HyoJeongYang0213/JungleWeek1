@@ -3,7 +3,8 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
-#include "../Player/Primitive.hpp"
+#include "../Resource/Primitive.hpp"
+
 #include "../Physics/Collider.h"
 #include "../Physics/CollisionManifold.hpp"
 #include "../Physics/CollisionDetector.h"
@@ -79,7 +80,7 @@ public:
 
 	void ReleaseConstantBuffer();
 
-	virtual void UpdateConstant(Vector3 Offset, float scale, float rotation) override;
+	virtual void UpdateConstant(Vector3 Offset, Vector3 scale, float rotation) override;
 
 
 	template<typename T, typename... Args>
@@ -133,9 +134,10 @@ public:
 	struct Constants
 	{
 		Vector3 Offset;
-		float scale;
+		float padding1; 
+		Vector3 scale;
+		float padding2; 
 		float rotation;
-		Vector3 padding;
 	};
 
 

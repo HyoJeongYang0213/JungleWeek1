@@ -2,8 +2,8 @@
 
 #include <d3d11.h>
 
-#include "Primitive.hpp"
-#include "../Physics/Math.hpp"
+#include "../Resource/Primitive.hpp"
+#include "../Utils/Math.hpp"
 #include "../Physics/RigidBody.h"
 #include "../Physics/Collider.h"
 #include "../Utils/Rnd.hpp"
@@ -13,7 +13,7 @@
 class Ball : public Primitive
 {
 public:
-	Ball(ID3D11Buffer* vb, UINT n);
+	Ball(ID3D11Buffer* vb, UINT numVertices);
 	virtual ~Ball() override; 
 
 	Ball(const Ball&) = delete;
@@ -25,7 +25,7 @@ public:
 public:
 	virtual void Tick(float t) override; 
 
-	virtual Collider& GetCollider() override;
+	virtual ICollider& GetCollider() override;
 	virtual RigidBody& GetRigidBody() override;
 
 
@@ -45,7 +45,7 @@ private:
 	static int TotalNumBalls;
 
 	RigidBody mRigidBody;
-	Collider mCollider;
+	SphereCollider mCollider;
 
 	ID3D11Buffer* mVertexBuffer;
 	UINT mNumVertices;
