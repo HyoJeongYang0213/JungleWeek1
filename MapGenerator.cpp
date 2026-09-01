@@ -1,4 +1,4 @@
-﻿#include "InfiniteMap.h"
+﻿#include "../Map/MapGenerator.h"
 #include <cmath>
 
 void InfiniteMap::Init(Renderer& renderer, ID3D11ShaderResourceView* groundmShaderResourceView, const std::vector<ID3D11ShaderResourceView*>& pattermShaderResourceViews)
@@ -8,7 +8,7 @@ void InfiniteMap::Init(Renderer& renderer, ID3D11ShaderResourceView* groundmShad
 
 	mFloorTextures[0] = mShaderResourceViewGround;
 
-	mVertexBufferChunk = renderer.CreateDynamicVertexBuffer(sizeof(VertexTex) * 6);
+	mVertexBufferChunk = renderer.CreateDynamicVertexBuffer(sizeof(VertexTexture) * 6);
 
 }
 
@@ -23,10 +23,10 @@ InfiniteMap::~InfiniteMap()
 
 ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
 {
-	auto It = mFloorTextures.find(floorIndex);
-	if (It != mFloorTextures.end())
+	auto it = mFloorTextures.find(floorIndex);
+	if (it != mFloorTextures.end())
 	{
-		return It->second;
+		return it->second;
 	}
 	
 	if (!mShaderResourceViewPatterns.empty())
@@ -58,7 +58,7 @@ void InfiniteMap::DrawChunk(Renderer& renderer, int floorIndex, float cameraCent
 		return;
 	}
 
-	VertexTex quad[6] = {
+	VertexTexture Quad[6] = {
 		{ -1.0f, NDCTop,    0.0f,  0.0f, 0.0f },
 		{  1.0f, NDCTop,    0.0f,  1.0f, 0.0f },
 		{  1.0f, NDCBottom, 0.0f,  1.0f, 1.0f },
@@ -68,9 +68,9 @@ void InfiniteMap::DrawChunk(Renderer& renderer, int floorIndex, float cameraCent
 		{ -1.0f, NDCBottom, 0.0f,  0.0f, 1.0f }
 	};
 
-	renderer.UpdateDynamicVertexBuffer(mVertexBufferChunk, quad, sizeof(quad));
+	renderer.UpdateDynamicVertexBuffer(mVertexBufferChunk, Quad, sizeof(Quad));
 
-	UINT stride = sizeof(VertexTex);
+	UINT stride = sizeof(VertexTexture);
 	UINT offset = 0;
 	renderer.DeviceContext->IASetVertexBuffers(0, 1, &mVertexBufferChunk, &stride, &offset);
 	renderer.DeviceContext->PSSetShaderResources(0, 1, &Texture);
