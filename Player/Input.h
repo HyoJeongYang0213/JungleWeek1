@@ -26,6 +26,7 @@ public:
 	bool GetButtonUp(KEY_TYPE key) { return GetKeyState(key) == KEY_STATE::UP; }
 
 	void Update();
+	void DragBall();
 
 private:
 	inline KEY_STATE GetKeyState(KEY_TYPE key)
