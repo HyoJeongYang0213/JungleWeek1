@@ -138,9 +138,8 @@
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="ImGui\stb_image.cpp" />
-    <ClCompile Include="InfiniteMap.cpp" />
-    <ClCompile Include="InfiniteMap.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MapGenerator.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\CollisionDetector.cpp" />
@@ -171,7 +170,7 @@
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="ImGui\stb_image.h" />
-    <ClInclude Include="Map\MapGenerator.hpp" />
+    <ClInclude Include="Map\MapGenerator.h" />
     <ClInclude Include="Map\MapGlobals.hpp" />
     <ClInclude Include="Map\Platform.h" />
     <ClInclude Include="Map\TextureLoader.hpp" />
