@@ -1,7 +1,7 @@
 ﻿#pragma once 
 #include "../Utils/Math.hpp"
 
-namespace Globals {
+namespace MapGlobals {
 	constexpr bool BOUND_BALL_TO_SCREEN = true;
 	constexpr bool ENABLE_GRAVITY = true;
 

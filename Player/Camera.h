@@ -19,6 +19,4 @@ public:
 	const Vector3 GetPosition() const;
 
 	Matrix3x3 GetViewMatrix() const;
-private:
-	Vector3 mPosition{}; 
 };

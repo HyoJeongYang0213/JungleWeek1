@@ -4,10 +4,10 @@
 
 
 Renderer::Renderer() 
-	: LeftWall(Globals::LEFT_BORDER_POINT, Globals::LEFT_BORDER_NORMAL),
-RightWall(Globals::RIGHT_BORDER_POINT, Globals::RIGHT_BORDER_NORMAL),
-TopWall(Globals::TOP_BORDER_POINT, Globals::TOP_BORDER_NORMAL),
-BottomWall(Globals::BOTTOM_BORDER_POINT, Globals::BOTTOM_BORDER_NORMAL),
+	: LeftWall(MapGlobals::LEFT_BORDER_POINT, MapGlobals::LEFT_BORDER_NORMAL),
+RightWall(MapGlobals::RIGHT_BORDER_POINT, MapGlobals::RIGHT_BORDER_NORMAL),
+TopWall(MapGlobals::TOP_BORDER_POINT, MapGlobals::TOP_BORDER_NORMAL),
+BottomWall(MapGlobals::BOTTOM_BORDER_POINT, MapGlobals::BOTTOM_BORDER_NORMAL),
 mCamera(Vector3(0.f, 0.f, 0.f))
 {
 }
@@ -324,7 +324,7 @@ void Renderer::UpdateConstant(Vector3 Offset, Vector3 scale, float rotation)
 			constants->rotation = rotation;
 		}
 
-		constants->Projection = Matrix3x3::Orthographic(Globals::LEFT_BORDER, Globals::RIGHT_BORDER, Globals::BOTTOM_BORDER, Globals::TOP_BORDER) * mCamera.GetViewMatrix();
+		constants->Projection = Matrix3x3::Orthographic(MapGlobals::LEFT_BORDER, MapGlobals::RIGHT_BORDER, MapGlobals::BOTTOM_BORDER, MapGlobals::TOP_BORDER) * mCamera.GetViewMatrix();
 		constants->Projection.Transpose();
 
 		DeviceContext->Unmap(ConstantBuffer, 0);
@@ -347,14 +347,14 @@ void Renderer::Tick(float dt)
 {
 	for (size_t i = 0; i < PrimitiveCount; ++i)
 	{
-		if (Globals::ENABLE_GRAVITY)
+		if (MapGlobals::ENABLE_GRAVITY)
 		{
 			const float mass = PrimitiveList[i]->GetRigidBody().GetMass();
 
 			const Vector3 gravityForce =
 			{
 				0.0f,
-				-Globals::GRAVITY_CONSTANT * mass,
+				-PhysicsGlobals::GRAVITY_CONSTANT * mass,
 				0.0f
 			};
 
@@ -393,7 +393,7 @@ void Renderer::Tick(float dt)
 	}
 
 
-	if (Globals::BOUND_BALL_TO_SCREEN)
+	if (MapGlobals::BOUND_BALL_TO_SCREEN)
 	{
 		StaticCollider* Walls[]
 		{
