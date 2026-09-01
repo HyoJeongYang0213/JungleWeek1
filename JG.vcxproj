@@ -141,6 +141,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapGenerator.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="Map\PlatformManager.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\CollisionDetector.cpp" />
     <ClCompile Include="Physics\CollisionMask.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Map\MapGenerator.h" />
     <ClInclude Include="Map\MapGlobals.hpp" />
     <ClInclude Include="Map\Platform.h" />
+    <ClInclude Include="Map\PlatformManager.h" />
     <ClInclude Include="Map\TextureLoader.hpp" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\ColliderType.hpp" />
