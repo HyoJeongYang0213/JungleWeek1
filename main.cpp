@@ -217,8 +217,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	ID3D11ShaderResourceView* ShaderResourceViewPlatform = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Platform.png");
 
-	PlatformManager platformManager;
-	platformManager.Init(renderer);
+	PlatformManager PlatformManager;
+	PlatformManager.Init(
+		renderer,
+		"Asset/stage1_collision_mask_1536x3000.png",
+		{ "Asset/stage1_collision_mask_1536x3000.png" }
+	);
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -245,23 +249,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 		input.Update();
+
+		PlatformManager.Update(cameraCenterY);
 		renderer.Tick(static_cast<float>(elapsedTime));
 
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 
 
-		platformManager.Update(cameraCenterY);
+		float moveSpeed = 1500.0f * static_cast<float>(elapsedTime);
+		if (GetAsyncKeyState(VK_UP) & 0x8000)   cameraCenterY -= moveSpeed;
+		if (GetAsyncKeyState(VK_DOWN) & 0x8000) cameraCenterY += moveSpeed;
+
+		float maxCameraY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
+		if (cameraCenterY > maxCameraY) cameraCenterY = maxCameraY;
+
 
 		renderer.Prepare();
 
 		renderer.DeviceContext->VSSetShader(TextureVertexShader, nullptr, 0);
 		renderer.DeviceContext->PSSetShader(TexturePixelShader, nullptr, 0);
 		renderer.DeviceContext->IASetInputLayout(TextureLayout);
+		renderer.DeviceContext->PSSetSamplers(0, 1, &MapSampler);
 
 		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
 
-		platformManager.Render(renderer, ShaderResourceViewPlatform, cameraCenterY);
+		PlatformManager.Render(renderer, ShaderResourceViewPlatform, cameraCenterY);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
