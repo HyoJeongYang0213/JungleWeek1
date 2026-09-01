@@ -162,7 +162,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		input.Update();
 		renderer.Tick(static_cast<float>(elapsedTime));
-		PlayerGlobals::PLAYERLOCATION = renderer.PrimitiveList[0]->GetCollider().GetRigidBody().GetPosition();
+
+		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
+		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 		renderer.Render();
 
 
