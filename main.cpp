@@ -10,6 +10,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "InfiniteMap.h"
 #include "Map/TextureLoader.hpp"
 #include "Map/MapGenerator.hpp"
 
@@ -114,7 +115,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 
-	std::vector<VertexTex> BackgroundVertices = MapView::CreateMapQuad(Globals::VIEW_HEIGHT_PX, Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
+	std::vector<VertexTex> BackgroundVertices = MapView::CreateMapQuad(Globals::VIEW_HEIGHT_PX, WindowGlobals::SCREENSIZE.Width, WindowGlobals::SCREENSIZE.Height);
 
 	ID3D11Buffer* vertexBufferBackground = renderer.CreateVertexBuffer(
 		(VertexSimple*)BackgroundVertices.data(),
@@ -164,8 +165,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
-	ID3D11ShaderResourceView* mapSRV = TextureLoader::CreateTextureFromFile(renderer.Device, L"Map.png");
+	ID3D11ShaderResourceView* srvGround = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_Ground.png");
+	ID3D11ShaderResourceView* srvA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_A.png");
+	ID3D11ShaderResourceView* srvB = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_B.png");
+	ID3D11ShaderResourceView* srvC = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_C.png");
+
 	ID3D11SamplerState* mapSampler = TextureLoader::CreateSamplerState(renderer.Device);
+
+	InfiniteMap infiniteMap;
+
+	infiniteMap.Init(renderer, srvGround, { srvA, srvB, srvC });
+
+	float cameraCenterY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -196,22 +207,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
-		renderer.Render();
+		//renderer.Render();
 
-		if (mapSRV)
-		{
-			renderer.DeviceContext->VSSetShader(texVS, nullptr, 0);
-			renderer.DeviceContext->PSSetShader(texPS, nullptr, 0);
-			renderer.DeviceContext->IASetInputLayout(texLayout);
+		float moveSpeed = 1500.0f * static_cast<float>(elapsedTime);
+		if (GetAsyncKeyState(VK_UP) & 0x8000)   cameraCenterY -= moveSpeed;
+		if (GetAsyncKeyState(VK_DOWN) & 0x8000) cameraCenterY += moveSpeed;
 
-			UINT stride = sizeof(VertexTex);
-			UINT offset = 0;
-			renderer.DeviceContext->IASetVertexBuffers(0, 1, &vertexBufferBackground, &stride, &offset);
-			renderer.DeviceContext->PSSetShaderResources(0, 1, &mapSRV);
-			renderer.DeviceContext->PSSetSamplers(0, 1, &mapSampler);
+		float maxCameraY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
+		if (cameraCenterY > maxCameraY) cameraCenterY = maxCameraY;
 
-			renderer.DeviceContext->Draw(6, 0);
-		}
+		renderer.Prepare();
+
+		renderer.DeviceContext->VSSetShader(texVS, nullptr, 0);
+		renderer.DeviceContext->PSSetShader(texPS, nullptr, 0);
+		renderer.DeviceContext->IASetInputLayout(texLayout);
+
+		infiniteMap.Render(renderer, mapSampler, cameraCenterY);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
@@ -249,7 +260,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.ReleaseShader();
 	renderer.Release();
 
-	if (mapSRV) mapSRV->Release();
+	if (srvGround) srvGround->Release();
+	if (srvA) srvA->Release();
+	if (srvB) srvB->Release();
+	if (srvC) srvC->Release();
 	if (mapSampler) mapSampler->Release();
 
 	if (texLayout) texLayout->Release();
