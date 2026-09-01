@@ -46,10 +46,10 @@ void InfiniteMap::DrawChunk(Renderer& renderer, int floorIndex, float cameraCent
 	ID3D11ShaderResourceView* Texture = GetOrCreateFloorTexture(floorIndex);
 	if (!Texture) return;
 
-	float TopY = -(float)(floorIndex)*Globals::MAP_HEIGHT;
-	float BottomY = TopY + Globals::MAP_HEIGHT;
+	float TopY = -(float)(floorIndex)*MapGlobals::MAP_HEIGHT;
+	float BottomY = TopY + MapGlobals::MAP_HEIGHT;
 
-	float HalfView = Globals::VIEW_HEIGHT_PX * 0.5f;
+	float HalfView = MapGlobals::VIEW_HEIGHT_PX * 0.5f;
 	float NDCTop = (cameraCenterY - TopY) / HalfView;
 	float NDCBottom = (cameraCenterY - BottomY) / HalfView;
 
@@ -82,11 +82,11 @@ void InfiniteMap::Render(Renderer& renderer, ID3D11SamplerState* sampler, float 
 	renderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	renderer.DeviceContext->PSSetSamplers(0, 1, &sampler);
 
-	float viewTopY = cameraCenterY - (Globals::VIEW_HEIGHT_PX * 0.5f);
-	float viewBottomY = cameraCenterY + (Globals::VIEW_HEIGHT_PX * 0.5f);
+	float viewTopY = cameraCenterY - (MapGlobals::VIEW_HEIGHT_PX * 0.5f);
+	float viewBottomY = cameraCenterY + (MapGlobals::VIEW_HEIGHT_PX * 0.5f);
 
-	int minFloor = static_cast<int>(std::floor((Globals::MAP_HEIGHT - viewBottomY) / Globals::MAP_HEIGHT));
-	int maxFloor = static_cast<int>(std::floor((Globals::MAP_HEIGHT - viewTopY) / Globals::MAP_HEIGHT));
+	int minFloor = static_cast<int>(std::floor((MapGlobals::MAP_HEIGHT - viewBottomY) / MapGlobals::MAP_HEIGHT));
+	int maxFloor = static_cast<int>(std::floor((MapGlobals::MAP_HEIGHT - viewTopY) / MapGlobals::MAP_HEIGHT));
 
 	if (minFloor < 0) minFloor = 0;
 

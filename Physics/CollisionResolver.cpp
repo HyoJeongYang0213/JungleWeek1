@@ -36,7 +36,7 @@ void CollisionResolver::PrepareConstraints(CollisionManifold& Manifold)
 
 	const float VelocityAlongNormal = RelativeVelocity.Dot(Manifold.Normal);
 
-	const float Restitution{ Globals::RESTITUTION_COEFFICIENT };
+	const float Restitution{ PhysicsGlobals::RESTITUTION_COEFFICIENT };
 
 	constexpr float RestitutionThreshold{ 0.1f };
 
@@ -162,21 +162,21 @@ float CollisionResolver::ResolveFrictionCoefficient(CollisionManifold& Manifold)
 	// 1. Sphere - Sphere
 	if (TypeA == ColliderType_Sphere && TypeB == ColliderType_Sphere)
 	{
-		return Globals::GENERAL_FRICTION_COEFFICIENT;
+		return PhysicsGlobals::GENERAL_FRICTION_COEFFICIENT;
 	}
 	// 2. Sphere - Box
 	else if ((TypeA == ColliderType_Sphere && TypeB == ColliderType_Box) || (TypeA == ColliderType_Box && TypeB == ColliderType_Sphere))
 	{
-		return Globals::GROUND_FRICTION_COEFFICIENT;
+		return PhysicsGlobals::GROUND_FRICTION_COEFFICIENT;
 	}
 	// 3. Sphere - Plane
 	else if ((TypeA == ColliderType_Sphere && TypeB == ColliderType_Plane) || (TypeA == ColliderType_Plane && TypeB == ColliderType_Sphere))
 	{
-		return Globals::GROUND_FRICTION_COEFFICIENT;
+		return PhysicsGlobals::GROUND_FRICTION_COEFFICIENT;
 	}
 	else // Undefined Behavior for other combinations, return default friction coefficient
 	{
-		return Globals::GENERAL_FRICTION_COEFFICIENT;
+		return PhysicsGlobals::GENERAL_FRICTION_COEFFICIENT;
 	}
 
 
