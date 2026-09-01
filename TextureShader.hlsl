@@ -23,5 +23,7 @@ PS_INPUT mainVS(VS_INPUT input)
 
 float4 mainPS(PS_INPUT input) : SV_TARGET
 {
-    return g_Texture.Sample(g_Sampler, input.uv);
+    float4 color = g_Texture.Sample(g_Sampler, input.uv);
+    clip(color.a - 0.1f); // Discard pixels with alpha less than 0.1
+    return color;
 }

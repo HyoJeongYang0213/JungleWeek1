@@ -145,6 +145,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		EPT_Max,
 	};
 
+
 	ETypePrimitive typePrimitive = EPT_Sphere;
 
 	// 고성능 타이머 초기화
@@ -181,7 +182,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
 	// 실제 Platform 생성
-	for (const PlatformCollisionData& data :
+	/*for (const PlatformCollisionData& data :
 		platformData)
 	{
 		renderer.CreatePrimitive<Platform>(
@@ -190,7 +191,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			data.Center,
 			data.HalfExtents
 		);
-	}
+	}*/
 
 
 	Input input; 
@@ -212,32 +213,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	InfiniteMap.Init(renderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
 
-	ID3D11ShaderResourceView* srvPlatform = TextureLoader::CreateTextureFromFile(renderer.Device, L"Platform.png");
+	float cameraCenterY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
+
+	ID3D11ShaderResourceView* srvPlatform = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Platform.png");
 
 	PlatformManager platformManager;
 	platformManager.Init(renderer);
-
-	std::vector<PlatformData> dummyGround = {
-		{ Vector3(0.0f, 3500.0f, 0.0f), 300.0f, 60.0f, 0, false },
-		{ Vector3(-200.0f, 2800.0f, 0.0f), 250.0f, 60.0f, 0, false },
-		{ Vector3(200.0f, 2000.0f, 0.0f), 250.0f, 60.0f, 0, false }
-	};
-
-	std::vector<std::vector<PlatformData>> dummyPatterns = {
-		{ // 패턴 A
-			{ Vector3(0.0f, 1000.0f, 0.0f), 280.0f, 60.0f, 0, false },
-			{ Vector3(-180.0f, 2500.0f, 0.0f), 220.0f, 60.0f, 0, false }
-		},
-		{ // 패턴 B
-			{ Vector3(150.0f, 1200.0f, 0.0f), 300.0f, 60.0f, 0, false },
-			{ Vector3(-150.0f, 2800.0f, 0.0f), 200.0f, 60.0f, 0, false }
-		}
-	};
-
-	platformManager.RegisterGroundPlatforms(dummyGround);
-	platformManager.RegisterPatternPlatforms(dummyPatterns);
-
-	float cameraCenterY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -269,12 +250,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 
-		float moveSpeed = 1500.0f * static_cast<float>(elapsedTime);
-		if (GetAsyncKeyState(VK_UP) & 0x8000)   cameraCenterY -= moveSpeed;
-		if (GetAsyncKeyState(VK_DOWN) & 0x8000) cameraCenterY += moveSpeed;
 
-		float maxCameraY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
-		if (cameraCenterY > maxCameraY) cameraCenterY = maxCameraY;
+		platformManager.Update(cameraCenterY);
 
 		renderer.Prepare();
 
@@ -283,6 +260,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.DeviceContext->IASetInputLayout(TextureLayout);
 
 		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
+
+		platformManager.Render(renderer, srvPlatform, cameraCenterY);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
