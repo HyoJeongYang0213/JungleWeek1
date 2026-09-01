@@ -120,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,6 +173,7 @@
     <ClInclude Include="Map\Platform.h" />
     <ClInclude Include="Map\TextureLoader.hpp" />
     <ClInclude Include="Physics\Collider.h" />
+    <ClInclude Include="Physics\ColliderType.hpp" />
     <ClInclude Include="Physics\CollisionDetector.h" />
     <ClInclude Include="Physics\CollisionManifold.hpp" />
     <ClInclude Include="Physics\CollisionResolver.h" />

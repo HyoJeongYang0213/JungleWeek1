@@ -163,6 +163,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
 	ID3D11ShaderResourceView* mapSRV = TextureLoader::CreateTextureFromFile(renderer.Device, L"Map.png");
 	ID3D11SamplerState* mapSampler = TextureLoader::CreateSamplerState(renderer.Device);

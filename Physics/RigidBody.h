@@ -23,6 +23,7 @@ public:
 	void ApplyPositionCorrection(const Vector3& Correction);
 
 	void SetMomentOfInertia(float moment); 
+	void SetRotation(float rotation);
 
 	float GetAngularVelocity() const; 
 	float GetRotation() const;
@@ -33,6 +34,10 @@ public:
 	const Vector3& GetPosition() const;
 	const Vector3& GetVelocity() const;
 	float GetMass() const;
+
+
+	// 매우 위험. 복사된 RigidBody 인 경우에 한해 사용 할 것. 원본 침해의 가능성 있음. 
+	void SetPosition(const Vector3& position) { Position = position; }
 
 private:
 	Vector3& Position;
