@@ -158,6 +158,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	double elapsedTime = 0.0;
 
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
 	Input input; 
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);

@@ -138,6 +138,7 @@ public:
 		float padding1; 
 		Vector3 scale;
 		float rotation;
+		Matrix3x3 Projection;
 	};
 
 
