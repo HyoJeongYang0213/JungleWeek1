@@ -219,9 +219,9 @@ CollisionMask::BuildComponent(
     const float rightWorld =
         rightRatio * 15.0f;
     const float topWorld =
-        40.0f - (topRatio * 40.0f);
+        30.0f - (topRatio * 30.0f);
     const float bottomWorld =
-        40.0f - (bottomRatio * 40.0f);
+        30.0f - (bottomRatio * 30.0f);
 
     // Center
     result.Center =
