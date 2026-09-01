@@ -112,12 +112,14 @@ public:
 	PolygonCollider& operator=(PolygonCollider&&) = default;
 
 public:
-	virtual  ColliderType GetColliderType() const override { return ColliderType_Polygon; }
+	virtual ColliderType GetColliderType() const override { return ColliderType_Polygon; }
 
 	RigidBody& GetRigidBody();
 	const  RigidBody& GetRigidBody() const;
 
-	const std::vector<Vector3>& GetPoints() const;
+	const std::vector<Vector3>& GetHullPoints() const;
+
+	bool IsPointInside(const Vector3& point) const;
 
 private:
 	void CreateConvexHull(const std::vector<Vector3>& points);

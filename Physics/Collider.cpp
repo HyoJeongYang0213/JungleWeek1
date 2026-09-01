@@ -85,6 +85,10 @@ const Vector3& StaticCollider::GetNormal() const
 	return mNormal; 
 }
 
+
+
+
+
 PolygonCollider::PolygonCollider(RigidBody& r, const std::vector<Vector3>& points)
 	: mRigidBody(r)
 {
@@ -101,9 +105,30 @@ const RigidBody& PolygonCollider::GetRigidBody() const
 	return mRigidBody;
 }
 
-const std::vector<Vector3>& PolygonCollider::GetPoints() const
+const std::vector<Vector3>& PolygonCollider::GetHullPoints() const
 {
 	return mPoints;
+}
+
+bool PolygonCollider::IsPointInside(const Vector3& point) const
+{
+	const size_t count = mPoints.size();
+
+	for (size_t i = 0; i < count; ++i)
+	{
+		const Vector3& a = mPoints[i];
+		const Vector3& b = mPoints[(i + 1) % count];
+
+		const Vector3 edge = b - a;
+		const Vector3 toPoint = point - a;
+
+		if (edge.Cross(toPoint) < 0.0f)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void PolygonCollider::CreateConvexHull(const std::vector<Vector3>& points)

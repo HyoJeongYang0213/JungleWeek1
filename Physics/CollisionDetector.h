@@ -51,12 +51,55 @@ Circle Center가 AABB 내부인지 검사
 
 */
 
+#ifdef max 
+#undef max
+#endif 
+
 
 class CollisionDetector
 {
+public:
+    struct ConvexCollisionData {
+		std::vector<Vector3> Points;
+        std::vector<Vector3> Axes; 
+    };
+
+    struct SupportFeature {
+		std::vector<Vector3> Points;
+		float Distance{ 0.0f };
+    };
+
+
+    struct SATResult {
+        Vector3 Normal;
+        float Penetration{ std::numeric_limits<float>::max() };
+    };
+
 public:
 	static bool FindCollision(SphereCollider& Ca, SphereCollider& Cb, CollisionManifold& OutManifold); 
 	static bool FindCollision(SphereCollider& c, StaticCollider& s, CollisionManifold& OutManifold);
 	static bool FindCollision(SphereCollider& c, BoxCollider& aabb, CollisionManifold& OutManifold);
 	static bool FindCollision(SphereCollider& c, BoxCollider& box, float theta, CollisionManifold& OutManifold);
+	static bool FindCollision(SphereCollider& c, PolygonCollider& poly, CollisionManifold& OutManifold);
+	static bool FindCollision(BoxCollider& box, PolygonCollider& poly, CollisionManifold& OutManifold);
+	static bool FindCollision(PolygonCollider& poly, PolygonCollider& poly2, CollisionManifold& OutManifold);
+	static bool FindCollision(PolygonCollider& poly, StaticCollider& s, CollisionManifold& OutManifold);
+
+private:
+	static Vector3 ToLocalSpace(const Vector3& point, const Vector3& position, float rotation);
+	static Vector3 ToWorldSpacePoint(const Vector3& point, const Vector3& position, float rotation);
+	static Vector3 ToWorldSpaceVector(const Vector3& vector, float rotation);
+
+    static ConvexCollisionData MakeCollisionData(const BoxCollider& box);
+	static ConvexCollisionData MakeCollisionData(const PolygonCollider& poly);
+    static void ProjectionPoints(const std::vector<Vector3>& Points, const Vector3& Axis, float& OutMin, float& OutMax);
+
+    static bool SATTest(const std::vector<Vector3>& PointsA, const std::vector<Vector3>& PointsB, const Vector3& Axis, SATResult& OutResult);
+	static bool FindCollisionSAT(const ConvexCollisionData& DataA, const ConvexCollisionData& DataB, SATResult& OutResult);
+
+    static SupportFeature FindSupportFeatures(const std::vector<Vector3>& Points, const Vector3& Direction, bool FindMax);
+
+    static void ProjectFeature(const std::vector<Vector3>& Points, const Vector3& Axis, float& OutMin, float& OutMax);
+
+	static bool GenerateDetector(const std::vector<Vector3>& PointsA, const std::vector<Vector3>& PointsB, const Vector3& Normal, CollisionManifold& OutManifold);
 };

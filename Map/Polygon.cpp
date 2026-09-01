@@ -3,8 +3,8 @@
 PPolygon::PPolygon(ID3D11Buffer* vb, UINT numVertices, const Vector3& position, const std::vector<Vector3>& vertices)
 	: mLocation{ position },
 	mVelocity{ 0.f, 0.f, 0.f },
-	mMass{ 0.f },
-	mRigidBody{ mLocation, mVelocity, mMass, 0.5f * mMass * 1.0f * 1.0f },
+	mMass{ 5.f },
+	mRigidBody{ mLocation, mVelocity, mMass, 1.f },
 	mCollider{ mRigidBody, vertices },
 	mVertexBuffer{ vb }, mNumVertices{ numVertices }
 {
@@ -12,7 +12,7 @@ PPolygon::PPolygon(ID3D11Buffer* vb, UINT numVertices, const Vector3& position, 
 
 void PPolygon::Tick(float t)
 {
-
+	mRigidBody.Integrate(t);
 }
 
 ICollider& PPolygon::GetCollider()

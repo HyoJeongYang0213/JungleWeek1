@@ -1,5 +1,7 @@
 ﻿#pragma once 
 
+#include <array>
+
 #include "RigidBody.h"
 #include "ColliderType.hpp"
 
@@ -11,19 +13,23 @@ struct ColliderInfo
 	ColliderType Type{};
 };
 
+struct ContactConstraint
+{
+	Vector3 Point{};
+
+	float AccumulatedNormalImpulse{};
+	float AccumulatedFrictionImpulse{};
+	float RestitutionBias{};
+};
+
 struct CollisionManifold
 {
 	ColliderInfo ColliderA{};
 	ColliderInfo ColliderB{};
 
 	Vector3 Normal{};
-	Vector3 ContactPoint{};
-
 	float Penetration{};
 
-	// Iteration variables
-	float AccumulatedNormalImpulse{};
-	float AccumulatedFrictionImpulse{};
-
-	float RestitutionBias{};
+	std::array<ContactConstraint, 2> Contacts{};
+	size_t ContactCount{};
 };

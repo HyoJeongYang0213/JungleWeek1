@@ -29,28 +29,33 @@ void CollisionResolver::PrepareConstraints(CollisionManifold& Manifold)
 	RigidBody& A = *Manifold.ColliderA.RigidBody;
 	RigidBody& B = *Manifold.ColliderB.RigidBody;
 
-	const Vector3 VelocityA = A.GetVelocityAtPoint(Manifold.ContactPoint);
-	const Vector3 VelocityB = B.GetVelocityAtPoint(Manifold.ContactPoint);
+	const float Restitution { PhysicsGlobals::RESTITUTION_COEFFICIENT };
 
-	const Vector3 RelativeVelocity = VelocityB - VelocityA;
+	constexpr float RestitutionThreshold { 0.1f };
 
-	const float VelocityAlongNormal = RelativeVelocity.Dot(Manifold.Normal);
-
-	const float Restitution{ PhysicsGlobals::RESTITUTION_COEFFICIENT };
-
-	constexpr float RestitutionThreshold{ 0.1f };
-
-	if(VelocityAlongNormal < -RestitutionThreshold)
+	for (size_t ContactIndex = 0; ContactIndex < Manifold.ContactCount; ++ContactIndex)
 	{
-		Manifold.RestitutionBias = -Restitution * VelocityAlongNormal;
-	}
-	else
-	{
-		Manifold.RestitutionBias = 0.0f;
-	}
+		ContactConstraint& Contact{ Manifold.Contacts[ContactIndex] };
 
-	Manifold.AccumulatedNormalImpulse = 0.0f;
-	Manifold.AccumulatedFrictionImpulse = 0.0f;
+		const Vector3 VelocityA { A.GetVelocityAtPoint(Contact.Point) };
+		const Vector3 VelocityB { B.GetVelocityAtPoint(Contact.Point) };
+
+		const Vector3 RelativeVelocity { VelocityB - VelocityA };
+
+		const float VelocityAlongNormal { RelativeVelocity.Dot(Manifold.Normal) };
+
+		if (VelocityAlongNormal < -RestitutionThreshold)
+		{
+			Contact.RestitutionBias = -Restitution * VelocityAlongNormal;
+		}
+		else
+		{
+			Contact.RestitutionBias = 0.0f;
+		}
+
+		Contact.AccumulatedNormalImpulse = 0.0f;
+		Contact.AccumulatedFrictionImpulse = 0.0f;
+	}
 }
 
 void CollisionResolver::ResolveRestitution(CollisionManifold& Manifold)
@@ -67,42 +72,51 @@ void CollisionResolver::ResolveRestitution(CollisionManifold& Manifold)
 		return;
 	}
 
-	const Vector3 VelocityA = A.GetVelocityAtPoint(Manifold.ContactPoint);
-	const Vector3 VelocityB = B.GetVelocityAtPoint(Manifold.ContactPoint);
-	const Vector3 RelativeVelocity = VelocityB - VelocityA;
-	const float VelocityAlongNormal = RelativeVelocity.Dot(Manifold.Normal);
-
-	const Vector3 OffsetA = Manifold.ContactPoint - A.GetPosition();
-	const Vector3 OffsetB = Manifold.ContactPoint - B.GetPosition();
-
-	const float AngularTermA = OffsetA.Cross(Manifold.Normal) * OffsetA.Cross(Manifold.Normal) * A.GetInverseMomentOfInertia();
-	const float AngularTermB = OffsetB.Cross(Manifold.Normal) * OffsetB.Cross(Manifold.Normal) * B.GetInverseMomentOfInertia();
-	const float Denominator = InverseMassSum + AngularTermA + AngularTermB;
-
-	if (Denominator <= 0.00001f)
+	for (size_t ContactIndex = 0; ContactIndex < Manifold.ContactCount; ++ContactIndex)
 	{
-		return;
+		ContactConstraint& Contact{ Manifold.Contacts[ContactIndex] };
+
+		const Vector3 VelocityA { A.GetVelocityAtPoint(Contact.Point) };
+		const Vector3 VelocityB { B.GetVelocityAtPoint(Contact.Point) };
+
+		const Vector3 RelativeVelocity { VelocityB - VelocityA };
+		const float VelocityAlongNormal { RelativeVelocity.Dot(Manifold.Normal) };
+
+		const Vector3 OffsetA { Contact.Point - A.GetPosition() };
+		const Vector3 OffsetB { Contact.Point - B.GetPosition() };
+
+		const float OffsetACrossNormal{ OffsetA.Cross(Manifold.Normal) };
+		const float OffsetBCrossNormal{ OffsetB.Cross(Manifold.Normal) };
+
+		const float AngularTermA{ OffsetACrossNormal * OffsetACrossNormal * A.GetInverseMomentOfInertia() };
+		const float AngularTermB { OffsetBCrossNormal * OffsetBCrossNormal * B.GetInverseMomentOfInertia() };
+
+		const float Denominator { InverseMassSum + AngularTermA + AngularTermB };
+
+		if (Denominator <= 0.00001f)
+		{
+			continue;
+		}
+
+		float Lambda = -(VelocityAlongNormal - Contact.RestitutionBias) / Denominator;
+
+		const float OldImpulse { Contact.AccumulatedNormalImpulse };
+
+		Contact.AccumulatedNormalImpulse = std::max(OldImpulse + Lambda, 0.0f);
+
+		Lambda = Contact.AccumulatedNormalImpulse - OldImpulse;
+
+		const Vector3 Impulse { Manifold.Normal * Lambda };
+
+		A.ApplyImpulse(Impulse * -1.0f, Contact.Point);
+		B.ApplyImpulse(Impulse, Contact.Point);
 	}
-
-	float Lambda = -(VelocityAlongNormal - Manifold.RestitutionBias) / Denominator;
-	const float OldImpulse = Manifold.AccumulatedNormalImpulse; 
-
-	Manifold.AccumulatedNormalImpulse = std::max(OldImpulse + Lambda, 0.0f);
-	
-	Lambda = Manifold.AccumulatedNormalImpulse - OldImpulse;
-	const Vector3 Impulse = Manifold.Normal * Lambda;
-
-	A.ApplyImpulse(Impulse * -1.f, Manifold.ContactPoint);
-	B.ApplyImpulse(Impulse, Manifold.ContactPoint);
 }
 
 void CollisionResolver::ResolveFriction(CollisionManifold& Manifold)
 {
 	RigidBody& A = *Manifold.ColliderA.RigidBody;
 	RigidBody& B = *Manifold.ColliderB.RigidBody;
-
-	const Vector3 OffsetA = Manifold.ContactPoint - A.GetPosition();
-	const Vector3 OffsetB = Manifold.ContactPoint - B.GetPosition();
 
 	const float InverseMassA = A.GetInverseMass();
 	const float InverseMassB = B.GetInverseMass();
@@ -114,44 +128,58 @@ void CollisionResolver::ResolveFriction(CollisionManifold& Manifold)
 	}
 
 	const float StaticFriction{ CollisionResolver::ResolveFrictionCoefficient(Manifold) };
-	const float DynamicFriction{ StaticFriction * 0.8f };
+	const float DynamicFriction { StaticFriction * 0.8f };
 
-	const Vector3 FrictionVelocityA{ A.GetVelocityAtPoint(Manifold.ContactPoint) };
-	const Vector3 FrictionVelocityB{ B.GetVelocityAtPoint(Manifold.ContactPoint) };
-	const Vector3 FrictionRelativeVelocity{ FrictionVelocityB - FrictionVelocityA };
+	const Vector3 Tangent { -Manifold.Normal.y, Manifold.Normal.x, 0.0f };
 
-
-
-	const Vector3 Tangent{ -Manifold.Normal.y, Manifold.Normal.x, 0.f };
-
-	const float OffsetACrossTangent{ OffsetA.Cross(Tangent) };
-	const float OffsetBCrossTangent{ OffsetB.Cross(Tangent) };
-
-	const float TangentDenominator{ InverseMassSum + OffsetACrossTangent * OffsetACrossTangent * A.GetInverseMomentOfInertia() + OffsetBCrossTangent * OffsetBCrossTangent * B.GetInverseMomentOfInertia() };
-
-	const float TangentVelocity{ FrictionRelativeVelocity.Dot(Tangent) };
-	float Lambda = -TangentVelocity / TangentDenominator;
-	const float OldFrictionImpulse = Manifold.AccumulatedFrictionImpulse;
-	const float NewFrictionImpulse = OldFrictionImpulse + Lambda;
-
-	const float MaxFrictionImpulse = Manifold.AccumulatedNormalImpulse * StaticFriction;
-
-	if (std::abs(NewFrictionImpulse) <= MaxFrictionImpulse)
+	for (size_t ContactIndex = 0; ContactIndex < Manifold.ContactCount; ++ContactIndex)
 	{
-		Manifold.AccumulatedFrictionImpulse = NewFrictionImpulse;
+		ContactConstraint& Contact { Manifold.Contacts[ContactIndex] };
+
+		const Vector3 OffsetA { Contact.Point - A.GetPosition() };
+		const Vector3 OffsetB { Contact.Point - B.GetPosition() };
+
+		const Vector3 FrictionVelocityA { A.GetVelocityAtPoint(Contact.Point) };
+		const Vector3 FrictionVelocityB { B.GetVelocityAtPoint(Contact.Point) };
+		const Vector3 FrictionRelativeVelocity { FrictionVelocityB - FrictionVelocityA };
+
+		const float OffsetACrossTangent { OffsetA.Cross(Tangent) };
+		const float OffsetBCrossTangent { OffsetB.Cross(Tangent) };
+
+		const float TangentDenominator { InverseMassSum + OffsetACrossTangent * OffsetACrossTangent * A.GetInverseMomentOfInertia() + OffsetBCrossTangent * OffsetBCrossTangent * B.GetInverseMomentOfInertia() };
+
+		if (TangentDenominator <= 0.00001f)
+		{
+			continue;
+		}
+
+		const float TangentVelocity { FrictionRelativeVelocity.Dot(Tangent) };
+
+		float Lambda = -TangentVelocity / TangentDenominator;
+
+		const float OldFrictionImpulse { Contact.AccumulatedFrictionImpulse };
+		const float NewFrictionImpulse { OldFrictionImpulse + Lambda };
+
+		const float MaxFrictionImpulse { Contact.AccumulatedNormalImpulse * StaticFriction };
+
+		if (std::abs(NewFrictionImpulse) <= MaxFrictionImpulse)
+		{
+			Contact.AccumulatedFrictionImpulse = NewFrictionImpulse;
+		}
+		else
+		{
+			const float MaxDynamicFrictionImpulse { Contact.AccumulatedNormalImpulse * DynamicFriction };
+
+			Contact.AccumulatedFrictionImpulse = std::clamp(NewFrictionImpulse, -MaxDynamicFrictionImpulse, MaxDynamicFrictionImpulse);
+		}
+
+		Lambda = Contact.AccumulatedFrictionImpulse - OldFrictionImpulse;
+
+		const Vector3 FrictionImpulse { Tangent * Lambda };
+
+		A.ApplyImpulse(FrictionImpulse * -1.0f, Contact.Point);
+		B.ApplyImpulse(FrictionImpulse, Contact.Point);
 	}
-	else {
-		const float MaxDynamicFrictionImpulse = Manifold.AccumulatedNormalImpulse * DynamicFriction;
-		Manifold.AccumulatedFrictionImpulse = std::clamp(NewFrictionImpulse, -MaxDynamicFrictionImpulse, MaxDynamicFrictionImpulse);
-	}
-
-	Lambda = Manifold.AccumulatedFrictionImpulse - OldFrictionImpulse;
-
-	const Vector3 FrictionImpulse{ Tangent * Lambda };
-
-	A.ApplyImpulse(FrictionImpulse * -1.0f, Manifold.ContactPoint);
-	B.ApplyImpulse(FrictionImpulse, Manifold.ContactPoint);
-	
 }
 
 float CollisionResolver::ResolveFrictionCoefficient(CollisionManifold& Manifold)
@@ -178,6 +206,4 @@ float CollisionResolver::ResolveFrictionCoefficient(CollisionManifold& Manifold)
 	{
 		return PhysicsGlobals::GENERAL_FRICTION_COEFFICIENT;
 	}
-
-
 }

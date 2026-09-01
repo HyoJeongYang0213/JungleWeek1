@@ -225,6 +225,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		collisionMask.BuildPlatformsNDC();
 
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
 	// 실제 Platform 생성
 	for (const PlatformCollisionData& data :
