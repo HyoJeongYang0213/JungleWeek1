@@ -18,6 +18,8 @@
 
 #include "../Utils/Rnd.hpp" 
 
+#include "../Player/Camera.h"
+
 class Renderer : public IRenderer
 {
 public:
@@ -150,4 +152,6 @@ public:
 	StaticCollider RightWall;
 	StaticCollider TopWall;
 	StaticCollider BottomWall;
+
+	Camera mCamera; 
 };
