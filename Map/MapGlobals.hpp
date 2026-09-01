@@ -9,7 +9,7 @@ namespace Globals {
 	constexpr Vector3 LEFT_BORDER_POINT		= Vector3(0.0f, 0.0f, 0.0f);
 	constexpr Vector3 RIGHT_BORDER_POINT	= Vector3(15.0f, 0.0f, 0.0f);
 	constexpr Vector3 TOP_BORDER_POINT		= Vector3(0.0f, 40.0f, 0.0f);
-	constexpr Vector3 BOTTOM_BORDER_POINT	= Vector3(0.0f, 5.0f, 0.0f);
+	constexpr Vector3 BOTTOM_BORDER_POINT	= Vector3(0.0f, 2.0f, 0.0f);
 
 	constexpr Vector3 LEFT_BORDER_NORMAL	= Vector3(1.0f, 0.0f, 0.0f);
 	constexpr Vector3 RIGHT_BORDER_NORMAL	= Vector3(-1.0f, 0.0f, 0.0f);
