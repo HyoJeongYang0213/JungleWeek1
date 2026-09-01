@@ -148,6 +148,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="TextureShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImGui\imconfig.h" />
@@ -158,8 +161,10 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="Map\MapGenerator.hpp" />
     <ClInclude Include="Map\MapGlobals.hpp" />
     <ClInclude Include="Map\Platform.h" />
+    <ClInclude Include="Map\TextureLoader.hpp" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\CollisionDetector.h" />
     <ClInclude Include="Physics\CollisionManifold.hpp" />
