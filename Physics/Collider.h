@@ -1,11 +1,6 @@
 ﻿#pragma once 
 #include "RigidBody.h"
-
-enum ColliderType {
-	ColliderType_Sphere,
-	ColliderType_Box, 
-};
-
+#include "ColliderType.hpp"
 
 class ICollider {
 public:
@@ -36,6 +31,8 @@ public:
 	const Vector3& GetCenter() const;
 	float GetRadius() const;
 
+	SphereCollider Clone(); 
+
 private:
 	RigidBody& mRigidBody;
 	float& mRadius;
@@ -61,6 +58,8 @@ public:
 
 	const Vector3& GetHalfExtents() const;
 
+
+	bool IsPointInside(const Vector3& point) const;
 private:
 	RigidBody& mRigidBody;
 	Vector3& mHalfExtents;
@@ -88,7 +87,7 @@ public:
 public:
 	Vector3 mPosition;
 	Vector3 mVelocity;
-	float mMass;
+	float mMass{ 0.f };
 
 	RigidBody mRigidBody;
 	Vector3 mNormal;

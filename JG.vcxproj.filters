@@ -78,9 +78,19 @@
     <ClCompile Include="Player\Input.cpp">
       <Filter>Player</Filter>
     </ClCompile>
+    <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="InfiniteMap.h">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="InfiniteMap.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="TextureShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -118,9 +128,6 @@
     <ClInclude Include="Player\Ball.h">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="Player\Primitive.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer\IRenderer.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -148,26 +155,26 @@
     <ClInclude Include="Physics\CollisionResolver.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Physics\Math.hpp">
-      <Filter>Physics</Filter>
-    </ClInclude>
     <ClInclude Include="Physics\PhysicsGlobals.hpp">
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics\RigidBody.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Physics\ColliderType.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
     <ClInclude Include="Physics\Pick.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Player\Input.h">
-      <Filter>Player</Filter>
+    <ClInclude Include="Resource\Primitive.hpp">
+      <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Player\PlayerGlobals.hpp">
-      <Filter>Player</Filter>
+    <ClInclude Include="Map\Platform.h">
+      <Filter>Map</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\WindowGlobals.hpp">
-      <Filter>Renderer</Filter>
+    <ClInclude Include="Utils\Math.hpp">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

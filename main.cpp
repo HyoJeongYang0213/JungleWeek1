@@ -10,6 +10,9 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "Map/TextureLoader.hpp"
+#include "Map/MapGenerator.h"
+
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
@@ -18,6 +21,7 @@
 
 #include "Utils/Math.hpp"
 #include "Physics/RigidBody.h"
+#include "Physics/CollisionMask.h"
 #include "Physics/Collider.h"
 #include "Physics/CollisionManifold.hpp"
 #include "Physics/CollisionDetector.h"
@@ -71,6 +75,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
+	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
 	// 윈도우 클래스 이름
 	WCHAR WindowClass[] = L"JungleWindowClass";
 
@@ -112,6 +118,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 
+	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
+	ID3D11VertexShader* TextureVertexShader = nullptr;
+	ID3D11PixelShader* TexturePixelShader = nullptr;
+	ID3D11InputLayout* TextureLayout = nullptr;
+
+	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderBlob, nullptr);
+	renderer.Device->CreateVertexShader(VertexShaderBlob->GetBufferPointer(), VertexShaderBlob->GetBufferSize(), nullptr, &TextureVertexShader);
+
+	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
+	renderer.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &TexturePixelShader);
+
+	D3D11_INPUT_ELEMENT_DESC TextureLayoutDesc[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+	renderer.Device->CreateInputLayout(TextureLayoutDesc, 2, VertexShaderBlob->GetBufferPointer(), VertexShaderBlob->GetBufferSize(), &TextureLayout);
+	VertexShaderBlob->Release();
+	psBlob->Release();
+
 	enum ETypePrimitive
 	{
 		EPT_Triangle,
@@ -129,13 +154,66 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	LARGE_INTEGER startTime, endTime;
 	double elapsedTime = 0.0;
 
+	// Collision Mask 추가 부분
+
+	CollisionMask collisionMask;
+
+
+	if (!collisionMask.Load(
+		"Asset/stage1_collision_mask_1536x4000.png"
+	))
+	{
+		MessageBoxA(
+			hWnd,
+			"Failed to load CollisionMask.png",
+			"Collision Mask Error",
+			MB_OK | MB_ICONERROR
+		);
+	}
+
+
+	// Collision Mask에서
+	// Connected Component별 Platform Data 생성
+	std::vector<PlatformCollisionData>
+		platformData =
+		collisionMask.BuildPlatformsNDC();
+
+
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
-	Input input; 
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	// 실제 Platform 생성
+	for (const PlatformCollisionData& data :
+		platformData)
+	{
+		renderer.CreatePrimitive<Platform>(
+			vertexBufferCube,
+			numVerticesCube,
+			data.Center,
+			data.HalfExtents
+		);
+	}
 
+
+	Input input; 
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+
+	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_Ground.png");
+	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_A.png");
+	ID3D11ShaderResourceView* ShaderResourceViewB = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_B.png");
+	ID3D11ShaderResourceView* ShaderResourceViewC = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_C.png");
+
+	ID3D11SamplerState* MapSampler = TextureLoader::CreateSamplerState(renderer.Device);
+
+	InfiniteMap InfiniteMap;
+
+	InfiniteMap.Init(renderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
+
+	float cameraCenterY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -166,9 +244,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
-		renderer.Render();
 
 
+		renderer.Prepare();
+
+		renderer.DeviceContext->VSSetShader(TextureVertexShader, nullptr, 0);
+		renderer.DeviceContext->PSSetShader(TexturePixelShader, nullptr, 0);
+		renderer.DeviceContext->IASetInputLayout(TextureLayout);
+
+		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
+
+		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
+		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
+		{
+			renderer.PrimitiveList[i]->Render(renderer);
+		}
 
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
@@ -201,5 +291,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.ReleaseShader();
 	renderer.Release();
 
+	if (ShaderResourceViewGround) ShaderResourceViewGround->Release();
+	if (ShaderResourceViewA) ShaderResourceViewA->Release();
+	if (ShaderResourceViewB) ShaderResourceViewB->Release();
+	if (ShaderResourceViewC) ShaderResourceViewC->Release();
+	if (MapSampler) MapSampler->Release();
+
+	if (TextureLayout) TextureLayout->Release();
+	if (TextureVertexShader) TextureVertexShader->Release();
+	if (TexturePixelShader) TexturePixelShader->Release();
+	CoUninitialize();
 	return 0;
 }
