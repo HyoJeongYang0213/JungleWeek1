@@ -7,5 +7,12 @@
 class CollisionResolver
 {
 public:
-	static void ResolveCollision(CollisionManifold& Manifold); 
+	static void ResolvePosition(CollisionManifold& Manifold);
+
+	static void PrepareConstraints(CollisionManifold& Manifold);
+
+	static void ResolveRestitution(CollisionManifold& Manifold);
+	static void ResolveFriction(CollisionManifold& Manifold);
+
+	static float ResolveFrictionCoefficient(CollisionManifold& Manifold);
 };

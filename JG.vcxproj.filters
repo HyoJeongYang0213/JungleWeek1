@@ -161,17 +161,20 @@
     <ClInclude Include="Physics\RigidBody.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Physics\ColliderType.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
     <ClInclude Include="Physics\Pick.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Player\Input.h">
-      <Filter>Player</Filter>
+    <ClInclude Include="Resource\Primitive.hpp">
+      <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Player\PlayerGlobals.hpp">
-      <Filter>Player</Filter>
+    <ClInclude Include="Map\Platform.h">
+      <Filter>Map</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\WindowGlobals.hpp">
-      <Filter>Renderer</Filter>
+    <ClInclude Include="Utils\Math.hpp">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

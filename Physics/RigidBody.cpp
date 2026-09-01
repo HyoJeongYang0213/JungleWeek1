@@ -9,6 +9,11 @@ void RigidBody::SetMomentOfInertia(float moment)
 	MomentOfInertia = moment;
 }
 
+void RigidBody::SetRotation(float rotation) 
+{
+	Rotation = rotation;
+}
+
 void RigidBody::AddForce(const Vector3& Force)
 {
 	AccumulatedForce += Force;

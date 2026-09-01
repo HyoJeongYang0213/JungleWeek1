@@ -14,6 +14,7 @@ const RigidBody& SphereCollider::GetRigidBody() const
 	return mRigidBody;
 }
 
+
 const Vector3& SphereCollider::GetCenter() const
 {
 	return mRigidBody.GetPosition();
@@ -22,6 +23,11 @@ const Vector3& SphereCollider::GetCenter() const
 float SphereCollider::GetRadius() const
 {
 	return mRadius;
+}
+
+SphereCollider SphereCollider::Clone() 
+{
+	return SphereCollider(mRigidBody, mRadius);
 }
 
 
@@ -43,6 +49,12 @@ const RigidBody& BoxCollider::GetRigidBody() const
 const Vector3& BoxCollider::GetHalfExtents() const
 {
 	return mHalfExtents;
+}
+
+bool BoxCollider::IsPointInside(const Vector3& point) const 
+{
+	return (point.x >= mRigidBody.GetPosition().x - mHalfExtents.x and point.x <= mRigidBody.GetPosition().x + mHalfExtents.x) &&
+		(point.y >= mRigidBody.GetPosition().y - mHalfExtents.y and point.y <= mRigidBody.GetPosition().y + mHalfExtents.y);
 }
 
 
