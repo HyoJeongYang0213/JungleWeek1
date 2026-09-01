@@ -104,6 +104,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)Player;$(ProjectDir)Libs</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,8 +141,10 @@
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\CollisionDetector.cpp" />
     <ClCompile Include="Physics\CollisionResolver.cpp" />
+    <ClCompile Include="Physics\Pick.cpp" />
     <ClCompile Include="Physics\RigidBody.cpp" />
     <ClCompile Include="Player\Ball.cpp" />
+    <ClCompile Include="Player\Input.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -165,11 +169,15 @@
     <ClInclude Include="Physics\CollisionManifold.hpp" />
     <ClInclude Include="Physics\CollisionResolver.h" />
     <ClInclude Include="Physics\PhysicsGlobals.hpp" />
+    <ClInclude Include="Physics\Pick.h" />
     <ClInclude Include="Physics\RigidBody.h" />
     <ClInclude Include="Player\Ball.h" />
+    <ClInclude Include="Player\Input.h" />
+    <ClInclude Include="Player\PlayerGlobals.hpp" />
+    <ClInclude Include="Player\Primitive.hpp" />
     <ClInclude Include="Renderer\IRenderer.hpp" />
     <ClInclude Include="Renderer\Renderer.h" />
-    <ClInclude Include="Resource\Primitive.hpp" />
+    <ClInclude Include="Renderer\WindowGlobals.hpp" />
     <ClInclude Include="Resource\Sphere.h" />
     <ClInclude Include="Resource\Square.hpp" />
     <ClInclude Include="Resource\vertexSimple.hpp" />
