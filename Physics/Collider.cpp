@@ -131,6 +131,50 @@ bool PolygonCollider::IsPointInside(const Vector3& point) const
 	return true;
 }
 
+float PolygonCollider::CalculateMomentOfInertia(float Mass) const
+{
+	if (mPoints.size() < 3 or Mass <= 0.f) {
+		return 0.0f;
+	}
+
+	float TwiceArea{ 0.f };
+
+	Vector3 Centroid{ 0.f, 0.f, 0.f };
+	float InertiaIntegral{ 0.f };
+
+	for (size_t i = 0; i < mPoints.size(); ++i)
+	{
+		const Vector3& A = mPoints[i];
+		const Vector3& B = mPoints[(i + 1) % mPoints.size()];
+
+		const float Cross = A.Cross(B);
+		TwiceArea += Cross;
+
+		Centroid += (A + B) * Cross;
+
+		const float XTerm{ A.x * A.x + A.x * B.x + B.x * B.x };
+		const float YTerm{ A.y * A.y + A.y * B.y + B.y * B.y };
+
+		InertiaIntegral += (XTerm + YTerm) * Cross;
+	}
+
+	if (std::abs(TwiceArea) < 0.0001f)
+	{
+		return 0.0f;
+	}
+
+	const float SignedArea = TwiceArea * 0.5f;
+
+	Centroid /= (3.0f * TwiceArea);
+
+	const float Density = Mass / std::abs(SignedArea);
+	const float InertiaAboutOrigin = (Density * InertiaIntegral) / 12.0f;
+	const float CentroidDistanceSquared = Centroid.SquaredLength();
+	const float InertiaAboutCentroid = InertiaAboutOrigin - Mass * CentroidDistanceSquared;
+
+	return  std::max(0.0f, InertiaAboutCentroid);
+}
+
 void PolygonCollider::CreateConvexHull(const std::vector<Vector3>& points)
 {
 	std::vector<Vector3> pts{ points };

@@ -121,6 +121,7 @@ public:
 
 	bool IsPointInside(const Vector3& point) const;
 
+	float CalculateMomentOfInertia(float mass) const;
 private:
 	void CreateConvexHull(const std::vector<Vector3>& points);
 	

@@ -24,6 +24,8 @@ struct Vector3
 	Vector3 operator*(float scalar) const { return Vector3(x * scalar, y * scalar, z * scalar); }
 	Vector3 operator/(float scalar) const { return Vector3(x / scalar, y / scalar, z / scalar); }
 
+	Vector3 operator/=(float scalar) { x /= scalar; y /= scalar; z /= scalar; return *this; }
+
 	Vector3 Normalize() const
 	{
 		float len = Length();
