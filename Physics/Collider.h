@@ -87,7 +87,7 @@ public:
 public:
 	Vector3 mPosition;
 	Vector3 mVelocity;
-	float mMass;
+	float mMass{ 0.f };
 
 	RigidBody mRigidBody;
 	Vector3 mNormal;

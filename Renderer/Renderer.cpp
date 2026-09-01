@@ -403,6 +403,7 @@ void Renderer::Tick(float dt)
 	for (CollisionManifold& manifold : Manifolds)
 	{
 		CollisionResolver::ResolvePosition(manifold);
+		CollisionResolver::PrepareConstraints(manifold);
 	}
 	
 
@@ -412,7 +413,8 @@ void Renderer::Tick(float dt)
 	{
 		for (CollisionManifold& manifold : Manifolds)
 		{
-			CollisionResolver::ResolveCollision(manifold);
+			CollisionResolver::ResolveRestitution(manifold);
+			CollisionResolver::ResolveFriction(manifold);
 		}
 	}
 

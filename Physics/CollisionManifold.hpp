@@ -20,4 +20,10 @@ struct CollisionManifold
 	Vector3 ContactPoint{};
 
 	float Penetration{};
+
+	// Iteration variables
+	float AccumulatedNormalImpulse{};
+	float AccumulatedFrictionImpulse{};
+
+	float RestitutionBias{};
 };
