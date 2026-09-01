@@ -72,7 +72,9 @@
     <ClCompile Include="main.cpp">
       <Filter>main</Filter>
     </ClCompile>
-    <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="Map\Platform.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -146,11 +148,17 @@
     <ClInclude Include="Physics\RigidBody.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Map\Platform.h" />
-    <ClInclude Include="Resource\Primitive.hpp" />
-    <ClInclude Include="Utils\Math.hpp" />
     <ClInclude Include="Physics\ColliderType.hpp">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\Primitive.hpp">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Platform.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Math.hpp">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
