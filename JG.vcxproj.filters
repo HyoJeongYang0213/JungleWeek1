@@ -73,7 +73,10 @@
       <Filter>main</Filter>
     </ClCompile>
     <ClCompile Include="Map\Platform.cpp" />
-    <ClCompile Include="InfiniteMapManager.hpp">
+    <ClCompile Include="InfiniteMap.h">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="InfiniteMap.cpp">
       <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
