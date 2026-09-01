@@ -1,6 +1,7 @@
 ﻿#pragma once 
 #include <math.h>
 #include <algorithm>
+#include <cmath>
 
 struct Vector3
 {
@@ -55,6 +56,23 @@ public:
 	Matrix3x3(Matrix3x3&&)= default;
 	Matrix3x3& operator=(Matrix3x3&&) = default;
 
+	Matrix3x3 operator*(const Matrix3x3& other) const
+	{
+		Matrix3x3 result;
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				result.m[i][j] = 0.0f;
+				for (int k = 0; k < 4; ++k)
+				{
+					result.m[i][j] += m[i][k] * other.m[k][j];
+				}
+			}
+		}
+		return result;
+	}
+
 public:
 
 	static Matrix3x3 Orthographic(float left, float right, float bottom, float top)
@@ -68,6 +86,29 @@ public:
 
 		return result;
 	}
+
+	static Matrix3x3 Translation(float tx, float ty)
+	{
+		Matrix3x3 result;
+		result.m[0][2] = tx;
+		result.m[1][2] = ty;
+		return result;
+	}
+
+	static Matrix3x3 Rotation(float angle)
+	{
+		Matrix3x3 result;
+		float cosA = std::cos(angle);
+		float sinA = std::sin(angle);
+		result.m[0][0] = cosA;
+		result.m[0][1] = -sinA;
+		result.m[1][0] = sinA;
+		result.m[1][1] = cosA;
+		return result;
+	}
+
+
+public:
 
 	void Transpose()
 	{

@@ -148,6 +148,7 @@
     <ClCompile Include="Physics\Pick.cpp" />
     <ClCompile Include="Physics\RigidBody.cpp" />
     <ClCompile Include="Player\Ball.cpp" />
+    <ClCompile Include="Player\Camera.cpp" />
     <ClCompile Include="Player\Input.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
   </ItemGroup>
@@ -184,6 +185,7 @@
     <ClInclude Include="Physics\Pick.h" />
     <ClInclude Include="Physics\RigidBody.h" />
     <ClInclude Include="Player\Ball.h" />
+    <ClInclude Include="Player\Camera.h" />
     <ClInclude Include="Player\Input.h" />
     <ClInclude Include="Player\PlayerGlobals.hpp" />
     <ClInclude Include="Player\Primitive.hpp" />
