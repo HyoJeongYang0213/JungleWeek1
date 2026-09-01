@@ -4,7 +4,7 @@ Platform::Platform(ID3D11Buffer* vb, UINT numVertices)
 	: mVertexBuffer{vb}, mNumVertices{numVertices},
 	mRigidBody{ mLocation, mVelocity, mMass, 1.0f }, mCollider{ mRigidBody, mHalfExtents }
 {
-	mRigidBody.SetRotation(Rnd::GetRandomFloat(0.f, 360.f));
+	mRigidBody.SetRotation(Rnd::GetRandom(0.f, 360.f));
 }
 
 Platform::~Platform()
