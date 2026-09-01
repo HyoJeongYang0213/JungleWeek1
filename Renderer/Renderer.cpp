@@ -4,10 +4,10 @@
 
 
 Renderer::Renderer() 
-	: LeftWall(Vector3(Globals::LEFT_BORDER, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f)),
-RightWall(Vector3(Globals::RIGHT_BORDER, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f)),
-TopWall(Vector3(0.0f, Globals::TOP_BORDER, 0.0f), Vector3(0.0f, 1.0f, 0.0f)),
-BottomWall(Vector3(0.0f, Globals::BOTTOM_BORDER, 0.0f), Vector3(0.0f, -1.0f, 0.0f))
+	: LeftWall(Globals::LEFT_BORDER_POINT, Globals::LEFT_BORDER_NORMAL),
+RightWall(Globals::RIGHT_BORDER_POINT, Globals::RIGHT_BORDER_NORMAL),
+TopWall(Globals::TOP_BORDER_POINT, Globals::TOP_BORDER_NORMAL),
+BottomWall(Globals::BOTTOM_BORDER_POINT, Globals::BOTTOM_BORDER_NORMAL)
 {
 }
 
@@ -322,6 +322,10 @@ void Renderer::UpdateConstant(Vector3 Offset, Vector3 scale, float rotation)
 			constants->scale = scale;
 			constants->rotation = rotation;
 		}
+
+		constants->Projection = Matrix3x3::Orthographic(Globals::LEFT_BORDER, Globals::RIGHT_BORDER, Globals::BOTTOM_BORDER, Globals::TOP_BORDER);
+		constants->Projection.Transpose();
+
 		DeviceContext->Unmap(ConstantBuffer, 0);
 	}
 }
