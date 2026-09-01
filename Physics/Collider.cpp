@@ -85,6 +85,47 @@ const Vector3& StaticCollider::GetNormal() const
 	return mNormal; 
 }
 
+PolygonCollider::PolygonCollider(RigidBody& r, const std::vector<Vector3>& points)
+	: mRigidBody(r)
+{
+	CreateConvexHull(points);
+}
 
+RigidBody& PolygonCollider::GetRigidBody()
+{
+	return mRigidBody;
+}
 
+const RigidBody& PolygonCollider::GetRigidBody() const
+{
+	return mRigidBody;
+}
 
+const std::vector<Vector3>& PolygonCollider::GetPoints() const
+{
+	return mPoints;
+}
+
+void PolygonCollider::CreateConvexHull(const std::vector<Vector3>& points)
+{
+	std::vector<Vector3> pts{ points };
+
+	if (pts.size() <= 2) {
+		throw std::invalid_argument("PolygonCollider requires at least 3 points to create a convex hull.");
+	}
+
+	std::sort(pts.begin(), pts.end(), [](const Vector3& a, const Vector3& b) {
+		if (a.x != b.x) return a.x < b.x;
+		return a.y < b.y;
+	});
+
+	std::vector<Vector3> hull{};
+	hull.reserve(pts.size() * 2);
+
+	PolygonCollider::MakeConvexHull(pts.begin(), pts.end(), hull, 2);
+	PolygonCollider::MakeConvexHull(pts.rbegin() + 1, pts.rend(), hull, hull.size() + 1);
+
+	hull.pop_back();
+
+	mPoints = std::move(hull);
+}

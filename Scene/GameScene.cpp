@@ -6,19 +6,21 @@
 #include "../Physics/CollisionDetector.h"
 #include "../Physics/CollisionResolver.h"
 
+#include "../Renderer/Renderer.h"
+
 void GameScene::Tick(float dt)
 {
 	auto PrimitiveCount{ mPrimitives.size() };
 
 	for (auto& Primitive : mPrimitives)
 	{
-		if (Globals::ENABLE_GRAVITY)
+		if (MapGlobals::ENABLE_GRAVITY)
 		{
 			const float mass = Primitive->GetRigidBody().GetMass();
 			const Vector3 gravityForce =
 			{
 				0.0f,
-				-Globals::GRAVITY_CONSTANT * mass,
+				-PhysicsGlobals::GRAVITY_CONSTANT * mass,
 				0.0f
 			};
 			Primitive->GetRigidBody().AddForce(gravityForce);
@@ -55,7 +57,7 @@ void GameScene::Tick(float dt)
 	}
 
 
-	if (Globals::BOUND_BALL_TO_SCREEN)
+	if (MapGlobals::BOUND_BALL_TO_SCREEN)
 	{
 		StaticCollider* Walls[]
 		{
@@ -116,8 +118,10 @@ void GameScene::Tick(float dt)
 	}
 }
 
-void GameScene::Render(IRenderer& renderer)
+void GameScene::Render(IRenderer& renderer, ID3D11SamplerState* pSamplerState)
 {
+	mBackGround.Render(static_cast<Renderer&>(renderer), pSamplerState, mCamera.GetPosition().y);
+
 	for (auto& Primitive : mPrimitives)
 	{
 		Primitive->Render(renderer);

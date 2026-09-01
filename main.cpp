@@ -29,18 +29,20 @@
 #include "Physics/Pick.h"
 
 #include "Resource/vertexSimple.hpp" 
-
-
 #include "Resource/Sphere.h"
 #include "Resource/Square.hpp"
+#include "Resource/PolygonGeometry.hpp"
 
 #include "Player/Ball.h"
 #include "Player/Input.h"
 #include "PlayerGlobals.hpp"
+
 #include "Map/Platform.h"
+#include "Map/Polygon.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/WindowGlobals.hpp"
+
 
 // 삼각형을 하드 코딩
 VertexSimple triangle_vertices[] =
@@ -122,6 +124,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11Buffer* vertexBufferTriangle = renderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
+	
+	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
+
+	{
+		auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
+			{
+				polygonVertexBuffers.emplace_back(
+					renderer.CreateVertexBuffer(
+						vertices,
+						sizeof(vertices)
+					),
+					static_cast<UINT>(std::size(vertices)),
+					positions
+				);
+			};
+
+		// Convex
+		AddPolygonVertexBuffer(convex_triangle_vertices, convex_triangle_positions);
+		AddPolygonVertexBuffer(convex_quad_vertices, convex_quad_positions);
+		AddPolygonVertexBuffer(convex_trapezoid_vertices, convex_trapezoid_positions);
+		AddPolygonVertexBuffer(convex_pentagon_vertices, convex_pentagon_positions);
+		AddPolygonVertexBuffer(convex_hexagon_vertices, convex_hexagon_positions);
+		AddPolygonVertexBuffer(convex_octagon_vertices, convex_octagon_positions);
+		AddPolygonVertexBuffer(convex_dodecagon_vertices, convex_dodecagon_positions);
+
+		// Concave
+		AddPolygonVertexBuffer(concave_arrow_vertices, concave_arrow_positions);
+		AddPolygonVertexBuffer(concave_l_vertices, concave_l_positions);
+		AddPolygonVertexBuffer(concave_u_vertices, concave_u_positions);
+		AddPolygonVertexBuffer(concave_plus_vertices, concave_plus_positions);
+		AddPolygonVertexBuffer(concave_c_vertices, concave_c_positions);
+		AddPolygonVertexBuffer(concave_star_vertices, concave_star_positions);
+		AddPolygonVertexBuffer(concave_lightning_vertices, concave_lightning_positions);
+		AddPolygonVertexBuffer(concave_comb_vertices, concave_comb_positions);
+		AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
+		AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
+	}
+
+
 
 	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
 	ID3D11VertexShader* TextureVertexShader = nullptr;
@@ -198,13 +239,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 
+	for (auto& pbuffer : polygonVertexBuffers)
+	{
+		renderer.CreatePrimitive<PPolygon>(std::get<0>(pbuffer), std::get<1>(pbuffer), Vector3{Rnd::GetRandom(0.f, 15.f), Rnd::GetRandom(0.f, 30.f), 0.f}, std::get<2>(pbuffer));
+	}
+
+
 	Input input; 
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
 	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_Ground.png");
 	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_A.png");
@@ -256,7 +297,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.DeviceContext->PSSetShader(TexturePixelShader, nullptr, 0);
 		renderer.DeviceContext->IASetInputLayout(TextureLayout);
 
-		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
+		//InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)

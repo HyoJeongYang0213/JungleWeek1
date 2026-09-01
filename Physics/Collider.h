@@ -1,4 +1,9 @@
 ﻿#pragma once 
+
+#include <vector>
+#include <iterator>
+#include <stdexcept>
+
 #include "RigidBody.h"
 #include "ColliderType.hpp"
 
@@ -64,6 +69,87 @@ private:
 	RigidBody& mRigidBody;
 	Vector3& mHalfExtents;
 };
+
+class PolygonCollider : public ICollider {
+	template <typename Iterator>
+	class Subrange
+	{
+	public:
+		Subrange(Iterator begin, Iterator end)
+			: Begin(begin)
+			, End(end)
+		{
+		}
+
+		Iterator begin() const
+		{
+			return Begin;
+		}
+
+		Iterator end() const
+		{
+			return End;
+		}
+
+		bool empty() const
+		{
+			return Begin == End;
+		}
+
+	private:
+		Iterator Begin;
+		Iterator End;
+	};
+
+public:
+	PolygonCollider(RigidBody& r, const std::vector<Vector3>& points);
+	~PolygonCollider() = default;
+
+	PolygonCollider(const PolygonCollider&) = delete;
+	PolygonCollider& operator=(const PolygonCollider&) = delete;
+
+	PolygonCollider(PolygonCollider&&) = default;
+	PolygonCollider& operator=(PolygonCollider&&) = default;
+
+public:
+	virtual  ColliderType GetColliderType() const override { return ColliderType_Polygon; }
+
+	RigidBody& GetRigidBody();
+	const  RigidBody& GetRigidBody() const;
+
+	const std::vector<Vector3>& GetPoints() const;
+
+private:
+	void CreateConvexHull(const std::vector<Vector3>& points);
+	
+	template<typename T> 
+	inline void MakeConvexHull(T begin, T end, std::vector<Vector3>& hull, size_t endCount) {
+		for (const auto& p : Subrange(begin, end)) {
+
+			while (hull.size() >= endCount) {
+				Vector3 a = hull[hull.size() - 2];
+				Vector3 b = hull[hull.size() - 1];
+
+				Vector3 ab = b - a;
+				Vector3 ap = p - a;
+
+				if (ab.Cross(ap) <= 0.f) {
+					hull.pop_back();
+				}
+				else {
+					break;
+				}
+			}
+
+			hull.push_back(p);
+		}
+	}
+
+private:
+	RigidBody& mRigidBody;
+	std::vector<Vector3> mPoints{};
+};
+
 
 class StaticCollider
 {

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <d3d11.h>
 
 #include "IScene.hpp"
 
@@ -12,6 +13,8 @@
 #include "../Physics/Collider.h"
 
 #include "../Player/Camera.h"
+
+#include "../Map/MapGenerator.h"
 
 class GameScene : public IScene {
 public:
@@ -26,7 +29,7 @@ public:
 
 public:
 	virtual void Tick(float dt) override;
-	virtual void Render(IRenderer& renderer) override;
+	virtual void Render(IRenderer& renderer, ID3D11SamplerState* pSamplerState) override;
 
 	template <typename T, typename... Args>
 	inline bool CreatePrimitive(Args&&... args)
@@ -44,8 +47,12 @@ public:
 private:
 	std::vector<std::unique_ptr<Primitive>> mPrimitives{};
 	
-	StaticCollider LeftWall{ Globals::LEFT_BORDER_POINT, Globals::LEFT_BORDER_NORMAL };
-	StaticCollider RightWall{ Globals::RIGHT_BORDER_POINT, Globals::RIGHT_BORDER_NORMAL };
-	StaticCollider TopWall{ Globals::TOP_BORDER_POINT, Globals::TOP_BORDER_NORMAL };
-	StaticCollider BottomWall{ Globals::BOTTOM_BORDER_POINT, Globals::BOTTOM_BORDER_NORMAL };
+	StaticCollider LeftWall{ MapGlobals::LEFT_BORDER_POINT, MapGlobals::LEFT_BORDER_NORMAL };
+	StaticCollider RightWall{ MapGlobals::RIGHT_BORDER_POINT, MapGlobals::RIGHT_BORDER_NORMAL };
+	StaticCollider TopWall{ MapGlobals::TOP_BORDER_POINT, MapGlobals::TOP_BORDER_NORMAL };
+	StaticCollider BottomWall{ MapGlobals::BOTTOM_BORDER_POINT, MapGlobals::BOTTOM_BORDER_NORMAL };
+
+	Camera mCamera{ Vector3(0.0f, 0.0f, 0.0f) };
+
+	InfiniteMap mBackGround{}; 
 };
