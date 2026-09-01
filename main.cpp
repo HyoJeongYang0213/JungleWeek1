@@ -23,16 +23,19 @@
 #include "Physics/CollisionDetector.h"
 #include "Physics/CollisionResolver.h"
 
-#include "Resource/vertexSimple.hpp"
+#include "Resource/vertexSimple.hpp" 
 
 
 #include "Resource/Sphere.h"
 #include "Resource/Square.hpp"
 
 #include "Player/Ball.h"
+#include "Player/Input.h"
+#include "PlayerGlobals.hpp"
 #include "Map/Platform.h"
 
 #include "Renderer/Renderer.h"
+#include "Renderer/WindowGlobals.hpp"
 
 // 삼각형을 하드 코딩
 VertexSimple triangle_vertices[] =
@@ -81,7 +84,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 1024 x 1024 크기에 윈도우 생성
 	HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
+		CW_USEDEFAULT, CW_USEDEFAULT, WindowGlobals::SCREENSIZE.Width, WindowGlobals::SCREENSIZE.Height,
 		nullptr, nullptr, hInstance, nullptr);
 
 	srand((UINT)GetTickCount64());
@@ -126,10 +129,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	double elapsedTime = 0.0;
 
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
+	Input input; 
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
@@ -162,8 +163,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 
-
+		input.Update();
 		renderer.Tick(static_cast<float>(elapsedTime));
+
+		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
+		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 		renderer.Render();
 
 

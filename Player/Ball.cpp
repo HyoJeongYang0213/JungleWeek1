@@ -1,4 +1,5 @@
 ﻿#include "Ball.h"
+#include "PlayerGlobals.hpp"
 
 int Ball::TotalNumBalls = 0;
 
@@ -13,10 +14,12 @@ Ball::Ball(ID3D11Buffer* vb, UINT numVertices)
 	mVertexBuffer{ vb }, mNumVertices{ numVertices }
 {
 	TotalNumBalls++;
+	PlayerGlobals::PLAYERBALL = this;
 }
 Ball::~Ball()
 {
 	TotalNumBalls--;
+	PlayerGlobals::PLAYERBALL = nullptr;
 }
 
 void Ball::Tick(float t)
