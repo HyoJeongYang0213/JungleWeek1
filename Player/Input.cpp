@@ -1,6 +1,8 @@
 ﻿#include "Input.h"
 #include <Windows.h>
 #include "../Physics/Pick.h"
+#include "../Player/PlayerGlobals.hpp" 
+#include "../ImGui/imgui.h"
 
 void Input::Update()
 {
@@ -23,18 +25,39 @@ void Input::Update()
 	}
 
 	if (GetKeyState(KEY_TYPE::LBUTTON) == KEY_STATE::DOWN) {
-		DragBall();
+		Pick pick;
+		POINT mousePos = GetMousePos();
+
+		if (_mIsDragging) {
+			OutputDebugStringA("Ball Released!\n");
+			// 공발사 함수 여기서 호출하시면 됩니당~~~ 
+
+			_mIsDragging = false;
+			return;
+		}
+		else {
+			if (pick.IsBallClicked(mousePos.x, mousePos.y) == true) {
+				OutputDebugStringA("Ball Clicked!\n");
+				_mIsDragging = !_mIsDragging;
+			}
+		}
 	}
 }
 
 void Input::DragBall()
 {
+	if (_mIsDragging == false) return;
+
 	Pick pick;
 	POINT mousePos = GetMousePos();
-	if (pick.IsBallClicked(mousePos.x, mousePos.y) == false) return;
 
-	// Ball 이 클릭되었을 때 처리 시작! (화살표 UI, 운동 등)
-	// 임시
-	OutputDebugStringA("Ball Clicked!\n");
+	WindowSize ballScreen = pick.WorldToScreen(PlayerGlobals::PLAYERLOCATION);
+
+	ImGui::GetForegroundDrawList()->AddLine(
+		ImVec2(ballScreen.Width, ballScreen.Height),
+		ImVec2((float)mousePos.x, (float)mousePos.y),
+		IM_COL32(255, 0, 0, 255),
+		3.0f
+	);
 }
 

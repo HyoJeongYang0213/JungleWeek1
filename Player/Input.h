@@ -37,4 +37,5 @@ private:
 private:
 	std::vector <KEY_STATE> _mStates;
 	POINT _mMousePos = {};
+	bool _mIsDragging = false;
 };

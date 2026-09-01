@@ -22,6 +22,7 @@
 #include "Physics/CollisionManifold.hpp"
 #include "Physics/CollisionDetector.h"
 #include "Physics/CollisionResolver.h"
+#include "Physics/Pick.h"
 
 #include "Resource/vertexSimple.hpp" 
 
@@ -173,6 +174,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
+		input.DragBall();
 
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
