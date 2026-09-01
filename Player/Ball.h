@@ -31,6 +31,11 @@ public:
 
 	virtual void Render(IRenderer& renderer) override;
 
+	Vector3 GetLocation() const { return mLocation; }
+	Vector3 GetVelocity() const { return mVelocity; }
+	float GetRadius() const { return mRadius; }
+	float GetMass() const { return mMass; }
+
 private: 
 	// 클래스 이름과, 아래 다섯개의 변수 이름은 변경하지 않습니다.
 	Vector3 mLocation;

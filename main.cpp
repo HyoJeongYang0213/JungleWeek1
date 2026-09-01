@@ -10,6 +10,9 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "Map/TextureLoader.hpp"
+#include "Map/MapGenerator.hpp"
+
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/imgui_impl_dx11.h"
@@ -23,16 +26,19 @@
 #include "Physics/CollisionDetector.h"
 #include "Physics/CollisionResolver.h"
 
-#include "Resource/vertexSimple.hpp"
+#include "Resource/vertexSimple.hpp" 
 
 
 #include "Resource/Sphere.h"
 #include "Resource/Square.hpp"
 
 #include "Player/Ball.h"
+#include "Player/Input.h"
+#include "PlayerGlobals.hpp"
 #include "Map/Platform.h"
 
 #include "Renderer/Renderer.h"
+#include "Renderer/WindowGlobals.hpp"
 
 // 삼각형을 하드 코딩
 VertexSimple triangle_vertices[] =
@@ -81,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 1024 x 1024 크기에 윈도우 생성
 	HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024,
+		CW_USEDEFAULT, CW_USEDEFAULT, WindowGlobals::SCREENSIZE.Width, WindowGlobals::SCREENSIZE.Height,
 		nullptr, nullptr, hInstance, nullptr);
 
 	srand((UINT)GetTickCount64());
@@ -108,6 +114,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 
+	std::vector<VertexTex> BackgroundVertices = MapView::CreateMapQuad(Globals::VIEW_HEIGHT_PX, Globals::WINDOW_WIDTH, Globals::WINDOW_HEIGHT);
+
+	ID3D11Buffer* vertexBufferBackground = renderer.CreateVertexBuffer(
+		(VertexSimple*)BackgroundVertices.data(),
+		static_cast<UINT>(BackgroundVertices.size() * sizeof(VertexTex))
+	);
+
+	ID3DBlob* vsBlob = nullptr, * psBlob = nullptr;
+	ID3D11VertexShader* texVS = nullptr;
+	ID3D11PixelShader* texPS = nullptr;
+	ID3D11InputLayout* texLayout = nullptr;
+
+	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vsBlob, nullptr);
+	renderer.Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &texVS);
+
+	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
+	renderer.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &texPS);
+
+	D3D11_INPUT_ELEMENT_DESC texLayoutDesc[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+	renderer.Device->CreateInputLayout(texLayoutDesc, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &texLayout);
+	vsBlob->Release();
+	psBlob->Release();
+
 	enum ETypePrimitive
 	{
 		EPT_Triangle,
@@ -126,10 +158,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	double elapsedTime = 0.0;
 
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
+	Input input; 
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
@@ -137,6 +167,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
+	ID3D11ShaderResourceView* mapSRV = TextureLoader::CreateTextureFromFile(renderer.Device, L"Map.png");
+	ID3D11SamplerState* mapSampler = TextureLoader::CreateSamplerState(renderer.Device);
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -162,11 +194,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 
-
+		input.Update();
 		renderer.Tick(static_cast<float>(elapsedTime));
+
+		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
+		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 		renderer.Render();
 
+		if (mapSRV)
+		{
+			renderer.DeviceContext->VSSetShader(texVS, nullptr, 0);
+			renderer.DeviceContext->PSSetShader(texPS, nullptr, 0);
+			renderer.DeviceContext->IASetInputLayout(texLayout);
 
+			UINT stride = sizeof(VertexTex);
+			UINT offset = 0;
+			renderer.DeviceContext->IASetVertexBuffers(0, 1, &vertexBufferBackground, &stride, &offset);
+			renderer.DeviceContext->PSSetShaderResources(0, 1, &mapSRV);
+			renderer.DeviceContext->PSSetSamplers(0, 1, &mapSampler);
+
+			renderer.DeviceContext->Draw(6, 0);
+		}
+
+		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
+		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
+		{
+			renderer.PrimitiveList[i]->Render(renderer);
+		}
 
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
@@ -198,5 +252,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.ReleaseShader();
 	renderer.Release();
 
+	if (mapSRV) mapSRV->Release();
+	if (mapSampler) mapSampler->Release();
+
+	if (texLayout) texLayout->Release();
+	if (texVS) texVS->Release();
+	if (texPS) texPS->Release();
 	return 0;
 }

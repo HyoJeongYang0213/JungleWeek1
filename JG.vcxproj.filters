@@ -25,7 +25,7 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{3aac128d-a48f-4ab4-af13-3c64b591ab45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="main">
+    <Filter Include="Main">
       <UniqueIdentifier>{c7d80af0-fb03-4b75-87ac-099004adb77c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -70,14 +70,27 @@
       <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>main</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Map\Platform.cpp">
+    <ClCompile Include="Physics\Pick.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\Input.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="InfiniteMap.h">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="InfiniteMap.cpp">
       <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="TextureShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -149,6 +162,9 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics\ColliderType.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Pick.h">
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Resource\Primitive.hpp">

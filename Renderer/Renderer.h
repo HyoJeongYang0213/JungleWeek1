@@ -72,7 +72,8 @@ public:
 	virtual void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices) override;
 
 	ID3D11Buffer* CreateVertexBuffer(VertexSimple* vertices, UINT byteWidth);
-
+	ID3D11Buffer* CreateDynamicVertexBuffer(UINT byteWidth);
+	void UpdateDynamicVertexBuffer(ID3D11Buffer* buffer, const void* data, UINT byteWidth);
 
 	void ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer);
 

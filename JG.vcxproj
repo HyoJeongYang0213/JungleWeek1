@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)Player;$(ProjectDir)Libs</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -136,21 +137,26 @@
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="InfiniteMap.cpp" />
+    <ClCompile Include="InfiniteMap.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\CollisionDetector.cpp" />
-    <ClCompile Include="Physics\CollisionMask.cpp" />
     <ClCompile Include="Physics\CollisionResolver.cpp" />
+    <ClCompile Include="Physics\Pick.cpp" />
     <ClCompile Include="Physics\RigidBody.cpp" />
     <ClCompile Include="Player\Ball.cpp" />
+    <ClCompile Include="Player\Input.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
-    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="TextureShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,21 +168,25 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
-    <ClInclude Include="ImGui\stb_image.h" />
+    <ClInclude Include="Map\MapGenerator.hpp" />
     <ClInclude Include="Map\MapGlobals.hpp" />
     <ClInclude Include="Map\Platform.h" />
+    <ClInclude Include="Map\TextureLoader.hpp" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\ColliderType.hpp" />
     <ClInclude Include="Physics\CollisionDetector.h" />
     <ClInclude Include="Physics\CollisionManifold.hpp" />
-    <ClInclude Include="Physics\CollisionMask.h" />
     <ClInclude Include="Physics\CollisionResolver.h" />
     <ClInclude Include="Physics\PhysicsGlobals.hpp" />
+    <ClInclude Include="Physics\Pick.h" />
     <ClInclude Include="Physics\RigidBody.h" />
     <ClInclude Include="Player\Ball.h" />
+    <ClInclude Include="Player\Input.h" />
+    <ClInclude Include="Player\PlayerGlobals.hpp" />
+    <ClInclude Include="Player\Primitive.hpp" />
     <ClInclude Include="Renderer\IRenderer.hpp" />
     <ClInclude Include="Renderer\Renderer.h" />
-    <ClInclude Include="Resource\Primitive.hpp" />
+    <ClInclude Include="Renderer\WindowGlobals.hpp" />
     <ClInclude Include="Resource\Sphere.h" />
     <ClInclude Include="Resource\Square.hpp" />
     <ClInclude Include="Resource\vertexSimple.hpp" />
