@@ -32,7 +32,7 @@ ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
 	if (!mShaderResourceViewPatterns.empty())
 	{
 		int MaxIndex = (int)(mShaderResourceViewPatterns.size()) - 1;
-		int RandIndex = Rnd::GetRandomInt(0, MaxIndex);
+		int RandIndex = Rnd::GetRandom(0, MaxIndex);
 
 		mFloorTextures[floorIndex] = mShaderResourceViewPatterns[RandIndex];
 		return mShaderResourceViewPatterns[RandIndex];
