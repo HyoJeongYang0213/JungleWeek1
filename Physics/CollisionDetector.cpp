@@ -80,7 +80,7 @@ bool CollisionDetector::FindCollision(SphereCollider& c, BoxCollider& aabb, Coll
 
 		float minPenetration = *std::min_element(penestrations, penestrations + 4);
 		
-		int minIndex = std::distance(penestrations, std::min_element(penestrations, penestrations + 4));
+		int minIndex = static_cast<int>(std::distance(penestrations, std::min_element(penestrations, penestrations + 4)));
 
 		OutManifold.ColliderA = &aabb.GetRigidBody();
 		OutManifold.ColliderB = &c.GetRigidBody();
@@ -132,7 +132,7 @@ bool CollisionDetector::FindCollision(SphereCollider& c, BoxCollider& box, float
 		return false;
 	}
 
-	const Vector3& localNormal = OutManifold.Normal;
+	const Vector3 localNormal = OutManifold.Normal;
 
 	OutManifold.Normal = Vector3(localNormal.x * cosf(-theta) + localNormal.y * sinf(-theta), localNormal.y * cosf(-theta) - localNormal.x * sinf(-theta), 0.f);
 
@@ -142,6 +142,7 @@ bool CollisionDetector::FindCollision(SphereCollider& c, BoxCollider& box, float
 
 	OutManifold.ColliderA = &box.GetRigidBody();
 	OutManifold.ColliderB = &c.GetRigidBody();
+	
 
 	return true; 
 }

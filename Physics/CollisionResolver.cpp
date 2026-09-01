@@ -1,4 +1,5 @@
 ﻿#include "CollisionResolver.h"
+#include <algorithm>
 
 void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
 {
@@ -39,7 +40,8 @@ void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
 	const float AngularTermB = OffsetB.Cross(Manifold.Normal) * OffsetB.Cross(Manifold.Normal) * B.GetInverseMomentOfInertia();
 	const float Denominator = InverseMassSum + AngularTermA + AngularTermB;
 
-	const float Restitution{ Globals::RESTITUTION_COEFFICIENT };
+	const float RestitutionThreshold{ 0.5f };
+	const float Restitution{  std::abs(VelocityAlongNormal) < RestitutionThreshold ? 0.0f : Globals::RESTITUTION_COEFFICIENT };
 	const float ImpulseMagnitude = -(1.0f + Restitution) * VelocityAlongNormal / Denominator;
 	const Vector3 Impulse = Manifold.Normal * ImpulseMagnitude;
 
@@ -58,7 +60,7 @@ void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
 	const Vector3 TangentVelocity{ FrictionRelativeVelocity - Manifold.Normal * TangentVelocityAlongNormal };
 	const float TangentVelocitySquaredLength{ TangentVelocity.SquaredLength() };
 
-	if (TangentVelocitySquaredLength > 0.000001f)
+	if (TangentVelocitySquaredLength > 0.0001f)
 	{
 		const Vector3 Tangent{ TangentVelocity.Normalize() };
 
