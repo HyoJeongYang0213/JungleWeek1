@@ -251,6 +251,36 @@ ID3D11Buffer* Renderer::CreateVertexBuffer(VertexSimple* vertices, UINT byteWidt
 	return vertexBuffer;
 }
 
+ID3D11Buffer* Renderer::CreateDynamicVertexBuffer(UINT byteWidth)
+{
+	D3D11_BUFFER_DESC desc = {};
+	desc.ByteWidth = byteWidth;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+
+	ID3D11Buffer* buffer = nullptr;
+	Device->CreateBuffer(&desc, nullptr, &buffer);
+	return buffer;
+}
+
+// 2. Map / Unmap을 이용해 정점 데이터 덮어쓰기
+void Renderer::UpdateDynamicVertexBuffer(ID3D11Buffer* buffer, const void* data, UINT byteWidth)
+{
+	if (!buffer || !data) return;
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+	// D3D11_MAP_WRITE_DISCARD: 기존 버퍼 내용을 버리고 새로 작성 (가장 빠름)
+	HRESULT hr = DeviceContext->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (SUCCEEDED(hr))
+	{
+		memcpy(mappedResource.pData, data, byteWidth);
+		DeviceContext->Unmap(buffer, 0);
+	}
+}
+
 void Renderer::ReleaseVertexBuffer(ID3D11Buffer* vertexBuffer)
 {
 	vertexBuffer->Release();
