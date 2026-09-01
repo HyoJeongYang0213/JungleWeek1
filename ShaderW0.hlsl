@@ -16,7 +16,7 @@ cbuffer constants : register(b0)
 	float3 Offset;
 	float3 scale;
 	float rotationAngle;
-	float pad; 
+    float3x3 projectionMatrix;
 }
 
 PS_INPUT mainVS(VS_INPUT input)
@@ -32,7 +32,11 @@ PS_INPUT mainVS(VS_INPUT input)
 	rotatedPosition.x = scaledPosition.x * c - scaledPosition.y * s;
 	rotatedPosition.y = scaledPosition.x * s + scaledPosition.y * c;
 
-	output.position = float4(rotatedPosition + Offset.xy, input.position.z, 1.0f);
+    float2 translatedPosition = rotatedPosition + float2(Offset.x, Offset.y);
+	
+    float3 projectedPosition = mul(projectionMatrix, float3(translatedPosition, 1.0f));
+	
+	output.position = float4(projectedPosition, 1.0f);
 
 	output.color = input.color;
 

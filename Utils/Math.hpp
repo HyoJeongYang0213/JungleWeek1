@@ -1,10 +1,11 @@
 ﻿#pragma once 
 #include <math.h>
+#include <algorithm>
 
 struct Vector3
 {
 	float x, y, z;
-	Vector3(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
+	constexpr Vector3(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
 
 	float SquaredLength() const { return x * x + y * y + z * z; }
 
@@ -33,3 +34,52 @@ struct Vector3
 };
 
 
+struct Matrix3x3
+{
+public:
+	Matrix3x3()
+	{
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				m[i][j] = (i == j) ? 1.0f : 0.0f;
+			}
+		}
+		
+	}
+	
+	~Matrix3x3() = default;
+
+	Matrix3x3(const Matrix3x3&) = default;
+	Matrix3x3& operator=(const Matrix3x3&) = default;
+
+	Matrix3x3(Matrix3x3&&)= default;
+	Matrix3x3& operator=(Matrix3x3&&) = default;
+
+public:
+
+	static Matrix3x3 Orthographic(float left, float right, float bottom, float top)
+	{
+		Matrix3x3 result;
+		result.m[0][0] = 2.0f / (right - left);
+		result.m[1][1] = 2.0f / (top - bottom);
+		result.m[0][2] = -(right + left) / (right - left);
+		result.m[1][2] = -(top + bottom) / (top - bottom);
+		result.m[2][2] = 1.0f;
+
+		return result;
+	}
+
+	void Transpose()
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = i + 1; j < 4; ++j)
+			{
+				std::swap(m[i][j], m[j][i]);
+			}
+		}
+	}
+
+public:
+	float m[4][4];
+};
