@@ -1,6 +1,7 @@
 ﻿#include "CollisionMask.h"
 
 #include "../ImGui/stb_image.h"
+#include "../Map/MapGlobals.hpp"
 
 #include <algorithm>
 #include <queue>
@@ -196,75 +197,46 @@ CollisionMask::BuildComponent(
 
     const float height =
         static_cast<float>(mHeight);
-    
 
-	//Image Aspect Ratio
-    const float imageAspectRatio =
-        width / height;
+    // Pixel ->  0,1
 
-	const float screenAspectRatio =
-		1024.0f / 1024.0f;
+    const float leftRatio =
+        leftPixel / width;
 
-	float scaleX = 1.0f;
-	float scaleY = 1.0f;
+    const float rightRatio =
+        rightPixel / width;
 
-	if (imageAspectRatio > screenAspectRatio)
-	{
-		//이미지가 가로로 더 넓은 경우, Y축을 스케일링
-		scaleY = screenAspectRatio / imageAspectRatio;
-	}
-	else
-	{
-		//이미지가 세로로 더 넓은 경우, X축을 스케일링
-		scaleX = imageAspectRatio / screenAspectRatio;
-	}
+    const float topRatio =
+        topPixel / height;
+
+    const float bottomRatio =
+        bottomPixel / height;
 
 
-
-    // Pixel → NDC
-
-    const float leftNDC =
-        ((leftPixel / width)
-        * 2.0f - 1.0f) * scaleX;
-
-    const float rightNDC =
-        ((rightPixel / width)
-        * 2.0f - 1.0f) * scaleX;
-
-
-    // Image Y 방향과
-    // NDC Y 방향이 반대
-    const float topNDC =
-       ( 1.0f -
-        (topPixel / height)
-        * 2.0f) * scaleY ;
-
-    const float bottomNDC =
-       ( 1.0f -
-        (bottomPixel / height)
-        * 2.0f) * scaleY ;
-
-
+    // 일단 임의로 하드코딩
+    const float leftWorld =
+        leftRatio * 15.0f;
+    const float rightWorld =
+        rightRatio * 15.0f;
+    const float topWorld =
+        40.0f - (topRatio * 40.0f);
+    const float bottomWorld =
+        40.0f - (bottomRatio * 40.0f);
 
     // Center
-
-
     result.Center =
     {
-        (leftNDC + rightNDC) * 0.5f,
-        (topNDC + bottomNDC) * 0.5f,
+        (leftWorld + rightWorld) * 0.5f,
+        (topWorld + bottomWorld) * 0.5f,
         0.0f
     };
 
 
-
     // HalfExtents
-
-
     result.HalfExtents =
     {
-        (rightNDC - leftNDC) * 0.5f,
-        (topNDC - bottomNDC) * 0.5f,
+        (rightWorld - leftWorld) * 0.5f,
+        (topWorld - bottomWorld) * 0.5f,
         0.0f
     };
 
