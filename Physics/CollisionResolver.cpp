@@ -1,10 +1,10 @@
 ﻿#include "CollisionResolver.h"
 #include <algorithm>
 
-void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
+void CollisionResolver::ResolvePosition(CollisionManifold& Manifold)
 {
-	RigidBody& A = *Manifold.ColliderA;
-	RigidBody& B = *Manifold.ColliderB;
+	RigidBody& A = *Manifold.ColliderA.RigidBody;
+	RigidBody& B = *Manifold.ColliderB.RigidBody;
 
 	const float InverseMassA = A.GetInverseMass();
 	const float InverseMassB = B.GetInverseMass();
@@ -22,6 +22,21 @@ void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
 
 	A.ApplyPositionCorrection(Correction * -1.f);
 	B.ApplyPositionCorrection(Correction);
+}
+
+void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
+{
+	RigidBody& A = *Manifold.ColliderA.RigidBody;
+	RigidBody& B = *Manifold.ColliderB.RigidBody;
+
+	const float InverseMassA = A.GetInverseMass();
+	const float InverseMassB = B.GetInverseMass();
+	const float InverseMassSum = InverseMassA + InverseMassB;
+
+	if (InverseMassSum <= 0.0f)
+	{
+		return;
+	}
 
 	const Vector3 VelocityA = A.GetVelocityAtPoint(Manifold.ContactPoint);
 	const Vector3 VelocityB = B.GetVelocityAtPoint(Manifold.ContactPoint);
@@ -40,7 +55,7 @@ void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
 	const float AngularTermB = OffsetB.Cross(Manifold.Normal) * OffsetB.Cross(Manifold.Normal) * B.GetInverseMomentOfInertia();
 	const float Denominator = InverseMassSum + AngularTermA + AngularTermB;
 
-	const float RestitutionThreshold{ 0.5f };
+	const float RestitutionThreshold{ 0.1f };
 	const float Restitution{  std::abs(VelocityAlongNormal) < RestitutionThreshold ? 0.0f : Globals::RESTITUTION_COEFFICIENT };
 	const float ImpulseMagnitude = -(1.0f + Restitution) * VelocityAlongNormal / Denominator;
 	const Vector3 Impulse = Manifold.Normal * ImpulseMagnitude;
@@ -49,8 +64,8 @@ void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
 	B.ApplyImpulse(Impulse, Manifold.ContactPoint);
 
 
-	const float StaticFriction{ Globals::FRICTION_COEFFICIENT };
-	const float DynamicFriction{ StaticFriction * 0.8f };
+	const float StaticFriction{ CollisionResolver::ResolveFrictionCoefficient(Manifold) };
+	const float DynamicFriction{ StaticFriction * 0.1f };
 
 	const Vector3 FrictionVelocityA{ A.GetVelocityAtPoint(Manifold.ContactPoint) };
 	const Vector3 FrictionVelocityB{ B.GetVelocityAtPoint(Manifold.ContactPoint) };
@@ -77,5 +92,33 @@ void CollisionResolver::ResolveCollision(CollisionManifold& Manifold)
 		A.ApplyImpulse(FrictionImpulse * -1.0f, Manifold.ContactPoint);
 		B.ApplyImpulse(FrictionImpulse, Manifold.ContactPoint);
 	}
+
+}
+
+float CollisionResolver::ResolveFrictionCoefficient(CollisionManifold& Manifold)
+{
+	ColliderType TypeA = Manifold.ColliderA.Type;
+	ColliderType TypeB = Manifold.ColliderB.Type;
+
+	// 1. Sphere - Sphere
+	if (TypeA == ColliderType_Sphere && TypeB == ColliderType_Sphere)
+	{
+		return Globals::GENERAL_FRICTION_COEFFICIENT;
+	}
+	// 2. Sphere - Box
+	else if ((TypeA == ColliderType_Sphere && TypeB == ColliderType_Box) || (TypeA == ColliderType_Box && TypeB == ColliderType_Sphere))
+	{
+		return Globals::GROUND_FRICTION_COEFFICIENT;
+	}
+	// 3. Sphere - Plane
+	else if ((TypeA == ColliderType_Sphere && TypeB == ColliderType_Plane) || (TypeA == ColliderType_Plane && TypeB == ColliderType_Sphere))
+	{
+		return Globals::GROUND_FRICTION_COEFFICIENT;
+	}
+	else // Undefined Behavior for other combinations, return default friction coefficient
+	{
+		return Globals::GENERAL_FRICTION_COEFFICIENT;
+	}
+
 
 }

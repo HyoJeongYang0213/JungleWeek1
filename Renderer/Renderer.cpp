@@ -1,5 +1,8 @@
 ﻿#include "Renderer.h"
 
+#include <vector>
+
+
 Renderer::Renderer() 
 	: LeftWall(Vector3(Globals::LEFT_BORDER, 0.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f)),
 RightWall(Vector3(Globals::RIGHT_BORDER, 0.0f, 0.0f), Vector3(-1.0f, 0.0f, 0.0f)),
@@ -326,6 +329,8 @@ void Renderer::Tick(float dt)
 		PrimitiveList[i]->Tick(dt);
 	}
 
+	std::vector<CollisionManifold> Manifolds{};
+
 	for (size_t i = 0; i < PrimitiveCount; ++i)
 	{
 		for (size_t j = i + 1; j < PrimitiveCount; ++j)
@@ -336,7 +341,7 @@ void Renderer::Tick(float dt)
 			{
 				if (CollisionDetector::FindCollision(static_cast<SphereCollider&>(PrimitiveList[i]->GetCollider()), static_cast<SphereCollider&>(PrimitiveList[j]->GetCollider()), manifold))
 				{
-					CollisionResolver::ResolveCollision(manifold);
+					Manifolds.emplace_back(manifold);
 				}
 			}
 
@@ -345,7 +350,7 @@ void Renderer::Tick(float dt)
 			{
 				if (CollisionDetector::FindCollision(static_cast<SphereCollider&>(PrimitiveList[i]->GetCollider()), static_cast<BoxCollider&>(PrimitiveList[j]->GetCollider()), static_cast<BoxCollider&>(PrimitiveList[j]->GetCollider()).GetRigidBody().GetRotation(), manifold))
 				{
-					CollisionResolver::ResolveCollision(manifold);
+					Manifolds.emplace_back(manifold);
 				}
 			}
 
@@ -379,7 +384,7 @@ void Renderer::Tick(float dt)
 					SphereCollider& Circle{ static_cast<SphereCollider&>(collider) };
 					if (CollisionDetector::FindCollision(Circle, *Walls[WallIndex], Manifold))
 					{
-						CollisionResolver::ResolveCollision(Manifold);
+						Manifolds.emplace_back(Manifold);
 					}
 				}
 				break;
@@ -393,6 +398,27 @@ void Renderer::Tick(float dt)
 			}
 		}
 	}
+
+
+	for (CollisionManifold& manifold : Manifolds)
+	{
+		CollisionResolver::ResolvePosition(manifold);
+	}
+	
+
+	constexpr int MaxIterations{ 10 };
+
+	for (int iteration = 0; iteration < MaxIterations; ++iteration)
+	{
+		for (CollisionManifold& manifold : Manifolds)
+		{
+			CollisionResolver::ResolveCollision(manifold);
+		}
+	}
+
+
+
+	
 
 
 }

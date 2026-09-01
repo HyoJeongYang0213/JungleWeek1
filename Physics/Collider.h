@@ -1,11 +1,6 @@
 ﻿#pragma once 
 #include "RigidBody.h"
-
-enum ColliderType {
-	ColliderType_Sphere,
-	ColliderType_Box, 
-};
-
+#include "ColliderType.hpp"
 
 class ICollider {
 public:

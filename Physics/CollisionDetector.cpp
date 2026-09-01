@@ -11,8 +11,11 @@ bool CollisionDetector::FindCollision(SphereCollider& Ca, SphereCollider& Cb, Co
 	{
 		float distance = sqrtf(distanceSquared);
 
-		OutManifold.ColliderA = &Ca.GetRigidBody();
-		OutManifold.ColliderB = &Cb.GetRigidBody();
+		OutManifold.ColliderA.RigidBody = &Ca.GetRigidBody();
+		OutManifold.ColliderA.Type = ColliderType_Sphere;
+
+		OutManifold.ColliderB.RigidBody = &Cb.GetRigidBody();
+		OutManifold.ColliderB.Type = ColliderType_Sphere;
 
 		OutManifold.Normal = (distance > 0.0001f) ? delta / distance : Vector3(1.0f, 0.0f, 0.0f);
 		OutManifold.ContactPoint = Ca.GetCenter() + OutManifold.Normal * Ca.GetRadius();
@@ -34,8 +37,12 @@ bool CollisionDetector::FindCollision(SphereCollider& c, StaticCollider& s, Coll
 		return false;
 	}
 
-	OutManifold.ColliderA = &c.GetRigidBody();
-	OutManifold.ColliderB = &s.GetRigidBody();
+	OutManifold.ColliderA.RigidBody = &c.GetRigidBody();
+	OutManifold.ColliderA.Type = ColliderType_Sphere;
+
+	OutManifold.ColliderB.RigidBody = &s.GetRigidBody();
+	OutManifold.ColliderB.Type = ColliderType_Plane;
+
 	OutManifold.Normal = s.GetNormal() * -1.0f;
 	OutManifold.Penetration = c.GetRadius() - SignedDistance;
 	OutManifold.ContactPoint = c.GetCenter() - s.GetNormal() * SignedDistance;
@@ -58,8 +65,11 @@ bool CollisionDetector::FindCollision(SphereCollider& c, BoxCollider& aabb, Coll
 		{
 			float distance = sqrtf(delta.SquaredLength());
 			
-			OutManifold.ColliderA = &aabb.GetRigidBody();
-			OutManifold.ColliderB = &c.GetRigidBody();
+			OutManifold.ColliderA.RigidBody = &aabb.GetRigidBody();
+			OutManifold.ColliderA.Type = ColliderType_Box;
+
+			OutManifold.ColliderB.RigidBody = &c.GetRigidBody();
+			OutManifold.ColliderB.Type = ColliderType_Sphere;
 			OutManifold.Normal = (distance > 0.0001f) ? delta / distance : Vector3(1.0f, 0.0f, 0.0f);
 			OutManifold.ContactPoint = closestPoint;
 			OutManifold.Penetration = c.GetRadius() - distance;
@@ -82,8 +92,11 @@ bool CollisionDetector::FindCollision(SphereCollider& c, BoxCollider& aabb, Coll
 		
 		int minIndex = static_cast<int>(std::distance(penestrations, std::min_element(penestrations, penestrations + 4)));
 
-		OutManifold.ColliderA = &aabb.GetRigidBody();
-		OutManifold.ColliderB = &c.GetRigidBody();
+		OutManifold.ColliderA.RigidBody = &aabb.GetRigidBody();
+		OutManifold.ColliderA.Type = ColliderType_Box;
+
+		OutManifold.ColliderB.RigidBody = &c.GetRigidBody();
+		OutManifold.ColliderB.Type = ColliderType_Sphere;
 		OutManifold.Penetration = minPenetration;
 		
 		
@@ -140,9 +153,11 @@ bool CollisionDetector::FindCollision(SphereCollider& c, BoxCollider& box, float
 
 	OutManifold.ContactPoint = Vector3(localContactPoint.x * cosf(-theta) + localContactPoint.y * sinf(-theta), localContactPoint.y * cosf(-theta) - localContactPoint.x * sinf(-theta), 0.f) + box.GetRigidBody().GetPosition();
 
-	OutManifold.ColliderA = &box.GetRigidBody();
-	OutManifold.ColliderB = &c.GetRigidBody();
-	
+	OutManifold.ColliderA.RigidBody = &box.GetRigidBody();
+	OutManifold.ColliderA.Type = ColliderType_Box;
+
+	OutManifold.ColliderB.RigidBody = &c.GetRigidBody();
+	OutManifold.ColliderB.Type = ColliderType_Sphere;
 
 	return true; 
 }
