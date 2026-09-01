@@ -215,7 +215,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	float cameraCenterY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
 
-	ID3D11ShaderResourceView* srvPlatform = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Platform.png");
+	ID3D11ShaderResourceView* ShaderResourceViewPlatform = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Platform.png");
 
 	PlatformManager platformManager;
 	platformManager.Init(renderer);
@@ -261,7 +261,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
 
-		platformManager.Render(renderer, srvPlatform, cameraCenterY);
+		platformManager.Render(renderer, ShaderResourceViewPlatform, cameraCenterY);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
@@ -303,6 +303,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (ShaderResourceViewA) ShaderResourceViewA->Release();
 	if (ShaderResourceViewB) ShaderResourceViewB->Release();
 	if (ShaderResourceViewC) ShaderResourceViewC->Release();
+	if (ShaderResourceViewPlatform) ShaderResourceViewPlatform->Release();
 	if (MapSampler) MapSampler->Release();
 
 	if (TextureLayout) TextureLayout->Release();
