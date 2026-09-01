@@ -1,0 +1,3 @@
+#pragma onece
+
+enum EChunk

@@ -73,6 +73,9 @@
       <Filter>main</Filter>
     </ClCompile>
     <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="InfiniteMapManager.hpp">
+      <Filter>Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">

@@ -134,6 +134,7 @@
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="InfiniteMapManager.hpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
