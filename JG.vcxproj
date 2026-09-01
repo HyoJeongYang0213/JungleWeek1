@@ -151,6 +151,9 @@
     <ClCompile Include="Player\Camera.cpp" />
     <ClCompile Include="Player\Input.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
+    <ClCompile Include="Scene\EndingScene.cpp" />
+    <ClCompile Include="Scene\GameScene.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -196,6 +199,10 @@
     <ClInclude Include="Resource\Sphere.h" />
     <ClInclude Include="Resource\Square.hpp" />
     <ClInclude Include="Resource\vertexSimple.hpp" />
+    <ClInclude Include="Scene\EndingScene.h" />
+    <ClInclude Include="Scene\GameScene.h" />
+    <ClInclude Include="Scene\IScene.hpp" />
+    <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Utils\Math.hpp" />
     <ClInclude Include="Utils\Rnd.hpp" />
   </ItemGroup>
