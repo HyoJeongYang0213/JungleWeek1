@@ -7,7 +7,8 @@ Renderer::Renderer()
 	: LeftWall(Globals::LEFT_BORDER_POINT, Globals::LEFT_BORDER_NORMAL),
 RightWall(Globals::RIGHT_BORDER_POINT, Globals::RIGHT_BORDER_NORMAL),
 TopWall(Globals::TOP_BORDER_POINT, Globals::TOP_BORDER_NORMAL),
-BottomWall(Globals::BOTTOM_BORDER_POINT, Globals::BOTTOM_BORDER_NORMAL)
+BottomWall(Globals::BOTTOM_BORDER_POINT, Globals::BOTTOM_BORDER_NORMAL),
+mCamera(Vector3(0.f, 0.f, 0.f))
 {
 }
 
@@ -323,7 +324,7 @@ void Renderer::UpdateConstant(Vector3 Offset, Vector3 scale, float rotation)
 			constants->rotation = rotation;
 		}
 
-		constants->Projection = Matrix3x3::Orthographic(Globals::LEFT_BORDER, Globals::RIGHT_BORDER, Globals::BOTTOM_BORDER, Globals::TOP_BORDER);
+		constants->Projection = Matrix3x3::Orthographic(Globals::LEFT_BORDER, Globals::RIGHT_BORDER, Globals::BOTTOM_BORDER, Globals::TOP_BORDER) * mCamera.GetViewMatrix();
 		constants->Projection.Transpose();
 
 		DeviceContext->Unmap(ConstantBuffer, 0);
