@@ -78,12 +78,19 @@
     <ClCompile Include="Player\Input.cpp">
       <Filter>Player</Filter>
     </ClCompile>
-    <ClCompile Include="Map\Platform.cpp">
+    <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="InfiniteMap.h">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="InfiniteMap.cpp">
       <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="TextureShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
