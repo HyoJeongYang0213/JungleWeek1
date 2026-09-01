@@ -21,4 +21,15 @@ void Input::Update()
 		_states[static_cast<int>(KEY_TYPE::LBUTTON)] 
 			= (prev == KEY_STATE::PRESS || prev == KEY_STATE::DOWN) ? KEY_STATE::UP : KEY_STATE::NONE;
 	}
+
+	if (GetButton(KEY_TYPE::LBUTTON))
+	{
+		Pick pick;
+		POINT mousePos = GetMousePos();
+		if (pick.IsBallClicked(mousePos.x, mousePos.y) == false) return;
+
+		// Ball 이 클릭되었을 때 처리 시작! (화살표 UI, 운동 등)
+		// 임시
+		OutputDebugStringA("Ball Clicked!\n");
+	}
 }
