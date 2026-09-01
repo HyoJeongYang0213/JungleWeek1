@@ -22,6 +22,7 @@
 #include "Physics/CollisionManifold.hpp"
 #include "Physics/CollisionDetector.h"
 #include "Physics/CollisionResolver.h"
+#include "Physics/Pick.h"
 
 #include "Resource/vertexSimple.hpp"
 
@@ -30,6 +31,8 @@
 #include "Resource/Square.hpp"
 
 #include "Player/Ball.h"
+#include "Player/Input.h"
+#include "PlayerGlobals.hpp"
 
 #include "Renderer/Renderer.h"
 
@@ -123,10 +126,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	double elapsedTime = 0.0;
 
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
 
+	Input input; 
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -152,8 +153,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 
-
+		input.Update();
 		renderer.Tick(static_cast<float>(elapsedTime));
+		PlayerGlobals::PLAYERLOCATION = renderer.PrimitiveList[0]->GetCollider().GetRigidBody().GetPosition();
 		renderer.Render();
 
 
