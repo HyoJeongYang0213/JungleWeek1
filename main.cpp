@@ -90,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 1024 x 1024 크기에 윈도우 생성
 	HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, WindowGlobals::SCREENSIZE.Width, WindowGlobals::SCREENSIZE.Height,
+		CW_USEDEFAULT, CW_USEDEFAULT, static_cast<int>(WindowGlobals::SCREENSIZE.Width), static_cast<int>(WindowGlobals::SCREENSIZE.Height),
 		nullptr, nullptr, hInstance, nullptr);
 
 	srand((UINT)GetTickCount64());
