@@ -1,17 +1,30 @@
-﻿#pragma once 
+﻿#pragma once
 
-#include <cstdlib>
+#include <random>
+#include <type_traits>
 
-namespace Rnd {
-	inline float GetRandomFloat(float min, float max)
+namespace Rnd
+{
+	inline std::mt19937& GetEngine()
 	{
-		float random = ((float)rand()) / (float)RAND_MAX; // 0.0 ~ 1.0
-		float range = max - min;
-		return (random * range) + min; // min ~ max
+		static thread_local std::mt19937 Engine{ std::random_device{}() };
+		return Engine;
 	}
 
-	inline int GetRandomInt(int min, int max) {
-		return rand() % (max - min + 1) + min; // min ~ max
+	template <typename T>
+	inline T GetRandom(T Min, T Max)
+	{
+		static_assert(std::is_arithmetic_v<T>, "Rnd::Get requires an arithmetic type.");
+
+		if constexpr (std::is_integral_v<T>)
+		{
+			std::uniform_int_distribution<T> Distribution{ Min, Max };
+			return Distribution(GetEngine());
+		}
+		else
+		{
+			std::uniform_real_distribution<T> Distribution{ Min, Max };
+			return Distribution(GetEngine());
+		}
 	}
 }
-

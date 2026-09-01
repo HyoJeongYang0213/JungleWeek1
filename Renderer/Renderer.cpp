@@ -328,7 +328,7 @@ void Renderer::UpdateConstant(Vector3 Offset, Vector3 scale, float rotation)
 
 void Renderer::ReleaseRandomPrimitive()
 {
-	size_t idx = (size_t)Rnd::GetRandomInt(0, static_cast<int>(PrimitiveCount) - 1);
+	size_t idx = (size_t)Rnd::GetRandom(0, static_cast<int>(PrimitiveCount) - 1);
 
 	delete PrimitiveList[idx];
 	for (size_t i = idx; i < PrimitiveCount - 1; ++i)
