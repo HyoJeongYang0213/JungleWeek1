@@ -25,6 +25,8 @@ public:
 	bool GetButtonDown(KEY_TYPE key) { return GetKeyState(key) == KEY_STATE::DOWN; }
 	bool GetButtonUp(KEY_TYPE key) { return GetKeyState(key) == KEY_STATE::UP; }
 
+	POINT GetTargetPos() const { return _mTargetPos; }
+
 	void Update();
 	void DragBall();
 
@@ -37,5 +39,6 @@ private:
 private:
 	std::vector <KEY_STATE> _mStates;
 	POINT _mMousePos = {};
+	POINT _mTargetPos = {};
 	bool _mIsDragging = false;
 };

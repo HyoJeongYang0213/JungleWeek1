@@ -26,17 +26,19 @@ void Input::Update()
 
 	if (GetKeyState(KEY_TYPE::LBUTTON) == KEY_STATE::DOWN) {
 		Pick pick;
-		POINT mousePos = GetMousePos();
+		POINT mTargetPos = GetMousePos();
 
 		if (_mIsDragging) {
 			OutputDebugStringA("Ball Released!\n");
 			// 공발사 함수 여기서 호출하시면 됩니당~~~ 
+			
+
 
 			_mIsDragging = false;
 			return;
 		}
 		else {
-			if (pick.IsBallClicked(mousePos.x, mousePos.y) == true) {
+			if (pick.IsBallClicked(mTargetPos.x, mTargetPos.y) == true) {
 				OutputDebugStringA("Ball Clicked!\n");
 				_mIsDragging = !_mIsDragging;
 			}
