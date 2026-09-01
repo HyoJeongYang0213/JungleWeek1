@@ -140,10 +140,12 @@
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\CollisionDetector.cpp" />
+    <ClCompile Include="Physics\CollisionMask.cpp" />
     <ClCompile Include="Physics\CollisionResolver.cpp" />
     <ClCompile Include="Physics\RigidBody.cpp" />
     <ClCompile Include="Player\Ball.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
+    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -160,11 +162,13 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="ImGui\stb_image.h" />
     <ClInclude Include="Map\MapGlobals.hpp" />
     <ClInclude Include="Map\Platform.h" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\CollisionDetector.h" />
     <ClInclude Include="Physics\CollisionManifold.hpp" />
+    <ClInclude Include="Physics\CollisionMask.h" />
     <ClInclude Include="Physics\CollisionResolver.h" />
     <ClInclude Include="Physics\PhysicsGlobals.hpp" />
     <ClInclude Include="Physics\RigidBody.h" />
