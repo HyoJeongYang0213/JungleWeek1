@@ -15,9 +15,6 @@ namespace TextureLoader
     {
         if (!device || !filename) return nullptr;
 
-        // COM 라이브러리 초기화
-        CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-
         IWICImagingFactory* pFactory = nullptr;
         HRESULT hr = CoCreateInstance(
             CLSID_WICImagingFactory,

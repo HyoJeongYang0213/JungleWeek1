@@ -10,9 +10,8 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
-#include "InfiniteMap.h"
 #include "Map/TextureLoader.hpp"
-#include "Map/MapGenerator.hpp"
+#include "Map/MapGenerator.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
@@ -74,6 +73,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
+	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
 	// 윈도우 클래스 이름
 	WCHAR WindowClass[] = L"JungleWindowClass";
 
@@ -115,30 +116,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 
-	std::vector<VertexTex> BackgroundVertices = MapView::CreateMapQuad(Globals::VIEW_HEIGHT_PX, WindowGlobals::SCREENSIZE.Width, WindowGlobals::SCREENSIZE.Height);
+	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
+	ID3D11VertexShader* TextureVertexShader = nullptr;
+	ID3D11PixelShader* TexturePixelShader = nullptr;
+	ID3D11InputLayout* TextureLayout = nullptr;
 
-	ID3D11Buffer* vertexBufferBackground = renderer.CreateVertexBuffer(
-		(VertexSimple*)BackgroundVertices.data(),
-		static_cast<UINT>(BackgroundVertices.size() * sizeof(VertexTex))
-	);
-
-	ID3DBlob* vsBlob = nullptr, * psBlob = nullptr;
-	ID3D11VertexShader* texVS = nullptr;
-	ID3D11PixelShader* texPS = nullptr;
-	ID3D11InputLayout* texLayout = nullptr;
-
-	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vsBlob, nullptr);
-	renderer.Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &texVS);
+	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderBlob, nullptr);
+	renderer.Device->CreateVertexShader(VertexShaderBlob->GetBufferPointer(), VertexShaderBlob->GetBufferSize(), nullptr, &TextureVertexShader);
 
 	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
-	renderer.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &texPS);
+	renderer.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &TexturePixelShader);
 
-	D3D11_INPUT_ELEMENT_DESC texLayoutDesc[] = {
+	D3D11_INPUT_ELEMENT_DESC TextureLayoutDesc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
-	renderer.Device->CreateInputLayout(texLayoutDesc, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &texLayout);
-	vsBlob->Release();
+	renderer.Device->CreateInputLayout(TextureLayoutDesc, 2, VertexShaderBlob->GetBufferPointer(), VertexShaderBlob->GetBufferSize(), &TextureLayout);
+	VertexShaderBlob->Release();
 	psBlob->Release();
 
 	enum ETypePrimitive
@@ -165,16 +159,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
-	ID3D11ShaderResourceView* srvGround = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_Ground.png");
-	ID3D11ShaderResourceView* srvA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_A.png");
-	ID3D11ShaderResourceView* srvB = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_B.png");
-	ID3D11ShaderResourceView* srvC = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_C.png");
+	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_Ground.png");
+	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_A.png");
+	ID3D11ShaderResourceView* ShaderResourceViewB = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_B.png");
+	ID3D11ShaderResourceView* ShaderResourceViewC = TextureLoader::CreateTextureFromFile(renderer.Device, L"Stage_C.png");
 
-	ID3D11SamplerState* mapSampler = TextureLoader::CreateSamplerState(renderer.Device);
+	ID3D11SamplerState* MapSampler = TextureLoader::CreateSamplerState(renderer.Device);
 
-	InfiniteMap infiniteMap;
+	InfiniteMap InfiniteMap;
 
-	infiniteMap.Init(renderer, srvGround, { srvA, srvB, srvC });
+	InfiniteMap.Init(renderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
 
 	float cameraCenterY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
 
@@ -207,22 +201,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
-		//renderer.Render();
 
-		float moveSpeed = 1500.0f * static_cast<float>(elapsedTime);
-		if (GetAsyncKeyState(VK_UP) & 0x8000)   cameraCenterY -= moveSpeed;
-		if (GetAsyncKeyState(VK_DOWN) & 0x8000) cameraCenterY += moveSpeed;
-
-		float maxCameraY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
-		if (cameraCenterY > maxCameraY) cameraCenterY = maxCameraY;
 
 		renderer.Prepare();
 
-		renderer.DeviceContext->VSSetShader(texVS, nullptr, 0);
-		renderer.DeviceContext->PSSetShader(texPS, nullptr, 0);
-		renderer.DeviceContext->IASetInputLayout(texLayout);
+		renderer.DeviceContext->VSSetShader(TextureVertexShader, nullptr, 0);
+		renderer.DeviceContext->PSSetShader(TexturePixelShader, nullptr, 0);
+		renderer.DeviceContext->IASetInputLayout(TextureLayout);
 
-		infiniteMap.Render(renderer, mapSampler, cameraCenterY);
+		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
@@ -260,14 +247,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.ReleaseShader();
 	renderer.Release();
 
-	if (srvGround) srvGround->Release();
-	if (srvA) srvA->Release();
-	if (srvB) srvB->Release();
-	if (srvC) srvC->Release();
-	if (mapSampler) mapSampler->Release();
+	if (ShaderResourceViewGround) ShaderResourceViewGround->Release();
+	if (ShaderResourceViewA) ShaderResourceViewA->Release();
+	if (ShaderResourceViewB) ShaderResourceViewB->Release();
+	if (ShaderResourceViewC) ShaderResourceViewC->Release();
+	if (MapSampler) MapSampler->Release();
 
-	if (texLayout) texLayout->Release();
-	if (texVS) texVS->Release();
-	if (texPS) texPS->Release();
+	if (TextureLayout) TextureLayout->Release();
+	if (TextureVertexShader) TextureVertexShader->Release();
+	if (TexturePixelShader) TexturePixelShader->Release();
+	CoUninitialize();
 	return 0;
 }

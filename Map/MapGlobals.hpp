@@ -12,5 +12,5 @@ namespace Globals {
 	constexpr float MAP_WIDTH = 1536.0f;
 	constexpr float MAP_HEIGHT = 4000.0f;
 
-	constexpr float VIEW_HEIGHT_PX = 2000.0f;
+	constexpr float VIEW_HEIGHT_PX = 4000.0f;
 }
