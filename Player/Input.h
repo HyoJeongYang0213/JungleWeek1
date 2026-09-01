@@ -17,9 +17,9 @@ enum class KEY_STATE {
 
 class Input {
 public:
-	Input() : _states(static_cast<int>(KEY_TYPE::END), KEY_STATE::NONE) {} 
+	Input() : _mStates(static_cast<int>(KEY_TYPE::END), KEY_STATE::NONE) {} 
 
-	const POINT& GetMousePos() const { return _mousePos; } 
+	const POINT& GetMousePos() const { return _mMousePos; } 
 
 	bool GetButton(KEY_TYPE key) { return GetKeyState(key) == KEY_STATE::PRESS; }
 	bool GetButtonDown(KEY_TYPE key) { return GetKeyState(key) == KEY_STATE::DOWN; }
@@ -30,10 +30,10 @@ public:
 private:
 	inline KEY_STATE GetKeyState(KEY_TYPE key)
 	{
-		return _states[static_cast<int>(key)];
+		return _mStates[static_cast<int>(key)];
 	}
 
 private:
-	std::vector <KEY_STATE> _states;
-	POINT _mousePos = {};
+	std::vector <KEY_STATE> _mStates;
+	POINT _mMousePos = {};
 };
