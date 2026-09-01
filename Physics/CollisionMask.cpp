@@ -191,36 +191,58 @@ CollisionMask::BuildComponent(
     const float bottomPixel =
         static_cast<float>(maxY + 1);
 
-
     const float width =
         static_cast<float>(mWidth);
 
     const float height =
         static_cast<float>(mHeight);
+    
+
+	//Image Aspect Ratio
+    const float imageAspectRatio =
+        width / height;
+
+	const float screenAspectRatio =
+		1024.0f / 1024.0f;
+
+	float scaleX = 1.0f;
+	float scaleY = 1.0f;
+
+	if (imageAspectRatio > screenAspectRatio)
+	{
+		//이미지가 가로로 더 넓은 경우, Y축을 스케일링
+		scaleY = screenAspectRatio / imageAspectRatio;
+	}
+	else
+	{
+		//이미지가 세로로 더 넓은 경우, X축을 스케일링
+		scaleX = imageAspectRatio / screenAspectRatio;
+	}
+
 
 
     // Pixel → NDC
 
     const float leftNDC =
-        (leftPixel / width)
-        * 2.0f - 1.0f;
+        ((leftPixel / width)
+        * 2.0f - 1.0f) * scaleX;
 
     const float rightNDC =
-        (rightPixel / width)
-        * 2.0f - 1.0f;
+        ((rightPixel / width)
+        * 2.0f - 1.0f) * scaleX;
 
 
     // Image Y 방향과
     // NDC Y 방향이 반대
     const float topNDC =
-        1.0f -
+       ( 1.0f -
         (topPixel / height)
-        * 2.0f;
+        * 2.0f) * scaleY ;
 
     const float bottomNDC =
-        1.0f -
+       ( 1.0f -
         (bottomPixel / height)
-        * 2.0f;
+        * 2.0f) * scaleY ;
 
 
 
