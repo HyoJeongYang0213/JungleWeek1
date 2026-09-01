@@ -161,7 +161,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	if (!collisionMask.Load(
-		"Asset/stage1_collision_mask_1536x4000.png"
+		"Asset/stage1_collision_mask_1536x3000.png"
 	))
 	{
 		MessageBoxA(
@@ -195,12 +195,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	Input input; 
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
+	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
 	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_Ground.png");
 	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_A.png");
