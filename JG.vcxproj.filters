@@ -72,6 +72,9 @@
     <ClCompile Include="main.cpp">
       <Filter>main</Filter>
     </ClCompile>
+    <ClCompile Include="Map\Platform.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -112,9 +115,6 @@
     <ClInclude Include="Player\Ball.h">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="Player\Primitive.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer\IRenderer.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -142,14 +142,23 @@
     <ClInclude Include="Physics\CollisionResolver.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Physics\Math.hpp">
-      <Filter>Physics</Filter>
-    </ClInclude>
     <ClInclude Include="Physics\PhysicsGlobals.hpp">
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics\RigidBody.h">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\ColliderType.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\Primitive.hpp">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Platform.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Math.hpp">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

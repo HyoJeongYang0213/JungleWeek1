@@ -36,7 +36,7 @@ private:
 	Vector3 mLocation{ Rnd::GetRandomFloat(-0.8f, 0.8f), Rnd::GetRandomFloat(-0.8f, 0.8f), 0.0f };
 	Vector3 mVelocity{ 0.f, 0.f, 0.f };
 	Vector3 mHalfExtents{ Rnd::GetRandomFloat(0.1f, 0.2f), Rnd::GetRandomFloat(0.1f, 0.2f), 0.f };
-	float mMass{ 1000000.f };
+	float mMass{ 0.f };
 	
 	RigidBody mRigidBody;
 	BoxCollider mCollider;
