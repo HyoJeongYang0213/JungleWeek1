@@ -6,3 +6,9 @@ struct VertexSimple
 	float x, y, z;    // Position
 	float r, g, b, a; // Color
 };
+
+struct VertexTexture
+{
+	float x, y, z;
+	float u, v;
+};

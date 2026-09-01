@@ -3,9 +3,8 @@
 #include <vector>
 #include <unordered_map>
 
-#include "Utils/Rnd.hpp"
-#include "Map/MapGenerator.hpp"
-#include "Renderer/Renderer.h"
+#include "../Utils/Rnd.hpp"
+#include "../Renderer/Renderer.h"
 
 class InfiniteMap
 {
