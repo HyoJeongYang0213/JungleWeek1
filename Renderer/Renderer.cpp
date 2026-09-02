@@ -270,13 +270,11 @@ ID3D11Buffer* Renderer::CreateDynamicVertexBuffer(UINT byteWidth)
 	return buffer;
 }
 
-// 2. Map / Unmap을 이용해 정점 데이터 덮어쓰기
 void Renderer::UpdateDynamicVertexBuffer(ID3D11Buffer* buffer, const void* data, UINT byteWidth)
 {
 	if (!buffer || !data) return;
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
-	// D3D11_MAP_WRITE_DISCARD: 기존 버퍼 내용을 버리고 새로 작성 (가장 빠름)
 	HRESULT hr = DeviceContext->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (SUCCEEDED(hr))
 	{
@@ -325,6 +323,27 @@ void Renderer::UpdateConstant(Vector3 Offset, Vector3 scale, float rotation)
 		}
 
 		constants->Projection = Matrix3x3::Orthographic(MapGlobals::LEFT_BORDER, MapGlobals::RIGHT_BORDER, MapGlobals::BOTTOM_BORDER, MapGlobals::TOP_BORDER) * mCamera.GetViewMatrix();
+		constants->Projection.Transpose();
+
+		DeviceContext->Unmap(ConstantBuffer, 0);
+	}
+}
+
+void Renderer::UpdateConstantIgnoreCamera(Vector3 Offset, Vector3 scale, float rotation)
+{
+	if (ConstantBuffer)
+	{
+		D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
+
+		DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
+		Constants* constants = (Constants*)constantbufferMSR.pData;
+		{
+			constants->Offset = Offset;
+			constants->scale = scale;
+			constants->rotation = rotation;
+		}
+
+		constants->Projection = Matrix3x3::Orthographic(MapGlobals::LEFT_BORDER, MapGlobals::RIGHT_BORDER, MapGlobals::BOTTOM_BORDER, MapGlobals::TOP_BORDER);
 		constants->Projection.Transpose();
 
 		DeviceContext->Unmap(ConstantBuffer, 0);
