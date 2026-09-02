@@ -139,7 +139,7 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="ImGui\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MapGenerator.cpp" />
+    <ClCompile Include="Map\MapGenerator.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Map\Polygon.cpp" />
     <ClCompile Include="Map\PlatformManager.cpp" />
@@ -156,6 +156,7 @@
     <ClCompile Include="Scene\EndingScene.cpp" />
     <ClCompile Include="Scene\GameScene.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\GameButtonUI.hpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -208,6 +209,7 @@
     <ClInclude Include="Scene\GameScene.h" />
     <ClInclude Include="Scene\IScene.hpp" />
     <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="UI\GameState.hpp" />
     <ClInclude Include="Utils\Math.hpp" />
     <ClInclude Include="Utils\Rnd.hpp" />
   </ItemGroup>

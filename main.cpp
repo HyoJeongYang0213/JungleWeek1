@@ -11,6 +11,9 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "UI/GameState.hpp"
+#include "UI/GameButtonUI.hpp"
+
 #include "Map/PlatformManager.h"
 #include "Map/TextureLoader.hpp"
 #include "Map/MapGenerator.h"
@@ -127,6 +130,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+
+	static const ImWchar customGlyphRanges[] = {
+		0x0020, 0x00FF,
+		0x2600, 0x26FF,
+		0x3131, 0x318E,
+		0xAC00, 0xD7A3,
+		0,
+	};
+
+	ImFont* font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, nullptr, customGlyphRanges);
+	if (!font)
+	{
+		io.Fonts->AddFontDefault();
+	}
+
 	ImGui_ImplWin32_Init((void*)hWnd);
 	ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
 
@@ -272,7 +290,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_A.png");
 	ID3D11ShaderResourceView* ShaderResourceViewB = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_B.png");
 	ID3D11ShaderResourceView* ShaderResourceViewC = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_C.png");
-
+	ID3D11ShaderResourceView* ShaderResourceViewPlayBtn = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Button_Play.png");
+	ID3D11ShaderResourceView* ShaderResourceViewSettingsBtn = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Button_Settings.png");
+	ID3D11ShaderResourceView* ShaderResourceViewBtnFrame = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Button_Blank.png");
 	ID3D11SamplerState* MapSampler = TextureLoader::CreateSamplerState(renderer.Device);
 
 	InfiniteMap InfiniteMap;
@@ -299,6 +319,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			player->GetRigidBody().ApplyImpulse((player->GetLocation() - ReleasePoint) * PlayerGlobals::PLAYER_DRAG_IMPULSE_MULTIPLIER, player->GetLocation());
 		});
 
+
+	GameContext gameCtx;
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
 	{
@@ -356,6 +378,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 
+		bool bCanControl = (gameCtx.mCurrentState == EGameState::Playing) && (!gameCtx.mBShowOptions);
+		if (bCanControl)
+		{
+			input.Update();
+		}
+		while (physicsAccumulator >= FixedPhysicsStep)
+		{
+			if (bCanControl)
+			{
+				renderer.Tick(static_cast<float>(FixedPhysicsStep));
+			}
+			physicsAccumulator -= FixedPhysicsStep;
+		}
 
 		renderer.Prepare();
 
@@ -380,6 +415,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ImGui::NewFrame();
 
 		input.DragBall();
+
+		switch (gameCtx.mCurrentState)
+		{
+		case EGameState::Title:
+			GameUI::RenderTitleUI(gameCtx, renderer, PlatformManager, ShaderResourceViewBtnFrame);
+			GameUI::RenderSettingsUI(gameCtx, renderer, PlatformManager, ShaderResourceViewSettingsBtn, ShaderResourceViewBtnFrame);
+			break;
+
+		case EGameState::Playing:
+			if (bCanControl)
+			{
+				input.DragBall();
+			}
+			GameUI::RenderSettingsUI(gameCtx, renderer, PlatformManager, ShaderResourceViewSettingsBtn, ShaderResourceViewBtnFrame);
+			break;
+
+		case EGameState::Ending:
+			GameUI::RenderEndingUI(gameCtx, renderer, PlatformManager, bIsExit);
+			break;
+		}
 
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -406,6 +461,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (ShaderResourceViewB) ShaderResourceViewB->Release();
 	if (ShaderResourceViewC) ShaderResourceViewC->Release();
 	if (ShaderResourceViewPlatform) ShaderResourceViewPlatform->Release();
+	if (ShaderResourceViewPlayBtn) ShaderResourceViewPlayBtn->Release();
+	if (ShaderResourceViewSettingsBtn) ShaderResourceViewSettingsBtn->Release();
+	if (ShaderResourceViewBtnFrame) ShaderResourceViewBtnFrame->Release();
 	if (MapSampler) MapSampler->Release();
 
 	if (TextureLayout) TextureLayout->Release();
