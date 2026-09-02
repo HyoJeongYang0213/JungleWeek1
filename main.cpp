@@ -11,6 +11,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "Map/PlatformManager.h"
 #include "Map/TextureLoader.hpp"
 #include "Map/MapGenerator.h"
 
@@ -52,6 +53,17 @@ VertexSimple triangle_vertices[] =
 	{  1.0f, -1.0f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f }, // Bottom-right vertex (green)
 	{ -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f }  // Bottom-left vertex (blue)
 };
+
+VertexTexture platform_vertices[] = {
+	{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+	{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+	{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+
+	{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+	{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+	{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f }
+};
+UINT numVerticesPlatform = 6;
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -192,6 +204,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		EPT_Max,
 	};
 
+
 	ETypePrimitive typePrimitive = EPT_Sphere;
 
 	// 고성능 타이머 초기화
@@ -223,6 +236,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 
+
 	// Collision Mask에서
 	// Connected Component별 Platform Data 생성
 	std::vector<PlatformCollisionData>
@@ -234,7 +248,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	// 실제 Platform 생성
-	for (const PlatformCollisionData& data :
+	/*for (const PlatformCollisionData& data :
 		platformData)
 	{
 		renderer.CreatePrimitive<Platform>(
@@ -243,7 +257,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			data.Center,
 			data.HalfExtents
 		);
-	}
+	}*/
 
 
 	//for (auto& pbuffer : polygonVertexBuffers)
@@ -265,7 +279,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	InfiniteMap.Init(renderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
 
-	float cameraCenterY = MapGlobals::MAP_HEIGHT - (MapGlobals::VIEW_HEIGHT_PX * 0.5f);
+
+	ID3D11ShaderResourceView* ShaderResourceViewPlatform = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Platform.png");
+
+	PlatformManager PlatformManager;
+	PlatformManager.Init(
+		renderer,
+		"Asset/stage1_collision_mask_1536x3000.png",
+		{ "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" }
+	);
+
+	renderer.SetCameraPosition(Vector3(0.0f, 0.0f, 0.0f));
 
 
 	input.RegisterDragCallback([&](POINT targetPos)
@@ -307,11 +331,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		physicsAccumulator += frameTime;
 
 		input.Update();
-		while (physicsAccumulator >= FixedPhysicsStep)
+
+
+		float MoveSpeed = 15.0f * static_cast<float>(elapsedTime);
+		Vector3 CamPos = renderer.GetCamera().GetPosition();
+
+		if (CamPos.y < 0.0f) CamPos.y = 0.0f;
+
+		renderer.SetCameraPosition(CamPos);
+
+    while (physicsAccumulator >= FixedPhysicsStep)
 		{
 			renderer.Tick(static_cast<float>(FixedPhysicsStep));
 			physicsAccumulator -= FixedPhysicsStep;
 		}
+    
+    
+
+		float CameraBottomY = CamPos.y;
+		float CameraCenterY = CameraBottomY + 15.0f;
+
+		PlatformManager.Update(CameraCenterY);
 
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
@@ -322,8 +362,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.DeviceContext->VSSetShader(TextureVertexShader, nullptr, 0);
 		renderer.DeviceContext->PSSetShader(TexturePixelShader, nullptr, 0);
 		renderer.DeviceContext->IASetInputLayout(TextureLayout);
+		renderer.DeviceContext->PSSetSamplers(0, 1, &MapSampler);
+		renderer.DeviceContext->VSSetConstantBuffers(0, 1, &renderer.ConstantBuffer);
 
-		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
+		InfiniteMap.Render(renderer, MapSampler, CamPos.y);
+
+		PlatformManager.Render(renderer, ShaderResourceViewPlatform);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
@@ -361,6 +405,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (ShaderResourceViewA) ShaderResourceViewA->Release();
 	if (ShaderResourceViewB) ShaderResourceViewB->Release();
 	if (ShaderResourceViewC) ShaderResourceViewC->Release();
+	if (ShaderResourceViewPlatform) ShaderResourceViewPlatform->Release();
 	if (MapSampler) MapSampler->Release();
 
 	if (TextureLayout) TextureLayout->Release();
