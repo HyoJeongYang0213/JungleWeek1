@@ -171,6 +171,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		return -1;
 	}
+	hr = soundManager.LoadSound(L"Asset\\game-over.wav", "GameOver");
+	if (FAILED(hr))
+	{
+		MessageBoxA(
+			hWnd,
+			"GameOver Load Failed",
+			"Audio Error",
+			MB_OK | MB_ICONERROR
+		);
+
+		return -1;
+	}
+
 
 
 	// 각종 생성하는 코드를 여기에 추가합니다.

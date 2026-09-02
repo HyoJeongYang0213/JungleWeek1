@@ -39,12 +39,23 @@ GameScene::GameScene(IRenderer& renderer)
 		{ -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f }  // Bottom-left vertex (blue)
 	};
 
+	VertexTexture ball_quad_vertices[] = {
+		{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+		{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+		{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+
+		{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+		{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+		{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f }
+	};
+
 	Renderer& concreteRenderer = static_cast<Renderer&>(renderer);
 
 	ID3D11Buffer* vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
 	ID3D11Buffer* vertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 	
+	mBallVertexBuffer = concreteRenderer.CreateVertexBuffer(reinterpret_cast<VertexSimple*>(ball_quad_vertices),sizeof(ball_quad_vertices));
 
 	mWater = std::make_unique<Water>(concreteRenderer, 0.0f);
 
@@ -108,7 +119,7 @@ GameScene::GameScene(IRenderer& renderer)
 	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_A.png");
 	ID3D11ShaderResourceView* ShaderResourceViewB = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_B.png");
 	ID3D11ShaderResourceView* ShaderResourceViewC = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_C.png");
-
+	mSRVBall = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Ball/Ball.png");
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
 	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });*/
@@ -182,7 +193,17 @@ GameScene::~GameScene()
 		mTexturePixelShader = nullptr;
 	}
 
+	if (mBallVertexBuffer)
+	{
+		mBallVertexBuffer->Release();
+		mBallVertexBuffer = nullptr;
+	}
 
+	if (mSRVBall)
+	{
+		mSRVBall->Release();
+		mSRVBall = nullptr;
+	}
 }
 
 void GameScene::Reset()
@@ -194,6 +215,8 @@ void GameScene::Reset()
 
 	WaterGlobals::WATER_Y_SCALE = 0.f;
 	WaterGlobals::B_GAME_OVER = false;
+	mWater->Reset();
+	mInput.Reset();
 }
 
 void GameScene::Tick(float dt)
@@ -344,8 +367,6 @@ void GameScene::Tick(float dt)
 		}
 	}
 
-	mWater->Tick(dt);
-
 	mInput.Update();
 
 	float MoveSpeed = 15.0f * dt;
@@ -381,11 +402,35 @@ void GameScene::Render(IRenderer& renderer)
 	mBackGround.Render(concreteRenderer, mSamplerState, mCamera.GetPosition().y);
 	mPlatformManager.Render(concreteRenderer, mSRVPlatform);
 
+	if (mSRVBall && mBallVertexBuffer)
+	{
+		Ball* player = static_cast<Ball*>(mPrimitives[0].get());
+		Vector3 pos = player->GetLocation();
+		float radius = player->GetRadius();
+		float angle = player->GetRigidBody().GetRotation();
+
+		concreteRenderer.UpdateConstant(
+			Vector3{ pos.x, pos.y, 0.0f },
+			Vector3{ radius, radius, 1.0f },
+			angle
+		);
+
+		concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVBall);
+
+		UINT stride = sizeof(VertexTexture);
+		UINT offset = 0;
+		concreteRenderer.DeviceContext->IASetVertexBuffers(0, 1, &mBallVertexBuffer, &stride, &offset);
+		concreteRenderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// 6개 정점 직접 그리기
+		concreteRenderer.DeviceContext->Draw(6, 0);
+	}
+
 	concreteRenderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 
-	for (auto& Primitive : mPrimitives)
+	for (size_t i = 1; i < mPrimitives.size(); ++i)
 	{
-		Primitive->Render(renderer);
+		mPrimitives[i]->Render(renderer);
 	}
 
 	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);

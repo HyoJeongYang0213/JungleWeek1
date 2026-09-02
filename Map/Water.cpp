@@ -2,6 +2,7 @@
 
 #include "../Renderer/Renderer.h"
 #include "../Map/TextureLoader.hpp"
+#include "../Audio/SoundManager.h"
 
 Water::Water(IRenderer& renderer, float Initheight)
 {
@@ -34,6 +35,7 @@ void Water::Tick(float dt)
 		WaterGlobals::WATER_Y_SCALE += WaterGlobals::WATER_SPEED * dt;
 		if (IsGameOver())
 		{
+			SoundManager::GetInstance().PlaySound("GameOver");
 			WaterGlobals::B_GAME_OVER = true;
 			OutputDebugStringA("게임오버!\n");
 		}

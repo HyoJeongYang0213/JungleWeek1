@@ -32,6 +32,12 @@ public:
 	void Update();
 	void DragBall();
 
+	void Reset() { 
+		_mMousePos = {};
+		_mTargetPos = {};
+		_mIsDragging = false;
+	};
+
 	void RegisterDragCallback(std::function<void(POINT)> callback) { _mDragCallback = callback; }
 private:
 	inline KEY_STATE GetKeyState(KEY_TYPE key)
