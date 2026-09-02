@@ -69,8 +69,8 @@ private:
 	ID3D11VertexShader* mTextureVertexShader = nullptr;
 	ID3D11PixelShader* mTexturePixelShader = nullptr;
 	ID3D11InputLayout* mTextureLayout = nullptr;
+	ID3D11SamplerState* mSamplerState = nullptr;
 
 	Input mInput{};
 
-	ID3D11SamplerState* mSamplerState = nullptr;
 };

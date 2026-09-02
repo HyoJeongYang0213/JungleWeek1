@@ -85,6 +85,7 @@ public:
 
 	virtual void UpdateConstant(Vector3 Offset, Vector3 scale, float rotation) override;
 
+	void UpdateConstantIgnoreCamera(Vector3 Offset, Vector3 scale, float rotation);
 
 	template<typename T, typename... Args>
 	void CreatePrimitive(Args&&... args)

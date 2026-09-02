@@ -10,6 +10,7 @@
 #include "../Player/Ball.h"
 #include "../Player/PlayerGlobals.hpp"
 #include "../Utils/Rnd.hpp"
+#include "../Audio/SoundManager.h"
 #include <algorithm>
 #include <cmath>
 
@@ -180,6 +181,8 @@ void PlatformManager::Update(float CameraCenterY)
         SphereCollider* Sphere = dynamic_cast<SphereCollider*>(&Player->GetCollider());
         if (Sphere)
         {
+            bool bIsColliding = false;
+
             for (auto& Plat : mActivePlatforms)
             {
                 Vector3 PlatPos = Plat.mPhysicsCenter;
@@ -193,16 +196,27 @@ void PlatformManager::Update(float CameraCenterY)
                 CollisionManifold Manifold;
                 if (CollisionDetector::FindCollision(*Sphere, PlatBox, Manifold))
                 {
+                    bIsColliding = true;
                     CollisionResolver::PrepareConstraints(Manifold);
                     CollisionResolver::ResolvePosition(Manifold);
                     CollisionResolver::ResolveRestitution(Manifold);
                     CollisionResolver::ResolveFriction(Manifold);
 
+                    if(mCanPlayHitSound)
+                    {
+                        SoundManager::GetInstance().PlaySound("BallHit", 0.5f, false);
 
+                        mCanPlayHitSound = false;
+                    }
 
                     PlayerGlobals::PLAYERLOCATION = Player->GetRigidBody().GetPosition();
                 }
             }
+
+			if (!bIsColliding)
+			{
+				mCanPlayHitSound = true;
+			}
         }
     }
     

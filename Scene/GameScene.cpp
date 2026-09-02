@@ -14,6 +14,8 @@
 #include "../Resource/Sphere.h"
 #include "../Resource/PolygonGeometry.hpp"
 
+#include "../UI/GameButtonUI.hpp"
+
 #include "../Map/TextureLoader.hpp"
 
 #include "../Player/Ball.h"
@@ -354,25 +356,5 @@ void GameScene::Render(IRenderer& renderer)
 	{
 		Primitive->Render(renderer);
 	}
-
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	ImGui::SetNextWindowPos(ImVec2(10.f, 10.0f));
-	ImGui::SetNextWindowBgAlpha(0.35f);
-	ImGui::Begin("Score", nullptr,
-		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize);
-
-	ImGui::Text("Current Height: %.1f", PlayerGlobals::PLAYERLOCATION.y);
-	ImGui::Text("Max Height: %.1f", PlayerGlobals::HIGH_SCORE);
-
-	ImGui::End();
-
-
 	mInput.DragBall();
-
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
 }
