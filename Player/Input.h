@@ -25,7 +25,8 @@ public:
 	bool GetButtonDown(KEY_TYPE key) { return GetKeyState(key) == KEY_STATE::DOWN; }
 	bool GetButtonUp(KEY_TYPE key) { return GetKeyState(key) == KEY_STATE::UP; }
 
-	POINT GetTargetPos() const { return _mTargetPos; }
+	POINT GetWorldPos(POINT screenPos) const;
+	POINT GetTargetPos() const;
 
 	void Update();
 	void DragBall();
