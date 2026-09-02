@@ -23,6 +23,7 @@ public:
 	void Tick(float dt);
 	void Render(IRenderer& renderer);
 
+	int GetCurrentSceneIndex() const { return mCurrentSceneIndex; }
 private:
 	std::vector<std::unique_ptr<IScene>> mScenes;
 	UINT mCurrentSceneIndex;

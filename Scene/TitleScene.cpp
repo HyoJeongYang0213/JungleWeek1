@@ -1,5 +1,7 @@
 ﻿#include "TitleScene.h"
+#
 #include "../Renderer/Renderer.h"
+#include "../UI/GameButtonUI.hpp"
 
 TitleScene::TitleScene()
 {
@@ -21,6 +23,4 @@ void TitleScene::Render(IRenderer& renderer)
 {
 	auto& concreteRenderer = static_cast<Renderer&>(renderer);
 	concreteRenderer.Prepare(); 
-
-
 }

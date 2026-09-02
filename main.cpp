@@ -11,6 +11,10 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "UI/GameState.hpp"
+#include "UI/GameButtonUI.hpp"
+#include "UI/UIManager.h"
+
 #include "Map/PlatformManager.h"
 #include "Map/TextureLoader.hpp"
 #include "Map/MapGenerator.h"
@@ -177,6 +181,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+
+	static const ImWchar customGlyphRanges[] = {
+		0x0020, 0x00FF,
+		0x2600, 0x26FF,
+		0x3131, 0x318E,
+		0xAC00, 0xD7A3,
+		0,
+	};
+
+	ImFont* font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 18.0f, nullptr, customGlyphRanges);
+	if (!font)
+	{
+		io.Fonts->AddFontDefault();
+	}
+
 	ImGui_ImplWin32_Init((void*)hWnd);
 	ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
 
@@ -240,12 +259,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SceneManager sceneManager(renderer);
 	//sceneManager.NextScene(); 
+	UIManager::Get().Init(renderer.Device, &sceneManager);
 
 
 	//메인 bgm play
 	soundManager.PlaySound("BGM", 0.5f, true);
-	
-
 	while (bIsExit == false)
 	{
 		MSG msg;
@@ -286,20 +304,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			sceneManager.Tick(static_cast<float>(FixedPhysicsStep));
 			physicsAccumulator -= FixedPhysicsStep;
 		}
-    
-		
-		//	재생이 끝난 SourceVoice를 찾아서 정리
 		soundManager.Update();
 
-
 		//// -- Render 
-		sceneManager.Render(renderer);
+		//sceneManager.Render(renderer);
 
+
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		sceneManager.Render(renderer);
+		UIManager::Get().Render(sceneManager.GetCurrentSceneIndex());
+
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 		renderer.SwapBuffer();
-
 	}
 
+	UIManager::Get().Shutdown();
 	// 소멸하는 코드를 여기에 추가합니다.
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -308,6 +332,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();
 	renderer.Release();
-
 	return 0;
 }

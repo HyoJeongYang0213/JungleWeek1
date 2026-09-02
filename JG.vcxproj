@@ -158,6 +158,8 @@
     <ClCompile Include="Scene\GameScene.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
+    <ClCompile Include="UI\GameButtonUI.hpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -212,6 +214,8 @@
     <ClInclude Include="Scene\IScene.hpp" />
     <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="UI\GameState.hpp" />
+    <ClInclude Include="UI\UIManager.h" />
     <ClInclude Include="Utils\Math.hpp" />
     <ClInclude Include="Utils\Rnd.hpp" />
   </ItemGroup>
