@@ -81,6 +81,19 @@
     <ClCompile Include="Player\Input.cpp">
       <Filter>Player</Filter>
     </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="ImGui\stb_image.cpp" />
+    <ClCompile Include="Physics\CollisionMask.cpp" />
+    <ClCompile Include="Player\Camera.cpp" />
+    <ClCompile Include="Map\MapGenerator.cpp" />
+    <ClCompile Include="Map\Polygon.cpp" />
+    <ClCompile Include="Map\PlatformManager.cpp" />
+    <ClCompile Include="Scene\EndingScene.cpp" />
+    <ClCompile Include="Scene\GameScene.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\GameButtonUI.hpp" />
+=======
     <ClCompile Include="Player\Camera.cpp">
       <Filter>Player</Filter>
     </ClCompile>
@@ -114,6 +127,7 @@
     <ClCompile Include="Scene\SceneManager.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+>>>>>>> origin/development
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -214,6 +228,16 @@
     <ClInclude Include="Player\PlayerGlobals.hpp">
       <Filter>Player</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="Map\Polygon.h" />
+    <ClInclude Include="Map\PlatformManager.h" />
+    <ClInclude Include="Resource\PolygonGeometry.hpp" />
+    <ClInclude Include="Scene\EndingScene.h" />
+    <ClInclude Include="Scene\GameScene.h" />
+    <ClInclude Include="Scene\IScene.hpp" />
+    <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="UI\GameState.hpp" />
+=======
     <ClInclude Include="Player\Camera.h">
       <Filter>Player</Filter>
     </ClInclude>
@@ -256,6 +280,7 @@
     <ClInclude Include="Scene\SceneManager.h">
       <Filter>Scene</Filter>
     </ClInclude>
+>>>>>>> origin/development
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />

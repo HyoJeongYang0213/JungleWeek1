@@ -1,6 +1,7 @@
 ﻿#include "EndingScene.h"
 #include "../Renderer/Renderer.h"
 #include "../Map/TextureLoader.hpp"
+#include "../UI/GameButtonUI.hpp"
 
 #include "../Player/PlayerGlobals.hpp"
 

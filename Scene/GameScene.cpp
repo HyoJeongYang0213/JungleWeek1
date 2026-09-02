@@ -14,6 +14,8 @@
 #include "../Resource/Sphere.h"
 #include "../Resource/PolygonGeometry.hpp"
 
+#include "../UI/GameButtonUI.hpp"
+
 #include "../Map/TextureLoader.hpp"
 
 #include "../Player/Ball.h"
@@ -353,13 +355,5 @@ void GameScene::Render(IRenderer& renderer)
 		Primitive->Render(renderer);
 	}
 
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
 	mInput.DragBall();
-
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
 }

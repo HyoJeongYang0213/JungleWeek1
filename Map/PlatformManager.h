@@ -52,4 +52,5 @@ private:
     Renderer* mRenderer = nullptr;
 
     const float BUFFER_DISTANCE = 5000.0f;
+    bool mCanPlayHitSound = true;
 };
