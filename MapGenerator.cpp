@@ -1,97 +1,88 @@
 ﻿#include "../Map/MapGenerator.h"
+#include "../Renderer/Renderer.h"
+#include "../Utils/Rnd.hpp"
+#include "../Resource/vertexSimple.hpp"
 #include <cmath>
 
 void InfiniteMap::Init(Renderer& renderer, ID3D11ShaderResourceView* groundmShaderResourceView, const std::vector<ID3D11ShaderResourceView*>& pattermShaderResourceViews)
 {
-	mShaderResourceViewGround = groundmShaderResourceView;
-	mShaderResourceViewPatterns = pattermShaderResourceViews;
+    mShaderResourceViewGround = groundmShaderResourceView;
+    mShaderResourceViewPatterns = pattermShaderResourceViews;
 
-	mFloorTextures[0] = mShaderResourceViewGround;
+    mFloorTextures[0] = mShaderResourceViewGround;
 
-	mVertexBufferChunk = renderer.CreateDynamicVertexBuffer(sizeof(VertexTexture) * 6);
+    mVertexBufferChunk = renderer.CreateDynamicVertexBuffer(sizeof(VertexTexture) * 6);
 
+    VertexTexture quad[6] = {
+        { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+        {  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+        {  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+
+        { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+        {  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+        { -1.0f, -1.0f, 0.0f,  0.0f, 1.0f }
+    };
+    renderer.UpdateDynamicVertexBuffer(mVertexBufferChunk, quad, sizeof(quad));
 }
 
 InfiniteMap::~InfiniteMap()
 {
-	if(mVertexBufferChunk)
-	{
-		mVertexBufferChunk->Release();
-		mVertexBufferChunk = nullptr;
-	}
+    if (mVertexBufferChunk)
+    {
+        mVertexBufferChunk->Release();
+        mVertexBufferChunk = nullptr;
+    }
 }
 
 ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
 {
-	auto it = mFloorTextures.find(floorIndex);
-	if (it != mFloorTextures.end())
-	{
-		return it->second;
-	}
-	
-	if (!mShaderResourceViewPatterns.empty())
-	{
-		int MaxIndex = (int)(mShaderResourceViewPatterns.size()) - 1;
-		int RandIndex = Rnd::GetRandom(0, MaxIndex);
+    auto it = mFloorTextures.find(floorIndex);
+    if (it != mFloorTextures.end())
+    {
+        return it->second;
+    }
 
-		mFloorTextures[floorIndex] = mShaderResourceViewPatterns[RandIndex];
-		return mShaderResourceViewPatterns[RandIndex];
-	}
+    if (!mShaderResourceViewPatterns.empty())
+    {
+        int MaxIndex = static_cast<int>(mShaderResourceViewPatterns.size()) - 1;
+        int RandIndex = Rnd::GetRandom(0, MaxIndex);
 
-	return mShaderResourceViewGround;
+        mFloorTextures[floorIndex] = mShaderResourceViewPatterns[RandIndex];
+        return mShaderResourceViewPatterns[RandIndex];
+    }
+
+    return mShaderResourceViewGround;
 }
 
-void InfiniteMap::DrawChunk(Renderer& renderer, int floorIndex, float cameraCenterY)
+void InfiniteMap::DrawChunk(Renderer& renderer, int floorIndex)
 {
-	ID3D11ShaderResourceView* Texture = GetOrCreateFloorTexture(floorIndex);
-	if (!Texture) return;
+    ID3D11ShaderResourceView* Texture = GetOrCreateFloorTexture(floorIndex);
+    if (!Texture) return;
 
-	float TopY = -(float)(floorIndex)*MapGlobals::MAP_HEIGHT;
-	float BottomY = TopY + MapGlobals::MAP_HEIGHT;
+    float CenterY = (static_cast<float>(floorIndex) * 30.0f) + 15.0f;
+    Vector3 Center = { 7.5f, CenterY, 0.0f };
+    Vector3 HalfExtents = { 7.5f, 15.0f, 0.0f };
 
-	float HalfView = MapGlobals::VIEW_HEIGHT_PX * 0.5f;
-	float NDCTop = (cameraCenterY - TopY) / HalfView;
-	float NDCBottom = (cameraCenterY - BottomY) / HalfView;
+    renderer.UpdateConstant(Center, HalfExtents, 0.0f);
+    renderer.DeviceContext->PSSetShaderResources(0, 1, &Texture);
 
-	if (NDCBottom > 1.0f || NDCTop < -1.0f)
-	{
-		return;
-	}
-
-	VertexTexture Quad[6] = {
-		{ -1.0f, NDCTop,    0.0f,  0.0f, 0.0f },
-		{  1.0f, NDCTop,    0.0f,  1.0f, 0.0f },
-		{  1.0f, NDCBottom, 0.0f,  1.0f, 1.0f },
-
-		{ -1.0f, NDCTop,    0.0f,  0.0f, 0.0f },
-		{  1.0f, NDCBottom, 0.0f,  1.0f, 1.0f },
-		{ -1.0f, NDCBottom, 0.0f,  0.0f, 1.0f }
-	};
-
-	renderer.UpdateDynamicVertexBuffer(mVertexBufferChunk, Quad, sizeof(Quad));
-
-	UINT stride = sizeof(VertexTexture);
-	UINT offset = 0;
-	renderer.DeviceContext->IASetVertexBuffers(0, 1, &mVertexBufferChunk, &stride, &offset);
-	renderer.DeviceContext->PSSetShaderResources(0, 1, &Texture);
-	renderer.DeviceContext->Draw(6, 0);
+    UINT Stride = sizeof(VertexTexture);
+    UINT Offset = 0;
+    renderer.DeviceContext->IASetVertexBuffers(0, 1, &mVertexBufferChunk, &Stride, &Offset);
+    renderer.DeviceContext->Draw(6, 0);
 }
 
-void InfiniteMap::Render(Renderer& renderer, ID3D11SamplerState* sampler, float cameraCenterY)
+void InfiniteMap::Render(Renderer& renderer, ID3D11SamplerState* sampler, float cameraY)
 {
-	renderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	renderer.DeviceContext->PSSetSamplers(0, 1, &sampler);
+    renderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    renderer.DeviceContext->PSSetSamplers(0, 1, &sampler);
 
-	float viewTopY = cameraCenterY - (MapGlobals::VIEW_HEIGHT_PX * 0.5f);
-	float viewBottomY = cameraCenterY + (MapGlobals::VIEW_HEIGHT_PX * 0.5f);
+    int MinFloor = static_cast<int>(std::floor(cameraY / 30.0f));
+    int MaxFloor = static_cast<int>(std::floor((cameraY + 30.0f) / 30.0f));
 
-	int minFloor = static_cast<int>(std::floor((MapGlobals::MAP_HEIGHT - viewBottomY) / MapGlobals::MAP_HEIGHT));
-	int maxFloor = static_cast<int>(std::floor((MapGlobals::MAP_HEIGHT - viewTopY) / MapGlobals::MAP_HEIGHT));
-
-	if (minFloor < 0) minFloor = 0;
-
-	for (int f = minFloor; f <= maxFloor; ++f)
-	{
-		DrawChunk(renderer, f, cameraCenterY);
-	}
+    if (MinFloor < 0) MinFloor = 0;
+    for (int f = MinFloor; f <= MaxFloor; ++f)
+    {
+        DrawChunk(renderer, f);
+    }
 }

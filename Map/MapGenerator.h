@@ -22,10 +22,10 @@ public:
 
     void Init(Renderer& renderer, ID3D11ShaderResourceView* groundSrv, const std::vector<ID3D11ShaderResourceView*>& patternSrvs);
 
-    void Render(Renderer& renderer, ID3D11SamplerState* sampler, float cameraCenterY);
+    void Render(Renderer& renderer, ID3D11SamplerState* sampler, float cameraY);
 
 private:
     ID3D11ShaderResourceView* GetOrCreateFloorTexture(int floorIndex);
 
-    void DrawChunk(Renderer& renderer, int floorIndex, float cameraCenterY);
+    void DrawChunk(Renderer& renderer, int floorIndex);
 };
