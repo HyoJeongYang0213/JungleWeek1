@@ -329,6 +329,27 @@ void Renderer::UpdateConstant(Vector3 Offset, Vector3 scale, float rotation)
 	}
 }
 
+void Renderer::UpdateConstantIgnoreCamera(Vector3 Offset, Vector3 scale, float rotation)
+{
+	if (ConstantBuffer)
+	{
+		D3D11_MAPPED_SUBRESOURCE constantbufferMSR;
+
+		DeviceContext->Map(ConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &constantbufferMSR); // update constant buffer every frame
+		Constants* constants = (Constants*)constantbufferMSR.pData;
+		{
+			constants->Offset = Offset;
+			constants->scale = scale;
+			constants->rotation = rotation;
+		}
+
+		constants->Projection = Matrix3x3::Orthographic(MapGlobals::LEFT_BORDER, MapGlobals::RIGHT_BORDER, MapGlobals::BOTTOM_BORDER, MapGlobals::TOP_BORDER);
+		constants->Projection.Transpose();
+
+		DeviceContext->Unmap(ConstantBuffer, 0);
+	}
+}
+
 void Renderer::ReleaseRandomPrimitive()
 {
 	size_t idx = (size_t)Rnd::GetRandom(0, static_cast<int>(PrimitiveCount) - 1);
