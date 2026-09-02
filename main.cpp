@@ -343,6 +343,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	UIManager::Get().Shutdown();
+	SoundManager::GetInstance().Shutdown();
 	// 소멸하는 코드를 여기에 추가합니다.
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
