@@ -116,14 +116,33 @@ GameScene::GameScene(IRenderer& renderer)
 	psBlob->Release();
 
 
-	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_Ground.png");
+	/*ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_Ground.png");
 	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_A.png");
 	ID3D11ShaderResourceView* ShaderResourceViewB = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_B.png");
 	ID3D11ShaderResourceView* ShaderResourceViewC = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_C.png");
-	mSRVBall = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Ball/Ball.png");
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
-	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
+	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });*/
+
+	mSRVBall = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Ball/Ball.png");
+
+	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Stage_Ground.png");
+	ID3D11ShaderResourceView* ShaderResourceViewMorning = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Morning.png");
+	ID3D11ShaderResourceView* ShaderResourceViewNoon = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Noon.png");
+	ID3D11ShaderResourceView* ShaderResourceViewSunset = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Sunset.png");
+	ID3D11ShaderResourceView* ShaderResourceViewEvening = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Evening.png");
+	ID3D11ShaderResourceView* ShaderResourceViewNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Night.png");
+	ID3D11ShaderResourceView* ShaderResourceViewSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Space.png");
+	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
+
+	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, {
+		ShaderResourceViewMorning,
+		ShaderResourceViewNoon,
+		ShaderResourceViewSunset,
+		ShaderResourceViewEvening,
+		ShaderResourceViewNight,
+		ShaderResourceViewSpace
+		});
 	mPlatformManager.Init(concreteRenderer, "Asset/stage1_collision_mask_1536x3000.png", { "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" });
 	mSRVPlatform = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Platform.png");
 
