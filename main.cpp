@@ -1,4 +1,5 @@
 ﻿#include <windows.h>
+#include <algorithm>
 // 여기에 아래 코드를 추가 합니다.
 
 // D3D 사용에 필요한 라이브러리들을 링크합니다.
@@ -197,8 +198,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
 
-	LARGE_INTEGER startTime, endTime;
-	double elapsedTime = 0.0;
+	LARGE_INTEGER previousTime;
+	QueryPerformanceCounter(&previousTime);
+
+	constexpr double FixedPhysicsStep = 1.0 / 120.0;
+	constexpr double MaxFrameTime = 0.05;
+	double physicsAccumulator = 0.0;
 
 	// Collision Mask 추가 부분
 
@@ -275,8 +280,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
 	{
-		QueryPerformanceCounter(&startTime);
-
 		MSG msg;
 
 		// 처리할 메시지가 더 이상 없을때 까지 수행
@@ -296,8 +299,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 
+		LARGE_INTEGER currentTime;
+		QueryPerformanceCounter(&currentTime);
+
+		double frameTime = static_cast<double>(currentTime.QuadPart - previousTime.QuadPart) /
+			static_cast<double>(frequency.QuadPart);
+		previousTime = currentTime;
+		frameTime = (std::min)(frameTime, MaxFrameTime);
+		physicsAccumulator += frameTime;
+
 		input.Update();
-		renderer.Tick(static_cast<float>(elapsedTime));
+		while (physicsAccumulator >= FixedPhysicsStep)
+		{
+			renderer.Tick(static_cast<float>(FixedPhysicsStep));
+			physicsAccumulator -= FixedPhysicsStep;
+		}
 
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
@@ -328,11 +344,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		renderer.SwapBuffer();
 
-
-		QueryPerformanceCounter(&endTime);
-		elapsedTime = static_cast<double>(endTime.QuadPart - startTime.QuadPart) / static_cast<double>(frequency.QuadPart);
-
-		////////////////////////////////////////////
 	}
 
 	// 소멸하는 코드를 여기에 추가합니다.

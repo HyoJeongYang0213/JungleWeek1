@@ -15,8 +15,8 @@ void CollisionResolver::ResolvePosition(CollisionManifold& Manifold)
 		return;
 	}
 
-	const float Slop{ 0.001f };
-	const float CorrectionPercent{ 0.8f };
+	const float Slop{ 0.005f };
+	const float CorrectionPercent{ 0.2f };
 	const float CorrectionMagnitude = ((Manifold.Penetration > Slop) ? Manifold.Penetration - Slop : 0.0f) / InverseMassSum * CorrectionPercent;
 	const Vector3 Correction = Manifold.Normal * CorrectionMagnitude;
 
@@ -31,7 +31,7 @@ void CollisionResolver::PrepareConstraints(CollisionManifold& Manifold)
 
 	const float Restitution { PhysicsGlobals::RESTITUTION_COEFFICIENT };
 
-	constexpr float RestitutionThreshold { 0.1f };
+	constexpr float RestitutionThreshold { PhysicsGlobals::RESTITUTION_VELOCITY_THRESHOLD };
 
 	for (size_t ContactIndex = 0; ContactIndex < Manifold.ContactCount; ++ContactIndex)
 	{
