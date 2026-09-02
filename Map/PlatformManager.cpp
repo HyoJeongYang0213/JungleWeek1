@@ -25,6 +25,10 @@ PlatformManager::~PlatformManager()
         mVertexBuffer->Release();
         mVertexBuffer = nullptr;
     }
+	if (mRenderer)
+	{
+		mRenderer = nullptr;
+	}
 }
 
 void PlatformManager::Init(Renderer& Renderer,
