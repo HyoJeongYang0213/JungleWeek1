@@ -125,7 +125,7 @@ void InfiniteMap::Render(Renderer& renderer, ID3D11SamplerState* sampler, float 
     renderer.DeviceContext->PSSetSamplers(0, 1, &sampler);
 
     int MinFloor = static_cast<int>(std::floor(cameraY / 30.0f));
-    int MaxFloor = static_cast<int>(std::floor((cameraY + 30.0f) / 30.0f));
+    int MaxFloor = static_cast<int>(std::floor((cameraY + 40.0f) / 30.0f));
 
     if (MinFloor < 0) MinFloor = 0;
     for (int f = MinFloor; f <= MaxFloor; ++f)

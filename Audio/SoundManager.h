@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <windows.h> 
 #include <xaudio2.h>

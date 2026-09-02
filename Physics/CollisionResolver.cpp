@@ -29,7 +29,7 @@ void CollisionResolver::PrepareConstraints(CollisionManifold& Manifold)
 	RigidBody& A = *Manifold.ColliderA.RigidBody;
 	RigidBody& B = *Manifold.ColliderB.RigidBody;
 
-	const float Restitution { PhysicsGlobals::RESTITUTION_COEFFICIENT };
+	const float Restitution { CollisionResolver::ResolveRestitutionCoefficient(Manifold) };
 
 	constexpr float RestitutionThreshold { PhysicsGlobals::RESTITUTION_VELOCITY_THRESHOLD };
 
@@ -202,8 +202,30 @@ float CollisionResolver::ResolveFrictionCoefficient(CollisionManifold& Manifold)
 	{
 		return PhysicsGlobals::GROUND_FRICTION_COEFFICIENT;
 	}
+	// 4. Sphere - Polygon
+	else if ((TypeA == ColliderType_Sphere && TypeB == ColliderType_Polygon) || (TypeA == ColliderType_Polygon && TypeB == ColliderType_Sphere))
+	{
+		return PhysicsGlobals::PLATFORM_FRICTION_COEFFICIENT;
+	}
 	else // Undefined Behavior for other combinations, return default friction coefficient
 	{
 		return PhysicsGlobals::GENERAL_FRICTION_COEFFICIENT;
 	}
+}
+
+float CollisionResolver::ResolveRestitutionCoefficient(CollisionManifold& Manifold)
+{
+	ColliderType TypeA = Manifold.ColliderA.Type;
+	ColliderType TypeB = Manifold.ColliderB.Type;
+
+	// 1. Sphere - Polygon
+	if ((TypeA == ColliderType_Sphere && TypeB == ColliderType_Polygon) || (TypeA == ColliderType_Polygon && TypeB == ColliderType_Sphere))
+	{
+		return PhysicsGlobals::PLATFORM_RESTITUTION_COEFFICIENT;
+	}
+	else // Fallback 
+	{
+		return PhysicsGlobals::RESTITUTION_COEFFICIENT;
+	}
+	return 0.0f;
 }

@@ -144,8 +144,7 @@ GameScene::GameScene(IRenderer& renderer)
 		ShaderResourceViewSpace,
 		srvCloud
 		});
-	mPlatformManager.Init(concreteRenderer, "Asset/stage1_collision_mask_1536x3000.png", { "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" });
-	mSRVPlatform = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Platform.png");
+	mPlatformTileManager.Init(concreteRenderer);
 
 	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 
@@ -179,12 +178,6 @@ GameScene::~GameScene()
 	{
 		mSamplerState->Release();
 		mSamplerState = nullptr;
-	}
-
-	if (mSRVPlatform)
-	{
-		mSRVPlatform->Release();
-		mSRVPlatform = nullptr;
 	}
 
 	if (mTextureLayout)
@@ -246,6 +239,8 @@ GameScene::~GameScene()
 void GameScene::Reset()
 {
 	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
+	mPlatformTileManager.Reset();
+	mPlatformTileManager.Update(MapGlobals::VIEW_HEIGHT * 0.5f);
 
 	auto ball = static_cast<Ball*>(mPrimitives[0].get());
 	ball->GetRigidBody().SetPosition(Vector3{ 0.0f, 5.0f, 0.0f });
@@ -278,6 +273,8 @@ void GameScene::Tick(float dt)
 
 		mPrimitives[i]->Tick(dt);
 	}
+
+	mPlatformTileManager.Update(mCamera.GetPosition().y + MapGlobals::VIEW_HEIGHT * 0.5f);
 
 	std::vector<CollisionManifold> Manifolds{};
 
@@ -333,6 +330,10 @@ void GameScene::Tick(float dt)
 
 		}
 	}
+
+	mPlatformTileManager.FindCollisions(
+		static_cast<SphereCollider&>(mPrimitives[0]->GetCollider()),
+		Manifolds);
 
 
 	if (MapGlobals::BOUND_BALL_TO_SCREEN)
@@ -417,7 +418,7 @@ void GameScene::Tick(float dt)
 	const float CameraBottomY = CamPos.y;
 	const float CameraCenterY = CameraBottomY + 15.0f;
 
-	mPlatformManager.Update(CameraCenterY);
+	mPlatformTileManager.Update(CameraCenterY);
 	PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 	PlayerGlobals::HIGH_SCORE = std::max(PlayerGlobals::HIGH_SCORE, player->GetLocation().y);
 
@@ -437,7 +438,18 @@ void GameScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 
 	mBackGround.Render(concreteRenderer, mSamplerState, mCamera.GetPosition().y);
-	mPlatformManager.Render(concreteRenderer, mSRVPlatform);
+
+	concreteRenderer.SetAlphaBlendState(true);
+	mPlatformTileManager.Render(renderer);
+	concreteRenderer.SetAlphaBlendState(false);
+	
+	concreteRenderer.PrepareShader();
+
+	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
+	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);
+	concreteRenderer.DeviceContext->IASetInputLayout(mTextureLayout);
+	concreteRenderer.DeviceContext->PSSetSamplers(0, 1, &mSamplerState);
+	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 
 	if (mSRVBall && mBallVertexBuffer)
 	{
