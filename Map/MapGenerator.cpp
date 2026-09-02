@@ -34,7 +34,7 @@ InfiniteMap::~InfiniteMap()
     }
 }
 
-ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
+/*ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
 {
     auto it = mFloorTextures.find(floorIndex);
     if (it != mFloorTextures.end())
@@ -49,6 +49,40 @@ ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
 
         mFloorTextures[floorIndex] = mShaderResourceViewPatterns[RandIndex];
         return mShaderResourceViewPatterns[RandIndex];
+    }
+
+    return mShaderResourceViewGround;
+}*/
+
+ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
+{
+    auto it = mFloorTextures.find(floorIndex);
+    if (it != mFloorTextures.end())
+    {
+        return it->second;
+    }
+
+    if (floorIndex == 0)
+    {
+        mFloorTextures[0] = mShaderResourceViewGround;
+        return mShaderResourceViewGround;
+    }
+
+    if (!mShaderResourceViewPatterns.empty() && floorIndex > 0)
+    {
+        constexpr int FLOORS_PER_STAGE = 10;
+
+        int patternIndex = (floorIndex - 1) / FLOORS_PER_STAGE;
+
+        int maxIndex = static_cast<int>(mShaderResourceViewPatterns.size()) - 1;
+        if (patternIndex > maxIndex)
+        {
+            patternIndex = maxIndex;
+        }
+
+        ID3D11ShaderResourceView* selectedTexture = mShaderResourceViewPatterns[patternIndex];
+        mFloorTextures[floorIndex] = selectedTexture;
+        return selectedTexture;
     }
 
     return mShaderResourceViewGround;
