@@ -23,6 +23,7 @@
 #include "../ImGui/imgui_internal.h"
 #include "../ImGui/imgui_impl_dx11.h"
 #include "../ImGui/imgui_impl_win32.h"
+#include "../Renderer/WindowGlobals.hpp"
 
 
 GameScene::GameScene(IRenderer& renderer)
@@ -329,6 +330,7 @@ void GameScene::Tick(float dt)
 
 	mPlatformManager.Update(CameraCenterY);
 	PlayerGlobals::PLAYERLOCATION = player->GetLocation();
+	PlayerGlobals::HIGH_SCORE = std::max(PlayerGlobals::HIGH_SCORE, player->GetLocation().y);
 }
 
 void GameScene::Render(IRenderer& renderer)
@@ -356,6 +358,17 @@ void GameScene::Render(IRenderer& renderer)
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+
+	ImGui::SetNextWindowPos(ImVec2(10.f, 10.0f));
+	ImGui::SetNextWindowBgAlpha(0.35f);
+	ImGui::Begin("Score", nullptr,
+		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize);
+
+	ImGui::Text("Current Height: %.1f", PlayerGlobals::PLAYERLOCATION.y);
+	ImGui::Text("Max Height: %.1f", PlayerGlobals::HIGH_SCORE);
+
+	ImGui::End();
+
 
 	mInput.DragBall();
 
