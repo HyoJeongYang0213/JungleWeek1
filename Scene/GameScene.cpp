@@ -329,8 +329,6 @@ void GameScene::Tick(float dt)
 		}
 	}
 
-	mWater->Tick(dt);
-
 	mInput.Update();
 
 	float MoveSpeed = 15.0f * dt;
