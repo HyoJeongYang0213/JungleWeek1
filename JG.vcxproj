@@ -144,6 +144,7 @@
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Map\Polygon.cpp" />
     <ClCompile Include="Map\PlatformManager.cpp" />
+    <ClCompile Include="Map\Water.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\CollisionDetector.cpp" />
     <ClCompile Include="Physics\CollisionMask.cpp" />
@@ -174,12 +175,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="ShaderW0.hlsl">
+    <FxCompile Include="Resource\Shader\Water.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="TextureShader.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +197,7 @@
     <ClInclude Include="Map\Polygon.h" />
     <ClInclude Include="Map\PlatformManager.h" />
     <ClInclude Include="Map\TextureLoader.hpp" />
+    <ClInclude Include="Map\Water.h" />
     <ClInclude Include="Physics\Collider.h" />
     <ClInclude Include="Physics\ColliderType.hpp" />
     <ClInclude Include="Physics\CollisionDetector.h" />

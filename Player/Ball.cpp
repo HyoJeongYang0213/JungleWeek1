@@ -8,7 +8,7 @@ Ball::Ball(ID3D11Buffer* vb, UINT numVertices)
 	: mLocation{ 7.5f,20.0f, 0.0f },
 	mVelocity{ 1.f,0.f, 0.f},
 	mRadius{ 0.5f },
-	mMass{ 0.2f * mRadius * mRadius * 3.14159f },
+	mMass{ 1.0f * mRadius * mRadius * 3.14159f },
 	mRigidBody{ mLocation, mVelocity, mMass, 0.5f * mMass * mRadius * mRadius },
 	mCollider{ mRigidBody, mRadius },
 	mVertexBuffer{ vb }, mNumVertices{ numVertices }

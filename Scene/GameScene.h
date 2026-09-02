@@ -17,6 +17,7 @@
 #include "../Player/Input.h"
 
 #include "../Map/MapGenerator.h"
+#include "../Map/Water.h"
 
 #include "../Renderer/IRenderer.hpp"
 
@@ -72,5 +73,5 @@ private:
 	ID3D11SamplerState* mSamplerState = nullptr;
 
 	Input mInput{};
-
+	Water mWater;
 };

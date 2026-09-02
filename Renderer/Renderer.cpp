@@ -28,6 +28,8 @@ void Renderer::Create(HWND hWindow)
 	// 래스터라이저 상태 생성
 	CreateRasterizerState();
 
+	CreateBlendState();
+
 	// 깊이 스텐실 버퍼 및 블렌드 상태는 이 코드에서는 다루지 않음
 }
 
@@ -152,6 +154,15 @@ void Renderer::Release()
 	ReleaseDeviceAndSwapChain();
 }
 
+void Renderer::ReleaseBendState()
+{
+	if (BlendState)
+	{
+		BlendState->Release();
+		BlendState = nullptr;
+	}
+}
+
 void Renderer::SwapBuffer()
 {
 	SwapChain->Present(1, 0); // 1: VSync 활성화
@@ -203,6 +214,35 @@ void Renderer::ReleaseShader()
 		SimpleVertexShader->Release();
 		SimpleVertexShader = nullptr;
 	}
+}
+
+void Renderer::CreateBlendState()
+{
+	D3D11_BLEND_DESC desc = {};
+
+	auto& target = desc.RenderTarget[0];
+	target.BlendEnable = TRUE;
+
+	target.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	target.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	target.BlendOp = D3D11_BLEND_OP_ADD;
+
+	target.SrcBlendAlpha = D3D11_BLEND_ONE;
+	target.DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+	target.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
+	target.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	Device->CreateBlendState(&desc, &BlendState);
+}
+
+void Renderer::SetAlphaBlendState(bool state)
+{
+	DeviceContext->OMSetBlendState(
+		state ? BlendState : nullptr,
+		nullptr,
+		0xffffffff
+	);
 }
 
 void Renderer::Prepare()

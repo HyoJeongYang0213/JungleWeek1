@@ -59,6 +59,8 @@ public:
 	// 렌더러에 사용된 모든 리소스를 해제하는 함수
 	void Release();
 
+	void ReleaseBendState();
+
 	// 스왑 체인의 백 버퍼와 프론트 버퍼를 교체하여 화면에 출력
 	void SwapBuffer();
 
@@ -66,6 +68,8 @@ public:
 
 	void ReleaseShader();
 
+	void CreateBlendState();
+	void SetAlphaBlendState(bool state);
 
 	void Prepare();
 
@@ -123,6 +127,7 @@ public:
 	ID3D11Device* Device = nullptr; // GPU와 통신하기 위한 Direct3D 장치
 	ID3D11DeviceContext* DeviceContext = nullptr; // GPU 명령 실행을 담당하는 컨텍스트
 	IDXGISwapChain* SwapChain = nullptr; // 프레임 버퍼를 교체하는 데 사용되는 스왑 체인
+	ID3D11BlendState* BlendState = nullptr; // 블렌딩 상태를 정의하는 객체
 
 	// 렌더링에 필요한 리소스 및 상태를 관리하기 위한 변수들
 	ID3D11Texture2D* FrameBuffer = nullptr; // 화면 출력용 텍스처
