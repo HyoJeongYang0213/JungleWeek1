@@ -48,6 +48,8 @@
 #include "Scene/GameScene.h"
 #include "Scene/SceneManager.h"
 
+#include "Audio/SoundManager.h"
+
 // 삼각형을 하드 코딩
 VertexSimple triangle_vertices[] =
 {
@@ -119,6 +121,52 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	srand((UINT)GetTickCount64());
 
 	bool bIsExit = false;
+
+	//SoundManager 초기화
+	SoundManager& soundManager =
+		SoundManager::GetInstance();
+
+	HRESULT hr =
+		soundManager.Initialize();
+
+	if (FAILED(hr))
+	{
+		MessageBoxA(
+			hWnd,
+			"SoundManager Initialize Failed",
+			"Audio Error",
+			MB_OK | MB_ICONERROR
+		);
+
+		return -1;
+	}
+
+	//여기에 메모리에 올리고 싶은 wavfile을 추가하세요
+	hr = soundManager.LoadSound(L"Asset\\magic-forest.wav", "BGM");
+	if (FAILED(hr))
+	{
+		MessageBoxA(
+			hWnd,
+			"BGM Load Failed",
+			"Audio Error",
+			MB_OK | MB_ICONERROR
+		);
+
+		return -1;
+	}
+	hr = soundManager.LoadSound(L"Asset\\metallic-ball.wav", "BallHit");
+	if (FAILED(hr))
+	{
+		MessageBoxA(
+			hWnd,
+			"BallHit Load Failed",
+			"Audio Error",
+			MB_OK | MB_ICONERROR
+		);
+
+		return -1;
+	}
+
 
 	// 각종 생성하는 코드를 여기에 추가합니다.
 	Renderer renderer;
@@ -193,6 +241,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SceneManager sceneManager(renderer);
 	//sceneManager.NextScene(); 
 
+
+	//메인 bgm play
+	soundManager.PlaySound("BGM", 0.5f, true);
+	
+
 	while (bIsExit == false)
 	{
 		MSG msg;
@@ -235,8 +288,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
     
 		
-
-
+		//	재생이 끝난 SourceVoice를 찾아서 정리
+		soundManager.Update();
 
 
 		//// -- Render 
