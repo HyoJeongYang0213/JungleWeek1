@@ -28,6 +28,9 @@
     <Filter Include="Main">
       <UniqueIdentifier>{c7d80af0-fb03-4b75-87ac-099004adb77c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{4de232d4-a46a-4b07-ae55-4806d6fc79a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGui\imgui.cpp">
@@ -78,9 +81,6 @@
     <ClCompile Include="Player\Input.cpp">
       <Filter>Player</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\EndingScene.cpp" />
-    <ClCompile Include="Scene\GameScene.cpp" />
-    <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Player\Camera.cpp">
       <Filter>Player</Filter>
     </ClCompile>
@@ -101,6 +101,18 @@
     </ClCompile>
     <ClCompile Include="Map\Platform.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\EndingScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\GameScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\TitleScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SceneManager.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -202,10 +214,6 @@
     <ClInclude Include="Player\PlayerGlobals.hpp">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\EndingScene.h" />
-    <ClInclude Include="Scene\GameScene.h" />
-    <ClInclude Include="Scene\IScene.hpp" />
-    <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Player\Camera.h">
       <Filter>Player</Filter>
     </ClInclude>
@@ -232,6 +240,21 @@
     </ClInclude>
     <ClInclude Include="Map\TextureLoader.hpp">
       <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\EndingScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\GameScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\IScene.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\TitleScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SceneManager.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

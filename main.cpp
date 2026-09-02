@@ -45,6 +45,8 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/WindowGlobals.hpp"
 
+#include "Scene/GameScene.h"
+#include "Scene/SceneManager.h"
 
 // 삼각형을 하드 코딩
 VertexSimple triangle_vertices[] =
@@ -130,84 +132,47 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplWin32_Init((void*)hWnd);
 	ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
 
-	UINT numVerticesTriangle = sizeof(triangle_vertices) / sizeof(VertexSimple);
-	UINT numVerticesSphere = sizeof(sphere_vertices) / sizeof(VertexSimple);
-	UINT numVerticesCube = sizeof(cube_vertices) / sizeof(VertexSimple);
 
-	ID3D11Buffer* vertexBufferTriangle = renderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
-	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
-	ID3D11Buffer* vertexBufferCube = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
-	
-	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
+	//std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
 
-	{
-		auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
-			{
-				polygonVertexBuffers.emplace_back(
-					renderer.CreateVertexBuffer(
-						vertices,
-						sizeof(vertices)
-					),
-					static_cast<UINT>(std::size(vertices)),
-					positions
-				);
-			};
+	//{
+	//	auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
+	//		{
+	//			polygonVertexBuffers.emplace_back(
+	//				renderer.CreateVertexBuffer(
+	//					vertices,
+	//					sizeof(vertices)
+	//				),
+	//				static_cast<UINT>(std::size(vertices)),
+	//				positions
+	//			);
+	//		};
 
-		// Convex
-		AddPolygonVertexBuffer(convex_triangle_vertices, convex_triangle_positions);
-		AddPolygonVertexBuffer(convex_quad_vertices, convex_quad_positions);
-		AddPolygonVertexBuffer(convex_trapezoid_vertices, convex_trapezoid_positions);
-		AddPolygonVertexBuffer(convex_pentagon_vertices, convex_pentagon_positions);
-		AddPolygonVertexBuffer(convex_hexagon_vertices, convex_hexagon_positions);
-		AddPolygonVertexBuffer(convex_octagon_vertices, convex_octagon_positions);
-		AddPolygonVertexBuffer(convex_dodecagon_vertices, convex_dodecagon_positions);
+	//	// Convex
+	//	AddPolygonVertexBuffer(convex_triangle_vertices, convex_triangle_positions);
+	//	AddPolygonVertexBuffer(convex_quad_vertices, convex_quad_positions);
+	//	AddPolygonVertexBuffer(convex_trapezoid_vertices, convex_trapezoid_positions);
+	//	AddPolygonVertexBuffer(convex_pentagon_vertices, convex_pentagon_positions);
+	//	AddPolygonVertexBuffer(convex_hexagon_vertices, convex_hexagon_positions);
+	//	AddPolygonVertexBuffer(convex_octagon_vertices, convex_octagon_positions);
+	//	AddPolygonVertexBuffer(convex_dodecagon_vertices, convex_dodecagon_positions);
 
-		// Concave
-		AddPolygonVertexBuffer(concave_arrow_vertices, concave_arrow_positions);
-		AddPolygonVertexBuffer(concave_l_vertices, concave_l_positions);
-		AddPolygonVertexBuffer(concave_u_vertices, concave_u_positions);
-		AddPolygonVertexBuffer(concave_plus_vertices, concave_plus_positions);
-		AddPolygonVertexBuffer(concave_c_vertices, concave_c_positions);
-		AddPolygonVertexBuffer(concave_star_vertices, concave_star_positions);
-		AddPolygonVertexBuffer(concave_lightning_vertices, concave_lightning_positions);
-		AddPolygonVertexBuffer(concave_comb_vertices, concave_comb_positions);
-		AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
-		AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
-	}
+	//	// Concave
+	//	AddPolygonVertexBuffer(concave_arrow_vertices, concave_arrow_positions);
+	//	AddPolygonVertexBuffer(concave_l_vertices, concave_l_positions);
+	//	AddPolygonVertexBuffer(concave_u_vertices, concave_u_positions);
+	//	AddPolygonVertexBuffer(concave_plus_vertices, concave_plus_positions);
+	//	AddPolygonVertexBuffer(concave_c_vertices, concave_c_positions);
+	//	AddPolygonVertexBuffer(concave_star_vertices, concave_star_positions);
+	//	AddPolygonVertexBuffer(concave_lightning_vertices, concave_lightning_positions);
+	//	AddPolygonVertexBuffer(concave_comb_vertices, concave_comb_positions);
+	//	AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
+	//	AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
+	//}
 
 
 
-	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
-	ID3D11VertexShader* TextureVertexShader = nullptr;
-	ID3D11PixelShader* TexturePixelShader = nullptr;
-	ID3D11InputLayout* TextureLayout = nullptr;
-
-	D3DCompileFromFile(L"Resource/Shader/TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderBlob, nullptr);
-	renderer.Device->CreateVertexShader(VertexShaderBlob->GetBufferPointer(), VertexShaderBlob->GetBufferSize(), nullptr, &TextureVertexShader);
-
-	D3DCompileFromFile(L"Resource/Shader/TextureShader.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
-	renderer.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &TexturePixelShader);
-
-	D3D11_INPUT_ELEMENT_DESC TextureLayoutDesc[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-	renderer.Device->CreateInputLayout(TextureLayoutDesc, 2, VertexShaderBlob->GetBufferPointer(), VertexShaderBlob->GetBufferSize(), &TextureLayout);
-	VertexShaderBlob->Release();
-	psBlob->Release();
-
-	enum ETypePrimitive
-	{
-		EPT_Triangle,
-		EPT_Cube,
-		EPT_Sphere,
-		EPT_Max,
-	};
-
-
-	ETypePrimitive typePrimitive = EPT_Sphere;
-
-	// 고성능 타이머 초기화
+	//// 고성능 타이머 초기화
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
 
@@ -218,46 +183,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	constexpr double MaxFrameTime = 0.05;
 	double physicsAccumulator = 0.0;
 
-	// Collision Mask 추가 부분
-
-	CollisionMask collisionMask;
-
-
-	if (!collisionMask.Load(
-		"Asset/stage1_collision_mask_1536x3000.png"
-	))
-	{
-		MessageBoxA(
-			hWnd,
-			"Failed to load CollisionMask.png",
-			"Collision Mask Error",
-			MB_OK | MB_ICONERROR
-		);
-	}
-
-
-
-	// Collision Mask에서
-	// Connected Component별 Platform Data 생성
-	std::vector<PlatformCollisionData>
-		platformData =
-		collisionMask.BuildPlatformsNDC();
-
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	
-
-
-	// 실제 Platform 생성
-	/*for (const PlatformCollisionData& data :
-		platformData)
-	{
-		renderer.CreatePrimitive<Platform>(
-			vertexBufferCube,
-			numVerticesCube,
-			data.Center,
-			data.HalfExtents
-		);
-	}*/
 
 
 	//for (auto& pbuffer : polygonVertexBuffers)
@@ -265,41 +190,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//	renderer.CreatePrimitive<PPolygon>(std::get<0>(pbuffer), std::get<1>(pbuffer), Vector3{Rnd::GetRandom(0.f, 15.f), Rnd::GetRandom(0.f, 30.f), 0.f}, std::get<2>(pbuffer));
 	//}
 
+	SceneManager sceneManager(renderer);
+	//sceneManager.NextScene(); 
 
-	Input input; 
-
-	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_Ground.png");
-	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_A.png");
-	ID3D11ShaderResourceView* ShaderResourceViewB = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_B.png");
-	ID3D11ShaderResourceView* ShaderResourceViewC = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_C.png");
-
-	ID3D11SamplerState* MapSampler = TextureLoader::CreateSamplerState(renderer.Device);
-
-	InfiniteMap InfiniteMap;
-
-	InfiniteMap.Init(renderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
-
-
-	ID3D11ShaderResourceView* ShaderResourceViewPlatform = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Platform.png");
-
-	PlatformManager PlatformManager;
-	PlatformManager.Init(
-		renderer,
-		"Asset/stage1_collision_mask_1536x3000.png",
-		{ "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" }
-	);
-
-	renderer.SetCameraPosition(Vector3(0.0f, 0.0f, 0.0f));
-
-
-	input.RegisterDragCallback([&](POINT targetPos)
-		{
-			Ball* player = static_cast<Ball*>(renderer.PrimitiveList[0]);
-			Vector3 ReleasePoint {Vector3(static_cast<float>(targetPos.x), static_cast<float>(targetPos.y), 0.0f)};
-			player->GetRigidBody().ApplyImpulse((player->GetLocation() - ReleasePoint) * PlayerGlobals::PLAYER_DRAG_IMPULSE_MULTIPLIER, player->GetLocation());
-		});
-
-	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
 	{
 		MSG msg;
@@ -318,71 +211,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				bIsExit = true;
 				break;
 			}
+
+			if (msg.message == WM_KEYDOWN && msg.wParam == VK_LEFT)
+			{
+				sceneManager.NextScene();
+				break;
+			}
 		}
 
 
 		LARGE_INTEGER currentTime;
 		QueryPerformanceCounter(&currentTime);
 
-		double frameTime = static_cast<double>(currentTime.QuadPart - previousTime.QuadPart) /
-			static_cast<double>(frequency.QuadPart);
+		double frameTime = static_cast<double>(currentTime.QuadPart - previousTime.QuadPart) / static_cast<double>(frequency.QuadPart);
 		previousTime = currentTime;
 		frameTime = (std::min)(frameTime, MaxFrameTime);
 		physicsAccumulator += frameTime;
 
-		input.Update();
-
-
-		float MoveSpeed = 15.0f * static_cast<float>(static_cast<float>(FixedPhysicsStep));
-		Vector3 CamPos = renderer.GetCamera().GetPosition();
-
-		if (CamPos.y < 0.0f) CamPos.y = 0.0f;
-
-		renderer.SetCameraPosition(CamPos);
-
-    while (physicsAccumulator >= FixedPhysicsStep)
+		while (physicsAccumulator >= FixedPhysicsStep)
 		{
-			renderer.Tick(static_cast<float>(FixedPhysicsStep));
+			sceneManager.Tick(static_cast<float>(FixedPhysicsStep));
 			physicsAccumulator -= FixedPhysicsStep;
 		}
     
-    
-
-		float CameraBottomY = CamPos.y;
-		float CameraCenterY = CameraBottomY + 15.0f;
-
-		PlatformManager.Update(CameraCenterY);
-
-		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
-		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
+		
 
 
-		renderer.Prepare();
 
-		renderer.DeviceContext->VSSetShader(TextureVertexShader, nullptr, 0);
-		renderer.DeviceContext->PSSetShader(TexturePixelShader, nullptr, 0);
-		renderer.DeviceContext->IASetInputLayout(TextureLayout);
-		renderer.DeviceContext->PSSetSamplers(0, 1, &MapSampler);
-		renderer.DeviceContext->VSSetConstantBuffers(0, 1, &renderer.ConstantBuffer);
 
-		InfiniteMap.Render(renderer, MapSampler, CamPos.y);
+		//// -- Render 
+		sceneManager.Render(renderer);
 
-		PlatformManager.Render(renderer, ShaderResourceViewPlatform);
-
-		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
-		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
-		{
-			renderer.PrimitiveList[i]->Render(renderer);
-		}
-
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-
-		input.DragBall();
-
-		ImGui::Render();
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 		renderer.SwapBuffer();
 
@@ -393,24 +252,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-	renderer.ReleaseVertexBuffer(vertexBufferTriangle);
-	renderer.ReleaseVertexBuffer(vertexBufferSphere);
-	renderer.ReleaseVertexBuffer(vertexBufferCube);
-
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();
 	renderer.Release();
 
-	if (ShaderResourceViewGround) ShaderResourceViewGround->Release();
-	if (ShaderResourceViewA) ShaderResourceViewA->Release();
-	if (ShaderResourceViewB) ShaderResourceViewB->Release();
-	if (ShaderResourceViewC) ShaderResourceViewC->Release();
-	if (ShaderResourceViewPlatform) ShaderResourceViewPlatform->Release();
-	if (MapSampler) MapSampler->Release();
-
-	if (TextureLayout) TextureLayout->Release();
-	if (TextureVertexShader) TextureVertexShader->Release();
-	if (TexturePixelShader) TexturePixelShader->Release();
-	CoUninitialize();
 	return 0;
 }
