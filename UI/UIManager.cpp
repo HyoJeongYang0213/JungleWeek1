@@ -31,6 +31,8 @@ void UIManager::Shutdown()
 		mScoreBannerSRV->Release();
 		mScoreBannerSRV = nullptr;
 	}
+
+    mSceneManager = nullptr;
 }
 
 void UIManager::DrawBoldText(const char* Text, float PosX, float PosY,

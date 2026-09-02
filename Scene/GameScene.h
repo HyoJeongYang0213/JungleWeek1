@@ -66,6 +66,7 @@ private:
 	PlatformManager mPlatformManager{};
 
 	ID3D11ShaderResourceView* mSRVPlatform = nullptr;
+	ID3D11Buffer* mVertexBufferSphere = nullptr;
 
 	ID3D11VertexShader* mTextureVertexShader = nullptr;
 	ID3D11PixelShader* mTexturePixelShader = nullptr;
@@ -78,11 +79,4 @@ private:
 	Input mInput{};
 
 	std::unique_ptr<Water> mWater;
-
-private:
-	ID3D11Buffer* vertexBufferTriangle;
-	ID3D11Buffer* vertexBufferSphere;
-	ID3D11Buffer* vertexBufferCube;
-
-	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> mPolygonVertexBuffers;
 };
