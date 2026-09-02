@@ -7,6 +7,7 @@ enum class SceneType {
 	None,
 	Game,
 	Title,
+	Ending,
 	END
 };
 

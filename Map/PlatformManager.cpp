@@ -194,9 +194,11 @@ void PlatformManager::Update(float CameraCenterY)
                 if (CollisionDetector::FindCollision(*Sphere, PlatBox, Manifold))
                 {
                     CollisionResolver::PrepareConstraints(Manifold);
+                    CollisionResolver::ResolvePosition(Manifold);
                     CollisionResolver::ResolveRestitution(Manifold);
                     CollisionResolver::ResolveFriction(Manifold);
-                    CollisionResolver::ResolvePosition(Manifold);
+
+
 
                     PlayerGlobals::PLAYERLOCATION = Player->GetRigidBody().GetPosition();
                 }
@@ -204,6 +206,13 @@ void PlatformManager::Update(float CameraCenterY)
         }
     }
     
+
+    /*
+    
+    
+    */
+
+
 }
 
 void PlatformManager::Render(Renderer& renderer, ID3D11ShaderResourceView* srv)

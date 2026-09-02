@@ -46,6 +46,7 @@
 #include "Renderer/WindowGlobals.hpp"
 
 #include "Scene/GameScene.h"
+#include "Scene/SceneManager.h"
 
 // 삼각형을 하드 코딩
 VertexSimple triangle_vertices[] =
@@ -189,9 +190,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//	renderer.CreatePrimitive<PPolygon>(std::get<0>(pbuffer), std::get<1>(pbuffer), Vector3{Rnd::GetRandom(0.f, 15.f), Rnd::GetRandom(0.f, 30.f), 0.f}, std::get<2>(pbuffer));
 	//}
 
-
-
-	GameScene gameScene(renderer);
+	SceneManager sceneManager(renderer);
+	//sceneManager.NextScene(); 
 
 	while (bIsExit == false)
 	{
@@ -211,6 +211,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				bIsExit = true;
 				break;
 			}
+
+			if (msg.message == WM_KEYDOWN && msg.wParam == VK_LEFT)
+			{
+				sceneManager.NextScene();
+				break;
+			}
 		}
 
 
@@ -224,7 +230,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		while (physicsAccumulator >= FixedPhysicsStep)
 		{
-			gameScene.Tick(static_cast<float>(FixedPhysicsStep));
+			sceneManager.Tick(static_cast<float>(FixedPhysicsStep));
 			physicsAccumulator -= FixedPhysicsStep;
 		}
     
@@ -234,7 +240,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 		//// -- Render 
-		gameScene.Render(renderer);
+		sceneManager.Render(renderer);
 
 
 		renderer.SwapBuffer();

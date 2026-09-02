@@ -80,10 +80,10 @@ GameScene::GameScene(IRenderer& renderer)
 
 	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
 
-	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderBlob, nullptr);
+	D3DCompileFromFile(L"Resource/Shader/TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderBlob, nullptr);
 	concreteRenderer.Device->CreateVertexShader(VertexShaderBlob->GetBufferPointer(), VertexShaderBlob->GetBufferSize(), nullptr, &mTextureVertexShader);
 
-	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
+	D3DCompileFromFile(L"Resource/Shader/TextureShader.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
 	concreteRenderer.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &mTexturePixelShader);
 
 	D3D11_INPUT_ELEMENT_DESC TextureLayoutDesc[] = {
@@ -160,7 +160,10 @@ GameScene::~GameScene()
 
 void GameScene::Reset()
 {
+	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 
+	auto ball = static_cast<Ball*>(mPrimitives[0].get());
+	ball->GetRigidBody().SetPosition(Vector3{ 0.0f, 5.0f, 0.0f });
 }
 
 void GameScene::Tick(float dt)
