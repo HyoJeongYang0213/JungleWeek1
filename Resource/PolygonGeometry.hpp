@@ -42,6 +42,17 @@ inline VertexSimple convex_quad_vertices[] =
 	{ -0.8f,  0.8f, 0.0f,  0.2f, 1.0f, 0.2f, 1.0f },
 };
 
+inline VertexSimple water_quad_vertices[] =
+{
+	{ -0.8f, -0.8f, 0.0f,  0.15f, 0.45f, 0.9f, 1.0f },
+	{  0.8f, -0.8f, 0.0f,  0.15f, 0.45f, 0.9f, 1.0f },
+	{  0.8f,  0.8f, 0.0f,  0.15f, 0.45f, 0.9f, 1.0f },
+
+	{ -0.8f, -0.8f, 0.0f,  0.15f, 0.45f, 0.9f, 1.0f },
+	{  0.8f,  0.8f, 0.0f,  0.15f, 0.45f, 0.9f, 1.0f },
+	{ -0.8f,  0.8f, 0.0f,  0.15f, 0.45f, 0.9f, 1.0f },
+};
+
 inline std::vector<Vector3> convex_quad_positions =
 {
 	{ -0.8f, -0.8f, 0.0f },
