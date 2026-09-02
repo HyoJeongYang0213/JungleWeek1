@@ -78,11 +78,16 @@
     <ClCompile Include="Player\Input.cpp">
       <Filter>Player</Filter>
     </ClCompile>
-    <ClCompile Include="Map\Platform.cpp" />
-    <ClCompile Include="InfiniteMap.h">
+    <ClCompile Include="ImGui\stb_image.cpp" />
+    <ClCompile Include="Physics\CollisionMask.cpp" />
+    <ClCompile Include="Player\Camera.cpp" />
+    <ClCompile Include="Map\PlatformManager.cpp">
       <Filter>Map</Filter>
     </ClCompile>
-    <ClCompile Include="InfiniteMap.cpp">
+    <ClCompile Include="MapGenerator.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\Platform.cpp">
       <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
@@ -167,14 +172,25 @@
     <ClInclude Include="Physics\Pick.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Resource\Primitive.hpp">
-      <Filter>Resource</Filter>
-    </ClInclude>
     <ClInclude Include="Map\Platform.h">
       <Filter>Map</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Math.hpp">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\stb_image.h" />
+    <ClInclude Include="Map\TextureLoader.hpp" />
+    <ClInclude Include="Physics\CollisionMask.h" />
+    <ClInclude Include="Player\Camera.h" />
+    <ClInclude Include="Player\Input.h" />
+    <ClInclude Include="Player\PlayerGlobals.hpp" />
+    <ClInclude Include="Player\Primitive.hpp" />
+    <ClInclude Include="Renderer\WindowGlobals.hpp" />
+    <ClInclude Include="Map\PlatformManager.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\MapGenerator.h">
+      <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

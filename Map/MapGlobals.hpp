@@ -22,8 +22,7 @@ namespace Globals {
 	constexpr float TOP_BORDER = 30.0f;
 	constexpr float BOTTOM_BORDER = 0.0f;
 
-	constexpr float MAP_WIDTH = 1536.0f;
-	constexpr float MAP_HEIGHT = 4000.0f;
-
-	constexpr float VIEW_HEIGHT_PX = 4000.0f;
+	constexpr float WORLD_WIDTH = 15.0f;
+	constexpr float VIEW_HEIGHT = 30.0f;
+	constexpr float CHUNK_HEIGHT = 30.0f;
 }

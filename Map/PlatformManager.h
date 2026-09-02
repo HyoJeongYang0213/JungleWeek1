@@ -16,6 +16,9 @@ struct PlatformData
     float mHeight;
     int mFloorIndex;
     bool mIsVisible;
+
+    Vector3 mPhysicsCenter;
+    Vector3 mPhysicsHalfExtents;
 };
 
 class PlatformManager
@@ -24,19 +27,19 @@ public:
     PlatformManager() = default;
     ~PlatformManager();
 
-    void Init(Renderer& renderer,
-        const std::string& groundMaskPath,
-        const std::vector<std::string>& patternMaskPaths);
+    void Init(Renderer& Renderer,
+        const std::string& GroundMaskPath,
+        const std::vector<std::string>& PatternMaskPaths);
 
-    void Update(float cameraCenterY);
+    void Update(float CameraCenterY);
 
-    void Render(Renderer& renderer, ID3D11ShaderResourceView* platformTexture, float cameraCenterY);
+    void Render(Renderer& Renderer, ID3D11ShaderResourceView* PlatformTexture);
 
     const std::vector<PlatformData>& GetActivePlatforms() const { return mActivePlatforms; }
 
 private:
-    std::vector<PlatformData> LoadMaskTemplate(const std::string& filePath);
-    void LoadFloor(int floorIndex);
+    std::vector<PlatformData> LoadMaskTemplate(const std::string& FilePath);
+    void LoadFloor(int FloorIndex);
 
     std::vector<PlatformData> mGroundTemplates;
     std::vector<std::vector<PlatformData>> mPatternTemplates;
@@ -46,5 +49,7 @@ private:
     std::unordered_map<int, int> mFloorPatternMap;
 
     ID3D11Buffer* mVertexBuffer = nullptr;
+    Renderer* mRenderer = nullptr;
+
     const float BUFFER_DISTANCE = 5000.0f;
 };

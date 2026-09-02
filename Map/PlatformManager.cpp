@@ -2,9 +2,20 @@
 #include "../Renderer/Renderer.h"
 #include "../Map/MapGlobals.hpp"
 #include "../Physics/CollisionMask.h"
+#include "../Physics/Collider.h"
+#include "../Physics/RigidBody.h"
+#include "../Physics/CollisionManifold.hpp"
+#include "../Physics/CollisionDetector.h"
+#include "../Physics/CollisionResolver.h"
+#include "../Player/Ball.h"
+#include "../Player/PlayerGlobals.hpp"
 #include "../Utils/Rnd.hpp"
 #include <algorithm>
 #include <cmath>
+
+#ifndef BUFFER_DISTANCE
+constexpr float BUFFER_DISTANCE = 45.0f; // 화면 위아래 버퍼 범위 (1.5층)
+#endif
 
 PlatformManager::~PlatformManager()
 {
@@ -12,6 +23,38 @@ PlatformManager::~PlatformManager()
     {
         mVertexBuffer->Release();
         mVertexBuffer = nullptr;
+    }
+}
+
+void PlatformManager::Init(Renderer& Renderer,
+    const std::string& GroundMaskPath,
+    const std::vector<std::string>& PatternMaskPaths)
+{
+    mRenderer = &Renderer;
+
+    mVertexBuffer = Renderer.CreateDynamicVertexBuffer(sizeof(VertexTexture) * 6);
+
+    VertexTexture quad[6] = {
+        { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+        {  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+        {  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+
+        { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+        {  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+        { -1.0f, -1.0f, 0.0f,  0.0f, 1.0f }
+    };
+    Renderer.UpdateDynamicVertexBuffer(mVertexBuffer, quad, sizeof(quad));
+
+    mGroundTemplates = LoadMaskTemplate(GroundMaskPath);
+
+    mPatternTemplates.clear();
+    for (const auto& Path : PatternMaskPaths)
+    {
+        auto Tmpl = LoadMaskTemplate(Path);
+        if (!Tmpl.empty())
+        {
+            mPatternTemplates.push_back(Tmpl);
+        }
     }
 }
 
@@ -25,48 +68,24 @@ std::vector<PlatformData> PlatformManager::LoadMaskTemplate(const std::string& F
     }
 
     std::vector<PlatformCollisionData> RawDataList = Mask.BuildPlatformsNDC();
-    float MapW = Globals::MAP_WIDTH;
-    float MapH = Globals::MAP_HEIGHT;
 
     for (const auto& Raw : RawDataList)
     {
         PlatformData Plat;
 
-        float RatioX = Raw.Center.x / 15.0f;
-        float RatioY = (30.0f - Raw.Center.y) / 30.0f;
+        Plat.mPhysicsCenter = Raw.Center;
+        Plat.mPhysicsHalfExtents = Raw.HalfExtents;
+        Plat.mWorldPosition = Raw.Center;
 
-        Plat.mWorldPosition.x = (RatioX - 0.5f) * MapW;
-        Plat.mWorldPosition.y = RatioY * MapH;
-        Plat.mWorldPosition.z = 0.0f;
-
-        Plat.mWidth = std::abs(Raw.HalfExtents.x / 15.0f) * MapW * 2.0f;
-        Plat.mHeight = std::abs(Raw.HalfExtents.y / 30.0f) * MapH * 2.0f;
+        Plat.mWidth = Raw.HalfExtents.x * 2.0f;
+        Plat.mHeight = Raw.HalfExtents.y * 2.0f;
         Plat.mFloorIndex = 0;
-        Plat.mIsVisible = false;
+        Plat.mIsVisible = true;
 
         Templates.push_back(Plat);
     }
 
     return Templates;
-}
-
-void PlatformManager::Init(Renderer& Renderer,
-    const std::string& GroundMaskPath,
-    const std::vector<std::string>& PatternMaskPaths)
-{
-    mVertexBuffer = Renderer.CreateDynamicVertexBuffer(sizeof(VertexTexture) * 6);
-
-    mGroundTemplates = LoadMaskTemplate(GroundMaskPath);
-
-    mPatternTemplates.clear();
-    for (const auto& Path : PatternMaskPaths)
-    {
-        auto Tmpl = LoadMaskTemplate(Path);
-        if (!Tmpl.empty())
-        {
-            mPatternTemplates.push_back(Tmpl);
-        }
-    }
 }
 
 void PlatformManager::LoadFloor(int FloorIndex)
@@ -90,7 +109,7 @@ void PlatformManager::LoadFloor(int FloorIndex)
         }
         else
         {
-            PatternIndex = static_cast<int>(Rnd::GetRandom(0.0f, static_cast<float>(mPatternTemplates.size() - 1)));
+            PatternIndex = static_cast<int>(Rnd::GetRandom(0, static_cast<int>(mPatternTemplates.size() - 1)));
             mFloorPatternMap[FloorIndex] = PatternIndex;
         }
         TargetTemplates = &mPatternTemplates[PatternIndex];
@@ -98,14 +117,17 @@ void PlatformManager::LoadFloor(int FloorIndex)
 
     if (!TargetTemplates) return;
 
-    float FloorOffsetTopY = -static_cast<float>(FloorIndex) * Globals::MAP_HEIGHT;
+    float FloorOffsetY = static_cast<float>(FloorIndex) * Globals::CHUNK_HEIGHT;
 
     for (const auto& Tmpl : *TargetTemplates)
     {
         PlatformData PlatformItem = Tmpl;
-        PlatformItem.mWorldPosition.y = FloorOffsetTopY + Tmpl.mWorldPosition.y;
+
+        PlatformItem.mWorldPosition.y = Tmpl.mWorldPosition.y + FloorOffsetY;
+        PlatformItem.mPhysicsCenter.y = Tmpl.mPhysicsCenter.y + FloorOffsetY;
+
         PlatformItem.mFloorIndex = FloorIndex;
-        PlatformItem.mIsVisible = false;
+        PlatformItem.mIsVisible = true;
 
         mActivePlatforms.push_back(PlatformItem);
     }
@@ -122,7 +144,6 @@ void PlatformManager::Update(float CameraCenterY)
         [ActiveMinY, ActiveMaxY](const PlatformData& Plat) {
             return (Plat.mWorldPosition.y < ActiveMinY || Plat.mWorldPosition.y > ActiveMaxY);
         });
-
     mActivePlatforms.erase(RemoveIt, mActivePlatforms.end());
 
     mLoadedFloors.clear();
@@ -131,8 +152,8 @@ void PlatformManager::Update(float CameraCenterY)
         mLoadedFloors.insert(Plat.mFloorIndex);
     }
 
-    int MinFloor = static_cast<int>(std::floor((Globals::MAP_HEIGHT - ActiveMaxY) / Globals::MAP_HEIGHT));
-    int MaxFloor = static_cast<int>(std::floor((Globals::MAP_HEIGHT - ActiveMinY) / Globals::MAP_HEIGHT));
+    int MinFloor = static_cast<int>(std::floor(ActiveMinY / Globals::CHUNK_HEIGHT));
+    int MaxFloor = static_cast<int>(std::floor(ActiveMaxY / Globals::CHUNK_HEIGHT));
     if (MinFloor < 0) MinFloor = 0;
 
     for (int F = MinFloor; F <= MaxFloor; ++F)
@@ -140,73 +161,67 @@ void PlatformManager::Update(float CameraCenterY)
         LoadFloor(F);
     }
 
-    float HalfMapW = Globals::MAP_WIDTH * 0.5f;
-    float HalfViewH = Globals::VIEW_HEIGHT_PX * 0.5f;
+    float ViewBottomY = CameraCenterY - 15.0f;
+    float ViewTopY = CameraCenterY + 15.0f;
 
     for (auto& Plat : mActivePlatforms)
     {
-        float HalfW = Plat.mWidth * 0.5f;
         float HalfH = Plat.mHeight * 0.5f;
+        float PlatTop = Plat.mWorldPosition.y + HalfH;
+        float PlatBottom = Plat.mWorldPosition.y - HalfH;
 
-        float WorldLeft = Plat.mWorldPosition.x - HalfW;
-        float WorldRight = Plat.mWorldPosition.x + HalfW;
-        float WorldTop = Plat.mWorldPosition.y - HalfH;
-        float WorldBottom = Plat.mWorldPosition.y + HalfH;
+        Plat.mIsVisible = (PlatBottom <= ViewTopY && PlatTop >= ViewBottomY);
+    }
 
-        float ScreenTop = (CameraCenterY - WorldTop) / HalfViewH;
-        float ScreenBottom = (CameraCenterY - WorldBottom) / HalfViewH;
-        float ScreenLeft = WorldLeft / HalfMapW;
-        float ScreenRight = WorldRight / HalfMapW;
+    if (mRenderer && mRenderer->PrimitiveCount > 0)
+    {
+        Ball* Player = dynamic_cast<Ball*>(mRenderer->PrimitiveList[0]);
+        if (Player)
+        {
+            SphereCollider* Sphere = dynamic_cast<SphereCollider*>(&Player->GetCollider());
+            if (Sphere)
+            {
+                for (auto& Plat : mActivePlatforms)
+                {
+                    Vector3 PlatPos = Plat.mPhysicsCenter;
+                    Vector3 PlatVel(0.0f, 0.0f, 0.0f);
+                    float PlatMass = 0.0f;
+                    Vector3 HalfExtents = Plat.mPhysicsHalfExtents;
 
-        float NDCTop = (std::max)(ScreenTop, ScreenBottom);
-        float NDCBottom = (std::min)(ScreenTop, ScreenBottom);
-        float NDCLeft = (std::min)(ScreenLeft, ScreenRight);
-        float NDCRight = (std::max)(ScreenLeft, ScreenRight);
+                    RigidBody PlatRB(PlatPos, PlatVel, PlatMass, 0.0f);
+                    BoxCollider PlatBox(PlatRB, HalfExtents);
 
-        bool InViewY = (NDCBottom <= 1.0f && NDCTop >= -1.0f);
-        bool InViewX = (NDCLeft <= 1.0f && NDCRight >= -1.0f);
+                    CollisionManifold Manifold;
+                    if (CollisionDetector::FindCollision(*Sphere, PlatBox, Manifold))
+                    {
+                        CollisionResolver::PrepareConstraints(Manifold);
+                        CollisionResolver::ResolveRestitution(Manifold);
+                        CollisionResolver::ResolveFriction(Manifold);
+                        CollisionResolver::ResolvePosition(Manifold);
 
-        Plat.mIsVisible = (InViewX && InViewY);
+                        PlayerGlobals::PLAYERLOCATION = Player->GetRigidBody().GetPosition();
+                    }
+                }
+            }
+        }
     }
 }
 
-void PlatformManager::Render(Renderer& Renderer, ID3D11ShaderResourceView* PlatformTexture, float CameraCenterY)
+void PlatformManager::Render(Renderer& renderer, ID3D11ShaderResourceView* srv)
 {
-    if (!PlatformTexture || !mVertexBuffer) return;
+    if (!srv || !mVertexBuffer) return;
 
-    float HalfMapW = Globals::MAP_WIDTH * 0.5f;
-    float HalfViewH = Globals::VIEW_HEIGHT_PX * 0.5f;
+    renderer.DeviceContext->PSSetShaderResources(0, 1, &srv);
 
     UINT Stride = sizeof(VertexTexture);
     UINT Offset = 0;
-
-    Renderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    Renderer.DeviceContext->IASetVertexBuffers(0, 1, &mVertexBuffer, &Stride, &Offset);
-    Renderer.DeviceContext->PSSetShaderResources(0, 1, &PlatformTexture);
+    renderer.DeviceContext->IASetVertexBuffers(0, 1, &mVertexBuffer, &Stride, &Offset);
 
     for (const auto& Plat : mActivePlatforms)
     {
         if (!Plat.mIsVisible) continue;
 
-        float HalfW = Plat.mWidth * 0.5f;
-        float HalfH = Plat.mHeight * 0.5f;
-
-        float NDCLeft = (Plat.mWorldPosition.x - HalfW) / HalfMapW;
-        float NDCRight = (Plat.mWorldPosition.x + HalfW) / HalfMapW;
-        float NDCTop = (CameraCenterY - (Plat.mWorldPosition.y - HalfH)) / HalfViewH;
-        float NDCBottom = (CameraCenterY - (Plat.mWorldPosition.y + HalfH)) / HalfViewH;
-
-        VertexTexture Quad[6] = {
-            { NDCLeft,  NDCTop,    0.0f,  0.0f, 0.0f },
-            { NDCRight, NDCTop,    0.0f,  1.0f, 0.0f },
-            { NDCRight, NDCBottom, 0.0f,  1.0f, 1.0f },
-
-            { NDCLeft,  NDCTop,    0.0f,  0.0f, 0.0f },
-            { NDCRight, NDCBottom, 0.0f,  1.0f, 1.0f },
-            { NDCLeft,  NDCBottom, 0.0f,  0.0f, 1.0f }
-        };
-
-        Renderer.UpdateDynamicVertexBuffer(mVertexBuffer, Quad, sizeof(Quad));
-        Renderer.DeviceContext->Draw(6, 0);
+        renderer.UpdateConstant(Plat.mPhysicsCenter, Plat.mPhysicsHalfExtents, 0.0f);
+        renderer.DeviceContext->Draw(6, 0);
     }
 }

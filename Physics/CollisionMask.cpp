@@ -200,7 +200,7 @@ CollisionMask::BuildComponent(
 
     // Pixel ->  0,1
 
-    const float leftRatio =
+    /*const float leftRatio =
         leftPixel / width;
 
     const float rightRatio =
@@ -210,8 +210,12 @@ CollisionMask::BuildComponent(
         topPixel / height;
 
     const float bottomRatio =
-        bottomPixel / height;
+        bottomPixel / height;*/
 
+    const float leftRatio = static_cast<float>(minX) / static_cast<float>(mWidth);
+    const float rightRatio = static_cast<float>(maxX + 1) / static_cast<float>(mWidth);
+    const float topRatio = static_cast<float>(minY) / static_cast<float>(mHeight);
+    const float bottomRatio = static_cast<float>(maxY + 1) / static_cast<float>(mHeight);
 
     // 일단 임의로 하드코딩
     const float leftWorld =

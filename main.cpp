@@ -50,6 +50,17 @@ VertexSimple triangle_vertices[] =
 	{ -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f }  // Bottom-left vertex (blue)
 };
 
+VertexTexture platform_vertices[] = {
+	{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+	{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+	{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+
+	{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+	{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+	{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f }
+};
+UINT numVerticesPlatform = 6;
+
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 // 각종 메시지를 처리할 함수
@@ -173,6 +184,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 
+
 	// Collision Mask에서
 	// Connected Component별 Platform Data 생성
 	std::vector<PlatformCollisionData>
@@ -213,7 +225,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	InfiniteMap.Init(renderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
 
-	float cameraCenterY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
 
 	ID3D11ShaderResourceView* ShaderResourceViewPlatform = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Platform.png");
 
@@ -221,8 +232,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	PlatformManager.Init(
 		renderer,
 		"Asset/stage1_collision_mask_1536x3000.png",
-		{ "Asset/stage1_collision_mask_1536x3000.png" }
+		{ "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" }
 	);
+
+	renderer.SetCameraPosition(Vector3(0.0f, 0.0f, 0.0f));
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -250,19 +263,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		input.Update();
 
-		PlatformManager.Update(cameraCenterY);
+		float moveSpeed = 15.0f * static_cast<float>(elapsedTime);
+		Vector3 camPos = renderer.GetCamera().GetPosition();
+
+		if (camPos.y < 0.0f) camPos.y = 0.0f;
+
+		renderer.SetCameraPosition(camPos);
+
 		renderer.Tick(static_cast<float>(elapsedTime));
+
+		float cameraBottomY = camPos.y;
+		float cameraCenterY = cameraBottomY + 15.0f;
+
+		PlatformManager.Update(cameraCenterY);
 
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
-
-
-		float moveSpeed = 1500.0f * static_cast<float>(elapsedTime);
-		if (GetAsyncKeyState(VK_UP) & 0x8000)   cameraCenterY -= moveSpeed;
-		if (GetAsyncKeyState(VK_DOWN) & 0x8000) cameraCenterY += moveSpeed;
-
-		float maxCameraY = Globals::MAP_HEIGHT - (Globals::VIEW_HEIGHT_PX * 0.5f);
-		if (cameraCenterY > maxCameraY) cameraCenterY = maxCameraY;
 
 
 		renderer.Prepare();
@@ -271,10 +287,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.DeviceContext->PSSetShader(TexturePixelShader, nullptr, 0);
 		renderer.DeviceContext->IASetInputLayout(TextureLayout);
 		renderer.DeviceContext->PSSetSamplers(0, 1, &MapSampler);
+		renderer.DeviceContext->VSSetConstantBuffers(0, 1, &renderer.ConstantBuffer);
 
-		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
+		InfiniteMap.Render(renderer, MapSampler, camPos.y);
 
-		PlatformManager.Render(renderer, ShaderResourceViewPlatform, cameraCenterY);
+		PlatformManager.Render(renderer, ShaderResourceViewPlatform);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)
@@ -285,7 +302,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-
 
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
