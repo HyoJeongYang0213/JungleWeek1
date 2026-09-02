@@ -1,8 +1,8 @@
 ﻿#pragma once 
 
+#include <d3d11.h>
 #include <vector>
 #include <memory>
-#include <d3d11.h>
 
 #include "IScene.hpp"
 
@@ -71,6 +71,9 @@ private:
 	ID3D11PixelShader* mTexturePixelShader = nullptr;
 	ID3D11InputLayout* mTextureLayout = nullptr;
 	ID3D11SamplerState* mSamplerState = nullptr;
+
+	ID3D11Buffer* mBallVertexBuffer = nullptr;
+	ID3D11ShaderResourceView* mSRVBall = nullptr;
 
 	Input mInput{};
 
