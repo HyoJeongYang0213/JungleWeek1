@@ -290,9 +290,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_A.png");
 	ID3D11ShaderResourceView* ShaderResourceViewB = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_B.png");
 	ID3D11ShaderResourceView* ShaderResourceViewC = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_C.png");
-	ID3D11ShaderResourceView* ShaderResourceViewPlayBtn = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Button_Play.png");
-	ID3D11ShaderResourceView* ShaderResourceViewSettingsBtn = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Button_Settings.png");
-	ID3D11ShaderResourceView* ShaderResourceViewBtnFrame = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Button_Blank.png");
+	ID3D11ShaderResourceView* ShaderResourceViewPlayBtn = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/UI/Button_Play.png");
+	ID3D11ShaderResourceView* ShaderResourceViewSettingsBtn = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/UI/Button_Settings.png");
+	ID3D11ShaderResourceView* ShaderResourceViewBtnFrame = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/UI/Button_Blank.png");
 	ID3D11SamplerState* MapSampler = TextureLoader::CreateSamplerState(renderer.Device);
 
 	InfiniteMap InfiniteMap;
@@ -419,8 +419,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		switch (gameCtx.mCurrentState)
 		{
 		case EGameState::Title:
-			GameUI::RenderTitleUI(gameCtx, renderer, PlatformManager, ShaderResourceViewBtnFrame);
-			GameUI::RenderSettingsUI(gameCtx, renderer, PlatformManager, ShaderResourceViewSettingsBtn, ShaderResourceViewBtnFrame);
+			GameUI::RenderTitleUI(gameCtx, ShaderResourceViewBtnFrame);
+			GameUI::RenderSettingsUI(gameCtx, ShaderResourceViewSettingsBtn, ShaderResourceViewBtnFrame);
 			break;
 
 		case EGameState::Playing:
@@ -428,11 +428,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{
 				input.DragBall();
 			}
-			GameUI::RenderSettingsUI(gameCtx, renderer, PlatformManager, ShaderResourceViewSettingsBtn, ShaderResourceViewBtnFrame);
+			GameUI::RenderSettingsUI(gameCtx, ShaderResourceViewSettingsBtn, ShaderResourceViewBtnFrame);
 			break;
 
 		case EGameState::Ending:
-			GameUI::RenderEndingUI(gameCtx, renderer, PlatformManager, bIsExit);
+			GameUI::RenderEndingUI(gameCtx, bIsExit);
 			break;
 		}
 

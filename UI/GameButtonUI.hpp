@@ -40,7 +40,7 @@ namespace GameUI
         return BClicked;
     }
 
-    inline void RenderTitleUI(GameContext& Context, Renderer& InRenderer, PlatformManager& InPlatformManager, ID3D11ShaderResourceView* BtnFrameSRV)
+    inline void RenderTitleUI(GameContext& Context, ID3D11ShaderResourceView* BtnFrameSRV)
     {
         if (Context.mBShowOptions)
         {
@@ -78,15 +78,13 @@ namespace GameUI
 
         if (BClicked)
         {
-            Context.ResetGame(InRenderer, InPlatformManager);
             Context.mCurrentState = EGameState::Playing;
         }
 
         ImGui::End();
     }
 
-    inline void RenderSettingsUI(GameContext& Context, Renderer& InRenderer, PlatformManager& InPlatformManager,
-        ID3D11ShaderResourceView* SettingsBtnSRV, ID3D11ShaderResourceView* BtnFrameSRV)
+    inline void RenderSettingsUI(GameContext& Context, ID3D11ShaderResourceView* SettingsBtnSRV, ID3D11ShaderResourceView* BtnFrameSRV)
     {
         float ScreenW = WindowGlobals::SCREENSIZE.Width;
         float ScreenH = WindowGlobals::SCREENSIZE.Height;
@@ -174,7 +172,6 @@ namespace GameUI
                 if (ImageTextButton("##BtnRestart", u8"타이틀로", BtnFrameSRV, ImVec2(185.0f, 48.0f)))
                 {
                     Context.mBShowOptions = false;
-                    Context.ResetGame(InRenderer, InPlatformManager);
                     Context.mCurrentState = EGameState::Title;
                 }
             }
@@ -193,7 +190,7 @@ namespace GameUI
         }
     }
 
-    inline void RenderEndingUI(GameContext& Context, Renderer& InRenderer, PlatformManager& InPlatformManager, bool& BIsExit)
+    inline void RenderEndingUI(GameContext& Context, bool& BIsExit)
     {
         float ScreenW = WindowGlobals::SCREENSIZE.Width;
         float ScreenH = WindowGlobals::SCREENSIZE.Height;
@@ -219,7 +216,6 @@ namespace GameUI
 
         if (ImGui::Button(u8"게임 재시작", ImVec2(320.0f, 45.0f)))
         {
-            Context.ResetGame(InRenderer, InPlatformManager);
             Context.mCurrentState = EGameState::Title;
         }
 
