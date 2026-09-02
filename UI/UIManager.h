@@ -28,15 +28,21 @@ private:
     UIManager(const UIManager&) = delete;
     UIManager& operator=(const UIManager&) = delete;
 
+    void DrawBoldText(const char* Text, float PosX, float PosY,
+        ImVec4 TextCol, ImVec4 ShadowCol, float Thick = 1.2f);
+    void DrawBoldTextScreen(const char* Text, ImVec2 ScreenPos,
+        ImU32 TextCol, ImU32 ShadowCol, float Thick = 1.2f);
+
     bool ImageTextButton(const char* StrId, const char* Text, ID3D11ShaderResourceView* TextureSRV, const ImVec2& Size);
     void RenderTitleUI();
     void RenderSettingsUI(int InCurrentSceneIndex);
     void RenderEndingUI();
-
+    void RenderScore();
 private:
     SceneManager* mSceneManager = nullptr;
     ID3D11ShaderResourceView* mBtnFrameSRV = nullptr;
     ID3D11ShaderResourceView* mSettingsBtnSRV = nullptr;
+    ID3D11ShaderResourceView* mScoreBannerSRV = nullptr;
 
     bool mBShowOptions = false;
     bool mBIsExit = false;

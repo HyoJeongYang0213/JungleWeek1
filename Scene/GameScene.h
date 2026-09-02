@@ -54,7 +54,7 @@ public:
 
 private:
 	std::vector<std::unique_ptr<Primitive>> mPrimitives{};
-	
+
 	StaticCollider LeftWall{ MapGlobals::LEFT_BORDER_POINT, MapGlobals::LEFT_BORDER_NORMAL };
 	StaticCollider RightWall{ MapGlobals::RIGHT_BORDER_POINT, MapGlobals::RIGHT_BORDER_NORMAL };
 	StaticCollider TopWall{ MapGlobals::TOP_BORDER_POINT, MapGlobals::TOP_BORDER_NORMAL };
@@ -62,9 +62,9 @@ private:
 
 	Camera mCamera{ Vector3(0.0f, 0.0f, 0.0f) };
 
-	InfiniteMap mBackGround{}; 
+	InfiniteMap mBackGround{};
 	PlatformManager mPlatformManager{};
-	
+
 	ID3D11ShaderResourceView* mSRVPlatform = nullptr;
 
 	ID3D11VertexShader* mTextureVertexShader = nullptr;
@@ -73,5 +73,6 @@ private:
 	ID3D11SamplerState* mSamplerState = nullptr;
 
 	Input mInput{};
-	Water mWater;
+
+	std::unique_ptr<Water> mWater;
 };

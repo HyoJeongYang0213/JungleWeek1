@@ -1,11 +1,13 @@
 ﻿#include "UIManager.h"
 #include "../Map/TextureLoader.hpp"
+#include "../Player/PlayerGlobals.hpp"
 
 void UIManager::Init(ID3D11Device* InDevice, SceneManager* InSceneManager)
 {
     mSceneManager = InSceneManager;
     mBtnFrameSRV = TextureLoader::CreateTextureFromFile(InDevice, L"Asset/UI/Button_Blank.png");
     mSettingsBtnSRV = TextureLoader::CreateTextureFromFile(InDevice, L"Asset/UI/Button_Settings.png");
+    mScoreBannerSRV = TextureLoader::CreateTextureFromFile(InDevice, L"Asset/UI/ScoreFrame.png");
     mBShowOptions = false;
     mBIsExit = false;
 }
@@ -23,6 +25,39 @@ void UIManager::Shutdown()
         mSettingsBtnSRV->Release();
         mSettingsBtnSRV = nullptr;
     }
+}
+
+void UIManager::DrawBoldText(const char* Text, float PosX, float PosY,
+    ImVec4 TextCol, ImVec4 ShadowCol, float Thick)
+{
+    ImGui::SetCursorPos(ImVec2(PosX - Thick, PosY));
+    ImGui::TextColored(ShadowCol, "%s", Text);
+
+    ImGui::SetCursorPos(ImVec2(PosX + Thick, PosY));
+    ImGui::TextColored(ShadowCol, "%s", Text);
+
+    ImGui::SetCursorPos(ImVec2(PosX, PosY - Thick));
+    ImGui::TextColored(ShadowCol, "%s", Text);
+
+    ImGui::SetCursorPos(ImVec2(PosX, PosY + Thick));
+    ImGui::TextColored(ShadowCol, "%s", Text);
+
+    ImGui::SetCursorPos(ImVec2(PosX, PosY));
+    ImGui::TextColored(TextCol, "%s", Text);
+}
+
+void UIManager::DrawBoldTextScreen(const char* Text, ImVec2 ScreenPos,
+    ImU32 TextCol, ImU32 ShadowCol, float Thick)
+{
+    ImDrawList* DrawList = ImGui::GetWindowDrawList();
+
+    DrawList->AddText(ImVec2(ScreenPos.x - Thick, ScreenPos.y), ShadowCol, Text);
+    DrawList->AddText(ImVec2(ScreenPos.x + Thick, ScreenPos.y), ShadowCol, Text);
+    DrawList->AddText(ImVec2(ScreenPos.x, ScreenPos.y - Thick), ShadowCol, Text);
+    DrawList->AddText(ImVec2(ScreenPos.x, ScreenPos.y + Thick), ShadowCol, Text);
+    DrawList->AddText(ImVec2(ScreenPos.x + Thick, ScreenPos.y + Thick), ShadowCol, Text);
+
+    DrawList->AddText(ScreenPos, TextCol, Text);
 }
 
 bool UIManager::ImageTextButton(const char* StrId, const char* Text, ID3D11ShaderResourceView* TextureSRV, const ImVec2& Size)
@@ -51,9 +86,9 @@ bool UIManager::ImageTextButton(const char* StrId, const char* Text, ID3D11Shade
         StartPos.y + (Size.y - TextSize.y) * 0.5f
     );
 
-    ImDrawList* DrawList = ImGui::GetWindowDrawList();
     ImU32 DarkBrownColor = IM_COL32(74, 35, 6, 255);
-    DrawList->AddText(TextPos, DarkBrownColor, Text);
+
+    DrawBoldTextScreen(Text, TextPos, DarkBrownColor, DarkBrownColor, 0.5f);
 
     return BClicked;
 }
@@ -68,6 +103,7 @@ void UIManager::Render(int InCurrentSceneIndex)
         break;
 
     case 1:
+        RenderScore();
         RenderSettingsUI(InCurrentSceneIndex);
         break;
 
@@ -225,41 +261,116 @@ void UIManager::RenderSettingsUI(int InCurrentSceneIndex)
 void UIManager::RenderEndingUI()
 {
     ImVec2 DisplaySize = ImGui::GetIO().DisplaySize;
-    float ModalW = 340.0f;
-    float ModalH = 220.0f;
-    ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ModalW) * 0.5f, (DisplaySize.y - ModalH) * 0.80f), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(ModalW, ModalH), ImGuiCond_Always);
+
+    {
+        float ScoreBoxW = 450.0f;
+        float ScoreBoxH = 150.0f;
+
+        ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ScoreBoxW) * 0.5f, DisplaySize.y * 0.43f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(ScoreBoxW, ScoreBoxH), ImGuiCond_Always);
+
+        ImGuiWindowFlags ScoreFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoScrollbar;
+
+        ImGui::Begin("EndingScoreDisplay", nullptr, ScoreFlags);
+
+        ImGui::SetWindowFontScale(6.0f);
+
+        char ScoreBuf[64];
+        sprintf_s(ScoreBuf, "%.1f m", PlayerGlobals::HIGH_SCORE);
+
+        float TextWidth = ImGui::CalcTextSize(ScoreBuf).x;
+        float BasePosX = (ScoreBoxW - TextWidth) * 0.5f;
+        float BasePosY = 10.0f;
+
+        ImVec4 TextCol = ImVec4(74.0f / 255.0f, 35.0f / 255.0f, 6.0f / 255.0f, 1.0f);
+
+        DrawBoldText(ScoreBuf, BasePosX, 10.0f, TextCol, TextCol, 1.5f);
+
+        ImGui::SetWindowFontScale(1.0f);
+        ImGui::End();
+    }
+
+    {
+        float ModalW = 340.0f;
+        float ModalH = 160.0f;
+        ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ModalW) * 0.5f, DisplaySize.y * 0.65f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(ModalW, ModalH), ImGuiCond_Always);
+
+        ImGuiWindowFlags Flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar;
+
+        ImGui::Begin("EndingUI", nullptr, Flags);
+
+        if (ImageTextButton("##BtnEndingRestart", u8"게임 재시작", mBtnFrameSRV, ImVec2(320.0f, 45.0f)))
+        {
+            if (mSceneManager)
+            {
+                mSceneManager->NextScene();
+            }
+        }
+
+        ImGui::Spacing();
+        ImGui::Spacing();
+
+        if(ImageTextButton("##BtnEndingExit", u8"게임 종료", mBtnFrameSRV, ImVec2(320.0f, 45.0f)))
+        {
+            exit(0);
+            mBIsExit = true;
+        }
+
+        ImGui::End();
+    }
+}
+
+void UIManager::RenderScore()
+{
+    ImVec2 DisplaySize = ImGui::GetIO().DisplaySize;
+
+    float BannerW = 160.0f;
+    float BannerH = 90.0f;
+
+    float PosX = (DisplaySize.x - BannerW) * 0.5f;
+    float PosY = 15.0f;
+
+    ImGui::SetNextWindowPos(ImVec2(PosX, PosY), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(BannerW, BannerH), ImGuiCond_Always);
 
     ImGuiWindowFlags Flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
-    ImGui::Begin("EndingUI", nullptr, Flags);
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground |
+        ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoScrollbar;
 
-    ImGui::Spacing();
-    ImGui::SetWindowFontScale(1.4f);
-    float TextWidth = ImGui::CalcTextSize("GAME OVER").x;
-    ImGui::SetCursorPosX((ModalW - TextWidth) * 0.5f);
-    ImGui::TextColored(ImVec4(0.95f, 0.25f, 0.25f, 1.0f), "GAME OVER");
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("InGameHeightHUD", nullptr, Flags);
+
+    if (mScoreBannerSRV)
+    {
+        ImGui::SetCursorPos(ImVec2(0.0f, 0.0f));
+        ImGui::Image((ImTextureID)mScoreBannerSRV, ImVec2(BannerW, BannerH));
+    }
+
+    char CurNumBuf[32];
+    char MaxNumBuf[32];
+    sprintf_s(CurNumBuf, "%.1f m", PlayerGlobals::PLAYERLOCATION.y);
+    sprintf_s(MaxNumBuf, "%.1f m", PlayerGlobals::HIGH_SCORE);
+
+    const char* CurLabel = (const char*)u8"현재 높이 : ";
+    const char* MaxLabel = (const char*)u8"최고 높이 : ";
+
+    char FullCurBuf[64];
+    char FullMaxBuf[64];
+    sprintf_s(FullCurBuf, "%s%s", CurLabel, CurNumBuf);
+    sprintf_s(FullMaxBuf, "%s%s", MaxLabel, MaxNumBuf);
+
+    ImVec4 BrownTextCol = ImVec4(74.0f / 255.0f, 35.0f / 255.0f, 6.0f / 255.0f, 1.0f);
+
+    float CurTextW = ImGui::CalcTextSize(FullCurBuf).x;
+    DrawBoldText(FullCurBuf, (BannerW - CurTextW) * 0.5f, 18.0f, BrownTextCol, BrownTextCol, 0.5f);
+
+    float HighText = ImGui::CalcTextSize(FullMaxBuf).x;
+    DrawBoldText(FullMaxBuf, (BannerW - HighText) * 0.5f, 48.0f, BrownTextCol, BrownTextCol, 0.5f);
+
     ImGui::SetWindowFontScale(1.0f);
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
-    if (ImageTextButton("##BtnEndingRestart", u8"게임 재시작", mBtnFrameSRV, ImVec2(320.0f, 45.0f)))
-    {
-        if (mSceneManager)
-        {
-            mSceneManager->NextScene();
-        }
-    }
-
-    ImGui::Spacing();
-
-    if (ImageTextButton("##BtnEndingExit", u8"게임 종료", mBtnFrameSRV, ImVec2(320.0f, 45.0f)))
-    {
-        exit(0);
-        mBIsExit = true;
-    }
-
     ImGui::End();
+    ImGui::PopStyleVar();
 }

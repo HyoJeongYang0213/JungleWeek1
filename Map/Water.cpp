@@ -26,6 +26,32 @@ Water::~Water()
 {
 }
 
+void Water::Tick(float t)
+{
+	WaterGlobals::WATER_Y_SCALE += WaterGlobals::WATER_SPEED * t;
+	if (IsGameOver())
+	{
+		WaterGlobals::B_GAME_OVER = true;
+		OutputDebugStringA("게임오버!\n");
+	}
+} 
+
+bool Water::IsGameOver() const
+{
+	const float wSurfaceY = mBaseY + WaterGlobals::WATER_Y_SCALE*0.8;
+
+	if (PlayerGlobals::PLAYERLOCATION.y - PlayerGlobals::PLAYERBALL->GetRadius() <= wSurfaceY)
+	{
+		return true;
+	}
+	return false;
+}
+
+
+void Water::Render(IRenderer& renderer)
+{;
+	renderer.UpdateConstant(Vector3{ mCenterX, mBaseY, 0.0f }, Vector3{ mScaleX, WaterGlobals::WATER_Y_SCALE, 0.0f }, 0.0f);
+	renderer.RenderPrimitive(mVertexBuffer, mNumVertices);
 void Water::Start()
 {
 	mIsActive = true;

@@ -2,6 +2,17 @@
 
 #include <d3d11.h>
 
+
+#include "../Resource/Primitive.hpp"
+#include "../Utils/Math.hpp"
+
+#include "../Renderer/IRenderer.hpp"
+
+class Water
+{
+public:
+	Water(ID3D11Buffer* vb, UINT numVertices);
+
 #include <array>
 #include "../Utils/Math.hpp"
 
@@ -54,6 +65,18 @@ public:
 	Water& operator=(Water&&) = default;
 
 public:
+	void Tick(float t);
+	bool IsGameOver() const;
+	void Render(IRenderer& renderer);
+
+private:
+	ID3D11Buffer* mVertexBuffer;
+	UINT mNumVertices;
+
+	float mCenterX;
+	float mBaseY;
+
+	float mScaleX;
 	void Start(); 
 
 	void Tick(float dt);
