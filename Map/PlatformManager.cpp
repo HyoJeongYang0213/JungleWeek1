@@ -1,4 +1,4 @@
-#include "PlatformManager.h"
+﻿#include "PlatformManager.h"
 #include "../Renderer/Renderer.h"
 #include "../Map/MapGlobals.hpp"
 #include "../Physics/CollisionMask.h"
