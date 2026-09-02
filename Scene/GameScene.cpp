@@ -51,17 +51,15 @@ GameScene::GameScene(IRenderer& renderer)
 
 	Renderer& concreteRenderer = static_cast<Renderer&>(renderer);
 
-	ID3D11Buffer* vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
-	ID3D11Buffer* vertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
-	ID3D11Buffer* vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
+	vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
+	vertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
+	vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 	
 	mBallVertexBuffer = concreteRenderer.CreateVertexBuffer(reinterpret_cast<VertexSimple*>(ball_quad_vertices),sizeof(ball_quad_vertices));
 
 	mWater = std::make_unique<Water>(concreteRenderer, 0.0f);
 
-
 	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
-
 	{
 		auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
 			{
@@ -96,7 +94,7 @@ GameScene::GameScene(IRenderer& renderer)
 		AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
 		AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
 	}
-
+	mPolygonVertexBuffers = std::move(polygonVertexBuffers);
 
 	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
 
@@ -187,6 +185,31 @@ GameScene::~GameScene()
 		mSRVBall->Release();
 		mSRVBall = nullptr;
 	}
+
+	if (vertexBufferTriangle)
+	{
+		vertexBufferTriangle->Release();
+		vertexBufferTriangle = nullptr;
+	}
+	if (vertexBufferSphere)
+	{
+		vertexBufferSphere->Release();
+		vertexBufferSphere = nullptr;
+	}
+	if (vertexBufferCube)
+	{
+		vertexBufferCube->Release();
+		vertexBufferCube = nullptr;
+	}
+	for (auto& [vertexBuffer, numVertices, positions] : mPolygonVertexBuffers)
+	{
+		if (vertexBuffer)
+		{
+			vertexBuffer->Release();
+			vertexBuffer = nullptr;
+		}
+	}
+	mPolygonVertexBuffers.clear();
 }
 
 void GameScene::Reset()
