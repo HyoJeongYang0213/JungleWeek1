@@ -51,10 +51,21 @@ GameScene::GameScene(IRenderer& renderer)
 
 	Renderer& concreteRenderer = static_cast<Renderer&>(renderer);
 
+	for (VertexSimple& Vertex : sphere_vertices)
+	{
+		Vertex.r = 0.2f;
+		Vertex.g = 0.2f;
+		Vertex.b = 0.2f;
+		Vertex.a = 1.0f;
+	}
+
 	//ID3D11Buffer* vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
 	mVertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	//ID3D11Buffer* vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 	
+	mMiniBallSystem.Init(mVertexBufferSphere, static_cast<UINT>(sizeof(sphere_vertices) / sizeof(sphere_vertices[0])));
+
+
 	mBallVertexBuffer = concreteRenderer.CreateVertexBuffer(reinterpret_cast<VertexSimple*>(ball_quad_vertices),sizeof(ball_quad_vertices));
 
 
@@ -171,10 +182,23 @@ GameScene::GameScene(IRenderer& renderer)
 		srvTransEveningToNight,
 		srvTransNightToSpace
 		}, themeDecos
-		);
+	);
 
 
 	mPlatformTileManager.Init(concreteRenderer);
+
+	mPlatformTileManager.SetBallSpawnCallback(
+		[this](
+			const Vector3& ContactPoint,
+			const Vector3& CollisionNormal)
+		{
+			mMiniBallSystem.Spawn(
+				ContactPoint,
+				CollisionNormal
+			);
+		}
+	);
+
 
 	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 
@@ -188,7 +212,8 @@ GameScene::GameScene(IRenderer& renderer)
 			Ball* player = static_cast<Ball*>(mPrimitives[0].get());
 			Vector3 ReleasePoint{ Vector3(static_cast<float>(targetPos.x), static_cast<float>(targetPos.y), 0.0f) };
 			player->GetRigidBody().ApplyImpulse((player->GetLocation() - ReleasePoint) * PlayerGlobals::PLAYER_DRAG_IMPULSE_MULTIPLIER, player->GetLocation());
-		});
+		}
+	);
 
 
 	mWater->Start(); 
@@ -240,30 +265,7 @@ GameScene::~GameScene()
 		mSRVBall = nullptr;
 	}
 
-	if (vertexBufferTriangle)
-	{
-		vertexBufferTriangle->Release();
-		vertexBufferTriangle = nullptr;
-	}
-	if (vertexBufferSphere)
-	{
-		vertexBufferSphere->Release();
-		vertexBufferSphere = nullptr;
-	}
-	if (vertexBufferCube)
-	{
-		vertexBufferCube->Release();
-		vertexBufferCube = nullptr;
-	}
-	for (auto& [vertexBuffer, numVertices, positions] : mPolygonVertexBuffers)
-	{
-		if (vertexBuffer)
-		{
-			vertexBuffer->Release();
-			vertexBuffer = nullptr;
-		}
-	}
-	mPolygonVertexBuffers.clear();
+
 }
 
 void GameScene::Reset()
@@ -277,6 +279,8 @@ void GameScene::Reset()
 
 	WaterGlobals::WATER_Y_SCALE = 0.f;
 	WaterGlobals::B_GAME_OVER = false;
+
+	mMiniBallSystem.Clear();
 	mWater->Reset();
 	mInput.Reset();
 }
@@ -421,7 +425,7 @@ void GameScene::Tick(float dt)
 		CollisionResolver::PrepareConstraints(manifold);
 	}
 
-
+	
 	constexpr int MaxIterations{ 10 };
 
 	for (int iteration = 0; iteration < MaxIterations; ++iteration)
@@ -432,6 +436,8 @@ void GameScene::Tick(float dt)
 			CollisionResolver::ResolveFriction(manifold);
 		}
 	}
+
+
 
 	for (CollisionManifold& manifold : Manifolds)
 	{
@@ -459,6 +465,9 @@ void GameScene::Tick(float dt)
 	const float CameraCenterY = CameraBottomY + 15.0f;
 
 	mPlatformTileManager.Update(CameraCenterY);
+
+	mMiniBallSystem.Tick(dt);
+
 	PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 	PlayerGlobals::HIGH_SCORE = std::max(PlayerGlobals::HIGH_SCORE, player->GetLocation().y);
 
@@ -470,6 +479,7 @@ void GameScene::Render(IRenderer& renderer)
 	Renderer& concreteRenderer = static_cast<Renderer&>(renderer);
 
 	concreteRenderer.Prepare();
+
 
 	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
 	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);
@@ -521,6 +531,8 @@ void GameScene::Render(IRenderer& renderer)
 	{
 		mPrimitives[i]->Render(renderer);
 	}
+
+	mMiniBallSystem.Render(renderer);
 
 	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
 	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);

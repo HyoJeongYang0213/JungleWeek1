@@ -6,6 +6,7 @@
 #include <memory>
 #include <unordered_set>
 #include <vector>
+#include <functional>
 
 #include "Polygon.h"
 #include "../Physics/CollisionManifold.hpp"
@@ -16,6 +17,8 @@ class SphereCollider;
 
 class PlatformTileManager
 {
+public:
+	using BallSpawnCallback = std::function<void(const Vector3&, const Vector3&)>;
 public:
 	PlatformTileManager() = default;
 	~PlatformTileManager();
@@ -32,6 +35,8 @@ public:
 	void FindCollisions(SphereCollider& sphere, std::vector<CollisionManifold>& manifolds);
 	void Render(IRenderer& renderer);
 	void Reset();
+
+	void SetBallSpawnCallback(const BallSpawnCallback& callback) { mBallSpawnCallback = callback; }
 
 private:
 	struct TileCoordinate
@@ -82,4 +87,7 @@ private:
 	Vector3 mPolygonLocalHalfExtents{ 1.0f, 1.0f, 0.0f };
 	int mLastMinRow = 1;
 	int mLastMaxRow = 0;
+
+	BallSpawnCallback mBallSpawnCallback{};
+	bool mCanPlayHitSound = true;
 };

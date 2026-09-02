@@ -21,6 +21,8 @@
 
 #include "../Renderer/IRenderer.hpp"
 
+#include "../Effect/MiniBallSystem.h"
+
 class GameScene : public IScene {
 public:
 	GameScene(IRenderer& renderer);
@@ -78,4 +80,6 @@ private:
 	Input mInput{};
 
 	std::unique_ptr<Water> mWater;
+
+	MiniBallSystem mMiniBallSystem{};
 };

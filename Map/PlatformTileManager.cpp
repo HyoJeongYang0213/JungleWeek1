@@ -13,6 +13,8 @@
 #include "../Renderer/Renderer.h"
 #include "../Resource/vertexSimple.hpp"
 
+#include "../Audio/SoundManager.h"
+
 namespace
 {
 	constexpr std::array<const char*, 9> PlatformPolygonImagePaths
@@ -137,15 +139,34 @@ void PlatformTileManager::Update(float cameraCenterY)
 
 void PlatformTileManager::FindCollisions(SphereCollider& sphere, std::vector<CollisionManifold>& manifolds)
 {
+	bool bIsColliding = false;
+
 	for (ActivePolygon& polygon : mPolygons)
 	{
 		CollisionManifold manifold{};
 		PolygonCollider& collider = static_cast<PolygonCollider&>(polygon.Polygon->GetCollider());
+		
+		bIsColliding = true; 
 
 		if (CollisionDetector::FindCollision(sphere, collider, manifold))
 		{
+			if (mCanPlayHitSound)
+			{
+				SoundManager::GetInstance().PlaySound("BallHit", 0.5f, false);
+				// 접촉 위치에서 작은 공 생성 요청
+				if (mBallSpawnCallback && manifold.ContactCount > 0)
+				{
+					mBallSpawnCallback(manifold.Contacts[0].Point, manifold.Normal);
+				}
+				mCanPlayHitSound = false;
+			}
+
 			manifolds.emplace_back(manifold);
 		}
+	}
+
+	if (not bIsColliding) {
+		mCanPlayHitSound = true;
 	}
 }
 
