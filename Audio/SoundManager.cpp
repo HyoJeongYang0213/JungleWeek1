@@ -63,6 +63,7 @@ void SoundManager::shutdown()
 		}
 	}
 	mActiveVoices.clear();
+	mSoundMap.clear();
 	
 	// 마스터 보이스 정리
 	if (mMasteringVoice)

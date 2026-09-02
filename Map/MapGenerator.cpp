@@ -32,6 +32,21 @@ InfiniteMap::~InfiniteMap()
         mVertexBufferChunk->Release();
         mVertexBufferChunk = nullptr;
     }
+
+    if (mShaderResourceViewGround)
+    {
+        mShaderResourceViewGround->Release();
+        mShaderResourceViewGround = nullptr;
+    }
+
+    for (auto& ShaderResourceView : mShaderResourceViewPatterns)
+    {
+        if (ShaderResourceView)
+        {
+            ShaderResourceView->Release();
+            ShaderResourceView = nullptr;
+        }
+    }
 }
 
 ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
@@ -59,9 +74,9 @@ void InfiniteMap::DrawChunk(Renderer& renderer, int floorIndex)
     ID3D11ShaderResourceView* Texture = GetOrCreateFloorTexture(floorIndex);
     if (!Texture) return;
 
-    float CenterY = (static_cast<float>(floorIndex) * 30.0f) + 15.0f;
-    Vector3 Center = { 7.5f, CenterY, 0.0f };
-    Vector3 HalfExtents = { 7.5f, 15.0f, 0.0f };
+    float CenterY = (static_cast<float>(floorIndex) * MapGlobals::CHUNK_HEIGHT) + MapGlobals::CHUNK_HEIGHT / 2.0f;
+    Vector3 Center = { MapGlobals::RIGHT_BORDER / 2.0f, CenterY, 0.0f };
+    Vector3 HalfExtents = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::CHUNK_HEIGHT / 2.0f, 0.0f };
 
     renderer.UpdateConstant(Center, HalfExtents, 0.0f);
     renderer.DeviceContext->PSSetShaderResources(0, 1, &Texture);

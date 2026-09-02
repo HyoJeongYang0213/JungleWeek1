@@ -25,6 +25,14 @@ void UIManager::Shutdown()
         mSettingsBtnSRV->Release();
         mSettingsBtnSRV = nullptr;
     }
+
+	if (mScoreBannerSRV)
+	{
+		mScoreBannerSRV->Release();
+		mScoreBannerSRV = nullptr;
+	}
+
+    mSceneManager = nullptr;
 }
 
 void UIManager::DrawBoldText(const char* Text, float PosX, float PosY,
@@ -315,7 +323,6 @@ void UIManager::RenderEndingUI()
 
         if(ImageTextButton("##BtnEndingExit", u8"게임 종료", mBtnFrameSRV, ImVec2(320.0f, 45.0f)))
         {
-            exit(0);
             mBIsExit = true;
         }
 

@@ -66,6 +66,7 @@ private:
 	PlatformManager mPlatformManager{};
 
 	ID3D11ShaderResourceView* mSRVPlatform = nullptr;
+	ID3D11Buffer* mVertexBufferSphere = nullptr;
 
 	ID3D11VertexShader* mTextureVertexShader = nullptr;
 	ID3D11PixelShader* mTexturePixelShader = nullptr;

@@ -52,6 +52,50 @@ EndingScene::EndingScene(IRenderer& renderer)
 
 EndingScene::~EndingScene()
 {
+	if (mSamplerState)
+	{
+		mSamplerState->Release();
+		mSamplerState = nullptr;
+	}
+
+	if (mQuadVertexBuffer)
+	{
+		mQuadVertexBuffer->Release();
+		mQuadVertexBuffer = nullptr;
+	}
+
+	if (mTextureLayout)
+	{
+		mTextureLayout->Release();
+		mTextureLayout = nullptr;
+	}
+
+	if(mTextureVertexShader) 
+	{
+		mTextureVertexShader->Release();
+		mTextureVertexShader = nullptr;
+	}
+
+	if (mTexturePixelShader)
+	{
+		mTexturePixelShader->Release();
+		mTexturePixelShader = nullptr;
+	}
+	if (mSRVEndingBG)
+	{
+		mSRVEndingBG->Release();
+		mSRVEndingBG = nullptr;
+	}
+	if (mSRVEndingText)
+	{
+		mSRVEndingText->Release();
+		mSRVEndingText = nullptr;
+	}
+	if (mScore)
+	{
+		mScore->Release();
+		mScore = nullptr;
+	}
 }
 
 void EndingScene::Reset()
@@ -75,8 +119,9 @@ void EndingScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 	concreteRenderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	Vector3 Center = { 7.5f,15.f, 0.0f };
-	Vector3 HalfExtents = { 7.5f ,15.f, 0.0f };
+
+	Vector3 Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 2.0f, 0.0f };
+	Vector3 HalfExtents = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 2.0f, 0.0f };
 
 	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVEndingBG);

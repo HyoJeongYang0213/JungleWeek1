@@ -4,6 +4,8 @@
 #include "../Map/TextureLoader.hpp"
 #include "../UI/GameButtonUI.hpp"
 
+#include "../Map/MapGlobals.hpp"
+
 TitleScene::TitleScene(IRenderer& renderer)
 {
 	Renderer& concreteRenderer = static_cast<Renderer&>(renderer);
@@ -45,6 +47,41 @@ TitleScene::TitleScene(IRenderer& renderer)
 
 TitleScene::~TitleScene()
 {
+	if (mQuadVertexBuffer)
+	{
+		mQuadVertexBuffer->Release();
+		mQuadVertexBuffer = nullptr;
+	}
+
+	if (mSamplerState)
+	{
+		mSamplerState->Release();
+		mSamplerState = nullptr;
+	}
+
+	if (mTextureLayout)
+	{
+		mTextureLayout->Release();
+		mTextureLayout = nullptr;
+	}
+	
+	if (mTextureVertexShader)
+	{
+		mTextureVertexShader->Release();
+		mTextureVertexShader = nullptr;
+	}
+
+	if (mTexturePixelShader)
+	{
+		mTexturePixelShader->Release();
+		mTexturePixelShader = nullptr;
+	}
+
+	if (mSRVTitle)
+	{
+		mSRVTitle->Release();
+		mSRVTitle = nullptr;
+	}
 }
 
 void TitleScene::Reset()
@@ -68,8 +105,8 @@ void TitleScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 	concreteRenderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	Vector3 Center = { 7.5f,15.f, 0.0f };
-	Vector3 HalfExtents = { 7.5f ,15.f, 0.0f };
+	Vector3 Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 2.0f, 0.0f };
+	Vector3 HalfExtents = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 2.0f, 0.0f };
 
 	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVTitle);

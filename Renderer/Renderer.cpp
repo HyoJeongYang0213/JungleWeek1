@@ -67,6 +67,7 @@ void Renderer::ReleaseDeviceAndSwapChain()
 {
 	if (DeviceContext)
 	{
+		DeviceContext->ClearState();
 		DeviceContext->Flush(); // 남아있는 GPU 명령 실행
 	}
 
@@ -76,16 +77,16 @@ void Renderer::ReleaseDeviceAndSwapChain()
 		SwapChain = nullptr;
 	}
 
-	if (Device)
-	{
-		Device->Release();
-		Device = nullptr;
-	}
-
 	if (DeviceContext)
 	{
 		DeviceContext->Release();
 		DeviceContext = nullptr;
+	}
+
+	if (Device)
+	{
+		Device->Release();
+		Device = nullptr;
 	}
 }
 
@@ -145,6 +146,7 @@ void Renderer::Release()
 	PrimitiveCount = 0;
 	PrimitiveCapacity = 0;
 
+	ReleaseBendState();
 	ReleaseRasterizerState();
 
 	// 렌더 타겟을 초기화
