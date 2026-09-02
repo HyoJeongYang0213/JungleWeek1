@@ -132,6 +132,7 @@ GameScene::GameScene(IRenderer& renderer)
 	ID3D11ShaderResourceView* ShaderResourceViewEvening = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Evening.png");
 	ID3D11ShaderResourceView* ShaderResourceViewNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Night.png");
 	ID3D11ShaderResourceView* ShaderResourceViewSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Space.png");
+	ID3D11ShaderResourceView* srvCloud = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Cloudy.png");
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
 	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, {
@@ -140,7 +141,8 @@ GameScene::GameScene(IRenderer& renderer)
 		ShaderResourceViewSunset,
 		ShaderResourceViewEvening,
 		ShaderResourceViewNight,
-		ShaderResourceViewSpace
+		ShaderResourceViewSpace,
+		srvCloud
 		});
 	mPlatformManager.Init(concreteRenderer, "Asset/stage1_collision_mask_1536x3000.png", { "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" });
 	mSRVPlatform = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Platform.png");
