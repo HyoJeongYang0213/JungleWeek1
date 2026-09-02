@@ -13,8 +13,11 @@
 class SoundManager
 {
 public :
-	SoundManager() = default;
-	~SoundManager();
+	static SoundManager& GetInstance()
+	{
+		static SoundManager Instance;
+		return Instance;
+	}
 
 	SoundManager(const SoundManager&) = delete;
 	SoundManager& operator=(const SoundManager&) = delete;
@@ -31,6 +34,10 @@ public :
 
 
 private :
+
+	SoundManager() = default;
+	~SoundManager();
+
 	struct SoundData
 	{
 		std::vector<BYTE> AudioBuffer;
