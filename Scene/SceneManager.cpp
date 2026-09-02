@@ -6,9 +6,9 @@
 
 SceneManager::SceneManager(IRenderer& renderer)
 {
-	mScenes.emplace_back(std::make_unique<TitleScene>());
+	mScenes.emplace_back(std::make_unique<TitleScene>(renderer));
 	mScenes.emplace_back(std::make_unique<GameScene>(renderer));
-	mScenes.emplace_back(std::make_unique<EndingScene>());
+	mScenes.emplace_back(std::make_unique<EndingScene>(renderer));
 
 	mCurrentSceneIndex = 0; 
 }
