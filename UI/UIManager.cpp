@@ -349,18 +349,26 @@ void UIManager::RenderScore()
         ImGui::Image((ImTextureID)mScoreBannerSRV, ImVec2(BannerW, BannerH));
     }
 
-    char CurrentHeightBuf[64];
-    char MaxHeightBuf[64];
-    sprintf_s(CurrentHeightBuf, "현재 높이 : %.1f m", PlayerGlobals::PLAYERLOCATION.y);
-    sprintf_s(MaxHeightBuf, "최고 높이 : %.1f m", PlayerGlobals::HIGH_SCORE);
+    char CurNumBuf[32];
+    char MaxNumBuf[32];
+    sprintf_s(CurNumBuf, "%.1f m", PlayerGlobals::PLAYERLOCATION.y);
+    sprintf_s(MaxNumBuf, "%.1f m", PlayerGlobals::HIGH_SCORE);
+
+    const char* CurLabel = (const char*)u8"현재 높이 : ";
+    const char* MaxLabel = (const char*)u8"최고 높이 : ";
+
+    char FullCurBuf[64];
+    char FullMaxBuf[64];
+    sprintf_s(FullCurBuf, "%s%s", CurLabel, CurNumBuf);
+    sprintf_s(FullMaxBuf, "%s%s", MaxLabel, MaxNumBuf);
 
     ImVec4 BrownTextCol = ImVec4(74.0f / 255.0f, 35.0f / 255.0f, 6.0f / 255.0f, 1.0f);
 
-    float Text1W = ImGui::CalcTextSize(CurrentHeightBuf).x;
-    DrawBoldText(CurrentHeightBuf, (BannerW - Text1W) * 0.5f, 18.0f, BrownTextCol, BrownTextCol, 0.5f);
+    float CurTextW = ImGui::CalcTextSize(FullCurBuf).x;
+    DrawBoldText(FullCurBuf, (BannerW - CurTextW) * 0.5f, 18.0f, BrownTextCol, BrownTextCol, 0.5f);
 
-    float Text2W = ImGui::CalcTextSize(MaxHeightBuf).x;
-    DrawBoldText(MaxHeightBuf, (BannerW - Text2W) * 0.5f, 48.0f, BrownTextCol, BrownTextCol, 0.5f);
+    float HighText = ImGui::CalcTextSize(FullMaxBuf).x;
+    DrawBoldText(FullMaxBuf, (BannerW - HighText) * 0.5f, 48.0f, BrownTextCol, BrownTextCol, 0.5f);
 
     ImGui::SetWindowFontScale(1.0f);
     ImGui::End();
