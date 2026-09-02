@@ -25,6 +25,12 @@ void UIManager::Shutdown()
         mSettingsBtnSRV->Release();
         mSettingsBtnSRV = nullptr;
     }
+
+	if (mScoreBannerSRV)
+	{
+		mScoreBannerSRV->Release();
+		mScoreBannerSRV = nullptr;
+	}
 }
 
 void UIManager::DrawBoldText(const char* Text, float PosX, float PosY,
