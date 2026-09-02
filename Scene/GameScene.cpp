@@ -366,5 +366,7 @@ void GameScene::Render(IRenderer& renderer)
 	{
 		Primitive->Render(renderer);
 	}
+	mWater->Render(renderer);
+
 	mInput.DragBall();
 }
