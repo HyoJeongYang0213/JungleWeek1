@@ -162,11 +162,11 @@ void Renderer::CreateShader()
 	ID3DBlob* vertexshaderCSO;
 	ID3DBlob* pixelshaderCSO;
 
-	D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
+	D3DCompileFromFile(L"Resource/Shader/ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
 
 	Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
 
-	D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
+	D3DCompileFromFile(L"Resource/Shader/ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
 
 	Device->CreatePixelShader(pixelshaderCSO->GetBufferPointer(), pixelshaderCSO->GetBufferSize(), nullptr, &SimplePixelShader);
 
@@ -270,13 +270,11 @@ ID3D11Buffer* Renderer::CreateDynamicVertexBuffer(UINT byteWidth)
 	return buffer;
 }
 
-// 2. Map / Unmap을 이용해 정점 데이터 덮어쓰기
 void Renderer::UpdateDynamicVertexBuffer(ID3D11Buffer* buffer, const void* data, UINT byteWidth)
 {
 	if (!buffer || !data) return;
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
-	// D3D11_MAP_WRITE_DISCARD: 기존 버퍼 내용을 버리고 새로 작성 (가장 빠름)
 	HRESULT hr = DeviceContext->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (SUCCEEDED(hr))
 	{
@@ -426,7 +424,6 @@ void Renderer::Tick(float dt)
 		{
 			&LeftWall,
 			&RightWall,
-			&TopWall,
 			&BottomWall
 		};
 
@@ -435,7 +432,7 @@ void Renderer::Tick(float dt)
 			ICollider& collider{ PrimitiveList[PrimitiveIndex]->GetCollider() };
 
 
-			for (size_t WallIndex{ 0 }; WallIndex < 4; ++WallIndex)
+			for (size_t WallIndex{ 0 }; WallIndex < 3; ++WallIndex)
 			{
 				CollisionManifold Manifold{};
 

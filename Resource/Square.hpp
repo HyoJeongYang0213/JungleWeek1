@@ -2,7 +2,7 @@
 #include "VertexSimple.hpp"
 
 // 큐브를 하드 코딩
-VertexSimple cube_vertices[] =
+inline VertexSimple cube_vertices[] =
 {
 	// Front face (Z+)
 	{ -1.0f, -1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 1.0f }, // Bottom-left (red)

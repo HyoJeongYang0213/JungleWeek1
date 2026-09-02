@@ -1,0 +1,34 @@
+﻿#include "SceneManager.h"
+
+#include "TitleScene.h"
+#include "GameScene.h"
+#include "EndingScene.h"
+
+SceneManager::SceneManager(IRenderer& renderer)
+{
+	mScenes.emplace_back(std::make_unique<TitleScene>());
+	mScenes.emplace_back(std::make_unique<GameScene>(renderer));
+	mScenes.emplace_back(std::make_unique<EndingScene>());
+
+	mCurrentSceneIndex = 0; 
+}
+
+SceneManager::~SceneManager()
+{
+}
+
+void SceneManager::NextScene()
+{
+	auto nextSceneIndex = (mCurrentSceneIndex + 1) % mScenes.size();
+	mCurrentSceneIndex = nextSceneIndex;
+}
+
+void SceneManager::Tick(float dt)
+{
+	mScenes[mCurrentSceneIndex]->Tick(dt);
+}
+
+void SceneManager::Render(IRenderer& renderer)
+{
+	mScenes[mCurrentSceneIndex]->Render(renderer);
+}

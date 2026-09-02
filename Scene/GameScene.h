@@ -7,19 +7,23 @@
 #include "IScene.hpp"
 
 #include "../Map/MapGlobals.hpp"
+#include "../Map/PlatformManager.h"
 
 #include "../Resource/Primitive.hpp"
 
 #include "../Physics/Collider.h"
 
 #include "../Player/Camera.h"
+#include "../Player/Input.h"
 
 #include "../Map/MapGenerator.h"
 
+#include "../Renderer/IRenderer.hpp"
+
 class GameScene : public IScene {
 public:
-	GameScene() = default;
-	~GameScene() override = default;
+	GameScene(IRenderer& renderer);
+	~GameScene() override;
 
 	GameScene(const GameScene&) = delete;
 	GameScene& operator=(const GameScene&) = delete;
@@ -28,8 +32,11 @@ public:
 	GameScene& operator=(GameScene&&) = default;
 
 public:
+	virtual SceneType GetSceneType() const override { return SceneType::Game; }
+
+	virtual void Reset() override;
 	virtual void Tick(float dt) override;
-	virtual void Render(IRenderer& renderer, ID3D11SamplerState* pSamplerState) override;
+	virtual void Render(IRenderer& renderer) override;
 
 	template <typename T, typename... Args>
 	inline bool CreatePrimitive(Args&&... args)
@@ -55,4 +62,15 @@ private:
 	Camera mCamera{ Vector3(0.0f, 0.0f, 0.0f) };
 
 	InfiniteMap mBackGround{}; 
+	PlatformManager mPlatformManager{};
+	
+	ID3D11ShaderResourceView* mSRVPlatform = nullptr;
+
+	ID3D11VertexShader* mTextureVertexShader = nullptr;
+	ID3D11PixelShader* mTexturePixelShader = nullptr;
+	ID3D11InputLayout* mTextureLayout = nullptr;
+
+	Input mInput{};
+
+	ID3D11SamplerState* mSamplerState = nullptr;
 };

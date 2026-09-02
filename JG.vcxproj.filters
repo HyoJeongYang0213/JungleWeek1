@@ -28,6 +28,9 @@
     <Filter Include="Main">
       <UniqueIdentifier>{c7d80af0-fb03-4b75-87ac-099004adb77c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{4de232d4-a46a-4b07-ae55-4806d6fc79a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGui\imgui.cpp">
@@ -78,6 +81,7 @@
     <ClCompile Include="Player\Input.cpp">
       <Filter>Player</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="ImGui\stb_image.cpp" />
     <ClCompile Include="Physics\CollisionMask.cpp" />
@@ -89,6 +93,41 @@
     <ClCompile Include="Scene\GameScene.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="UI\GameButtonUI.hpp" />
+=======
+    <ClCompile Include="Player\Camera.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\MapGenerator.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\PlatformManager.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\Polygon.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\stb_image.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\CollisionMask.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\Platform.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\EndingScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\GameScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\TitleScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\SceneManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+>>>>>>> origin/development
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -177,12 +216,6 @@
     <ClInclude Include="Utils\Math.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ImGui\stb_image.h" />
-    <ClInclude Include="Map\MapGenerator.h" />
-    <ClInclude Include="Map\TextureLoader.hpp" />
-    <ClInclude Include="Physics\CollisionMask.h" />
-    <ClInclude Include="Player\Camera.h" />
-    <ClInclude Include="Player\Primitive.hpp" />
     <ClInclude Include="Player\CameraGlobals.hpp">
       <Filter>Player</Filter>
     </ClInclude>
@@ -195,6 +228,7 @@
     <ClInclude Include="Player\PlayerGlobals.hpp">
       <Filter>Player</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Map\Polygon.h" />
     <ClInclude Include="Map\PlatformManager.h" />
     <ClInclude Include="Resource\PolygonGeometry.hpp" />
@@ -203,6 +237,50 @@
     <ClInclude Include="Scene\IScene.hpp" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="UI\GameState.hpp" />
+=======
+    <ClInclude Include="Player\Camera.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\MapGenerator.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\PlatformManager.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Polygon.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\stb_image.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\CollisionMask.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\PolygonGeometry.hpp">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\Primitive.hpp">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\TextureLoader.hpp">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\EndingScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\GameScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\IScene.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\TitleScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\SceneManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+>>>>>>> origin/development
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />

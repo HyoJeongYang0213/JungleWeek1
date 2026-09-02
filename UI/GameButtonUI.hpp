@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 #include "GameState.hpp"
+#include "../Scene/SceneManager.h"
 #include "../ImGui/imgui.h"
 #include "../Renderer/WindowGlobals.hpp"
 
@@ -40,21 +41,19 @@ namespace GameUI
         return BClicked;
     }
 
-    inline void RenderTitleUI(GameContext& Context, ID3D11ShaderResourceView* BtnFrameSRV)
+    inline void RenderTitleUI(GameContext& Context, SceneManager& InSceneManager, ID3D11ShaderResourceView* BtnFrameSRV)
     {
         if (Context.mBShowOptions)
         {
             return;
         }
 
-        float ScreenW = WindowGlobals::SCREENSIZE.Width;
-        float ScreenH = WindowGlobals::SCREENSIZE.Height;
-
+        ImVec2 DisplaySize = ImGui::GetIO().DisplaySize;
         float ButtonW = 240.0f;
         float ButtonH = 80.0f;
 
-        float PosX = (ScreenW - ButtonW) * 0.5f;
-        float PosY = ScreenH * 0.70f;
+        float PosX = (DisplaySize.x - ButtonW) * 0.5f;
+        float PosY = DisplaySize.y * 0.70f;
 
         ImGui::SetNextWindowPos(ImVec2(PosX, PosY), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(ButtonW + 20.0f, ButtonH + 20.0f), ImGuiCond_Always);
@@ -79,20 +78,20 @@ namespace GameUI
         if (BClicked)
         {
             Context.mCurrentState = EGameState::Playing;
+            InSceneManager.NextScene();
         }
 
         ImGui::End();
     }
 
-    inline void RenderSettingsUI(GameContext& Context, ID3D11ShaderResourceView* SettingsBtnSRV, ID3D11ShaderResourceView* BtnFrameSRV)
+    inline void RenderSettingsUI(GameContext& Context, SceneManager& InSceneManager,
+        ID3D11ShaderResourceView* SettingsBtnSRV, ID3D11ShaderResourceView* BtnFrameSRV)
     {
-        float ScreenW = WindowGlobals::SCREENSIZE.Width;
-        float ScreenH = WindowGlobals::SCREENSIZE.Height;
+        ImVec2 DisplaySize = ImGui::GetIO().DisplaySize;
+        float IconSize = 46.0f;
 
-        float IconSize = 45.0f;
-
-        ImGui::SetNextWindowPos(ImVec2(ScreenW - IconSize - 20.0f, 20.0f), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(IconSize + 20.0f, IconSize + 20.0f), ImGuiCond_Always);
+        ImGui::SetNextWindowPos(ImVec2(DisplaySize.x - IconSize - 20.0f, 20.0f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(IconSize + 10.0f, IconSize + 10.0f), ImGuiCond_Always);
 
         ImGuiWindowFlags IconFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground |
@@ -126,7 +125,7 @@ namespace GameUI
             float ModalW = 420.0f;
             float ModalH = 320.0f;
 
-            ImGui::SetNextWindowPos(ImVec2((ScreenW - ModalW) * 0.5f, (ScreenH - ModalH) * 0.5f), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ModalW) * 0.5f, (DisplaySize.y - ModalH) * 0.5f), ImGuiCond_Always);
             ImGui::SetNextWindowSize(ImVec2(ModalW, ModalH), ImGuiCond_Always);
 
             ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
@@ -173,6 +172,8 @@ namespace GameUI
                 {
                     Context.mBShowOptions = false;
                     Context.mCurrentState = EGameState::Title;
+                    InSceneManager.NextScene();
+                    InSceneManager.NextScene();
                 }
             }
             else
@@ -190,17 +191,16 @@ namespace GameUI
         }
     }
 
-    inline void RenderEndingUI(GameContext& Context, bool& BIsExit)
+    inline void RenderEndingUI(GameContext& Context, SceneManager& InSceneManager, bool& BIsExit, ID3D11ShaderResourceView* BtnFrameSRV)
     {
-        float ScreenW = WindowGlobals::SCREENSIZE.Width;
-        float ScreenH = WindowGlobals::SCREENSIZE.Height;
-
+        ImVec2 DisplaySize = ImGui::GetIO().DisplaySize;
         float ModalW = 340.0f;
         float ModalH = 220.0f;
-        ImGui::SetNextWindowPos(ImVec2((ScreenW - ModalW) * 0.5f, (ScreenH - ModalH) * 0.5f), ImGuiCond_Always);
+        ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ModalW) * 0.5f, (DisplaySize.y - ModalH) * 0.5f), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(ModalW, ModalH), ImGuiCond_Always);
 
-        ImGuiWindowFlags Flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        ImGuiWindowFlags Flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
         ImGui::Begin("EndingUI", nullptr, Flags);
 
         ImGui::Spacing();
@@ -214,14 +214,15 @@ namespace GameUI
         ImGui::Separator();
         ImGui::Spacing();
 
-        if (ImGui::Button(u8"게임 재시작", ImVec2(320.0f, 45.0f)))
+        if (ImageTextButton("##BtnEndingRestart", u8"게임 재시작", BtnFrameSRV, ImVec2(320.0f, 45.0f)))
         {
             Context.mCurrentState = EGameState::Title;
+            InSceneManager.NextScene();
         }
 
         ImGui::Spacing();
 
-        if (ImGui::Button(u8"게임 종료", ImVec2(320.0f, 45.0f)))
+        if (ImageTextButton("##BtnEndingExit", u8"게임 종료", BtnFrameSRV, ImVec2(320.0f, 45.0f)))
         {
             BIsExit = true;
         }
