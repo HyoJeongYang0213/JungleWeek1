@@ -1,4 +1,7 @@
-﻿#include <windows.h>
+﻿#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+
+#include <windows.h>
 #include <algorithm>
 // 여기에 아래 코드를 추가 합니다.
 
@@ -99,6 +102,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
 	// 윈도우 클래스 이름
@@ -301,6 +306,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{
 				sceneManager.NextScene();
 				break;
+			}
+
+			if (UIManager::Get().ShouldExit())
+			{
+				bIsExit = true;
 			}
 		}
 

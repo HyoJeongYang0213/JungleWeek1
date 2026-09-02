@@ -315,7 +315,6 @@ void UIManager::RenderEndingUI()
 
         if(ImageTextButton("##BtnEndingExit", u8"게임 종료", mBtnFrameSRV, ImVec2(320.0f, 45.0f)))
         {
-            exit(0);
             mBIsExit = true;
         }
 
