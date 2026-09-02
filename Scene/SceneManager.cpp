@@ -20,7 +20,9 @@ SceneManager::~SceneManager()
 void SceneManager::NextScene()
 {
 	auto nextSceneIndex = (mCurrentSceneIndex + 1) % mScenes.size();
+	mScenes[nextSceneIndex]->Reset();
 	mCurrentSceneIndex = nextSceneIndex;
+
 }
 
 void SceneManager::Tick(float dt)

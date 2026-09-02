@@ -30,7 +30,7 @@
 #include "../Map/Water.h"
 
 
-GameScene::GameScene(IRenderer& renderer) : mWater(renderer, 0.0f)
+GameScene::GameScene(IRenderer& renderer) 
 {
 	VertexSimple triangle_vertices[] =
 	{
@@ -45,9 +45,8 @@ GameScene::GameScene(IRenderer& renderer) : mWater(renderer, 0.0f)
 	ID3D11Buffer* vertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 	
-	ID3D11Buffer* waterVertexBuffer = concreteRenderer.CreateVertexBuffer(water_quad_vertices, sizeof(water_quad_vertices));
-	UINT waterNumVertices = static_cast<UINT>(std::size(water_quad_vertices));
-	mWater = std::make_unique<Water>(waterVertexBuffer, waterNumVertices);
+
+	mWater = std::make_unique<Water>(concreteRenderer, 0.0f);
 
 
 	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
@@ -131,7 +130,7 @@ GameScene::GameScene(IRenderer& renderer) : mWater(renderer, 0.0f)
 		});
 
 
-	mWater.Start(); 
+	mWater->Start(); 
 }
 
 GameScene::~GameScene()
@@ -175,6 +174,9 @@ void GameScene::Reset()
 
 	auto ball = static_cast<Ball*>(mPrimitives[0].get());
 	ball->GetRigidBody().SetPosition(Vector3{ 0.0f, 5.0f, 0.0f });
+
+	WaterGlobals::WATER_Y_SCALE = 0.f;
+	WaterGlobals::B_GAME_OVER = false;
 }
 
 void GameScene::Tick(float dt)
@@ -344,7 +346,7 @@ void GameScene::Tick(float dt)
 	PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 	PlayerGlobals::HIGH_SCORE = std::max(PlayerGlobals::HIGH_SCORE, player->GetLocation().y);
 
-	mWater.Tick(dt);
+	mWater->Tick(dt);
 }
 
 void GameScene::Render(IRenderer& renderer)
@@ -368,8 +370,6 @@ void GameScene::Render(IRenderer& renderer)
 	{
 		Primitive->Render(renderer);
 	}
-	mWater->Render(renderer);
-
 
 	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
 	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);
@@ -377,7 +377,7 @@ void GameScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->PSSetSamplers(0, 1, &mSamplerState);
 	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 
-	mWater.Render(concreteRenderer);
+	mWater->Render(concreteRenderer);
 
 	mInput.DragBall();
 }

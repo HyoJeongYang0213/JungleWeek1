@@ -1,19 +1,16 @@
 ﻿#pragma once 
 
 #include <d3d11.h>
+#include <array>
 
+#include "../Map/WaterGlobals.hpp"
 
+#include "../Player/PlayerGlobals.hpp"
 #include "../Resource/Primitive.hpp"
 #include "../Utils/Math.hpp"
 
 #include "../Renderer/IRenderer.hpp"
 
-class Water
-{
-public:
-	Water(ID3D11Buffer* vb, UINT numVertices);
-
-#include <array>
 #include "../Utils/Math.hpp"
 
 #include "../Renderer/Renderer.h"
@@ -65,27 +62,18 @@ public:
 	Water& operator=(Water&&) = default;
 
 public:
-	void Tick(float t);
+
 	bool IsGameOver() const;
 	void Render(IRenderer& renderer);
 
-private:
-	ID3D11Buffer* mVertexBuffer;
-	UINT mNumVertices;
-
-	float mCenterX;
-	float mBaseY;
-
-	float mScaleX;
 	void Start(); 
-
 	void Tick(float dt);
 
-	void Render(IRenderer& renderer);
+	void Reset();
 public:
 	float mHeight{}; 
 	bool mIsActive{ false };
-	float t{ 0.f };
+	float t{ -10.f };
 
 	ID3D11Buffer* mVertexBuffer = nullptr;
 	ID3D11ShaderResourceView* mSRVWater = nullptr; 

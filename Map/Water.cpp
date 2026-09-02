@@ -26,43 +26,46 @@ Water::~Water()
 {
 }
 
-void Water::Tick(float t)
+void Water::Tick(float dt)
 {
-	WaterGlobals::WATER_Y_SCALE += WaterGlobals::WATER_SPEED * t;
-	if (IsGameOver())
-	{
-		WaterGlobals::B_GAME_OVER = true;
-		OutputDebugStringA("게임오버!\n");
+	t += dt;
+
+	if (t > 0.f) {
+		WaterGlobals::WATER_Y_SCALE += WaterGlobals::WATER_SPEED * dt;
+		if (IsGameOver())
+		{
+			WaterGlobals::B_GAME_OVER = true;
+			OutputDebugStringA("게임오버!\n");
+		}
 	}
-} 
+}
+void Water::Reset()
+{
+	t = -10.f;
+	WaterGlobals::WATER_Y_SCALE = 0.f;
+}
+
 
 bool Water::IsGameOver() const
 {
-	const float wSurfaceY = mBaseY + WaterGlobals::WATER_Y_SCALE*0.8;
+	if (t > 0.f) {
 
-	if (PlayerGlobals::PLAYERLOCATION.y - PlayerGlobals::PLAYERBALL->GetRadius() <= wSurfaceY)
-	{
-		return true;
+		const float wSurfaceY = WaterGlobals::WATER_Y_SCALE;
+
+		if (PlayerGlobals::PLAYERLOCATION.y - PlayerGlobals::PLAYERBALL->GetRadius() <= wSurfaceY)
+		{
+			return true;
+		}
+		return false;
 	}
+
 	return false;
 }
 
 
-void Water::Render(IRenderer& renderer)
-{;
-	renderer.UpdateConstant(Vector3{ mCenterX, mBaseY, 0.0f }, Vector3{ mScaleX, WaterGlobals::WATER_Y_SCALE, 0.0f }, 0.0f);
-	renderer.RenderPrimitive(mVertexBuffer, mNumVertices);
 void Water::Start()
 {
 	mIsActive = true;
-}
-
-void Water::Tick(float dt)
-{
-	if (mIsActive)
-	{
-		t += dt;
-	}
 }
 
 void Water::Render(IRenderer& renderer)
@@ -74,7 +77,7 @@ void Water::Render(IRenderer& renderer)
 
 	concreteRenderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Vector3 Center = { 7.5f, 0.f, 0.0f };
-	Vector3 HalfExtents = { 8.5f ,t, t };
+	Vector3 HalfExtents = { 8.5f ,WaterGlobals::WATER_Y_SCALE, t };
 	
 	concreteRenderer.UpdateConstant(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVWater);
