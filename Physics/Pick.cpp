@@ -31,13 +31,13 @@ WindowSize Pick::ScreenToWorld(__int32 screenX, __int32 screenY) {
 	float ndcX = (screenX / (screenWidth / 2.0f)) - 1.0f;
 	float ndcY = 1.0f - (screenY / (screenHeight / 2.0f));
 
-	// NDC -> local (orthographic)
-	float localX = (ndcX * (MapGlobals::RIGHT_BORDER - MapGlobals::LEFT_BORDER) + (MapGlobals::RIGHT_BORDER + MapGlobals::LEFT_BORDER)) / 2.0f;
-	float localY = (ndcY * (MapGlobals::TOP_BORDER - MapGlobals::BOTTOM_BORDER) + (MapGlobals::TOP_BORDER + MapGlobals::BOTTOM_BORDER)) / 2.0f;
+	// NDC -> View 
+	float viewX = (ndcX * (MapGlobals::RIGHT_BORDER - MapGlobals::LEFT_BORDER) + (MapGlobals::RIGHT_BORDER + MapGlobals::LEFT_BORDER)) / 2.0f;
+	float viewY = (ndcY * (MapGlobals::TOP_BORDER - MapGlobals::BOTTOM_BORDER) + (MapGlobals::TOP_BORDER + MapGlobals::BOTTOM_BORDER)) / 2.0f;
 
-	// world = local + camera
-	float worldX = localX + CameraGlobals::CAMERA_POSITION.x;
-	float worldY = localY + CameraGlobals::CAMERA_POSITION.y;
+	// world = View + camera
+	float worldX = viewX + CameraGlobals::CAMERA_POSITION.x;
+	float worldY = viewY + CameraGlobals::CAMERA_POSITION.y;
 
 	return { worldX, worldY };
 }
@@ -47,14 +47,14 @@ WindowSize Pick::WorldToScreen(Vector3 worldPos)
 	float width = WindowGlobals::SCREENSIZE.Width;
 	float height = WindowGlobals::SCREENSIZE.Height;
 
-	// world -> local (orthographic)
-	float localX = worldPos.x - CameraGlobals::CAMERA_POSITION.x;
-	float localY = worldPos.y - CameraGlobals::CAMERA_POSITION.y;
+	// world -> View
+	float viewX = worldPos.x - CameraGlobals::CAMERA_POSITION.x;
+	float viewY = worldPos.y - CameraGlobals::CAMERA_POSITION.y;
 
-	// local -> NDC 
+	// View -> NDC 
 	using namespace MapGlobals;
-	float ndcX = (2.0f * localX - (RIGHT_BORDER + LEFT_BORDER)) / (RIGHT_BORDER - LEFT_BORDER);
-	float ndcY = (2.0f * localY - (TOP_BORDER + BOTTOM_BORDER)) / (TOP_BORDER - BOTTOM_BORDER);
+	float ndcX = (2.0f * viewX - (RIGHT_BORDER + LEFT_BORDER)) / (RIGHT_BORDER - LEFT_BORDER);
+	float ndcY = (2.0f * viewY - (TOP_BORDER + BOTTOM_BORDER)) / (TOP_BORDER - BOTTOM_BORDER);
 
 	// NDC -> screen
 	float screenX = (ndcX + 1.0f) / 2.0f * width;
