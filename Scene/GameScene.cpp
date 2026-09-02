@@ -17,6 +17,7 @@
 #include "../UI/GameButtonUI.hpp"
 
 #include "../Map/TextureLoader.hpp"
+#include "../Map/WaterGlobals.hpp"
 
 #include "../Player/Ball.h"
 #include "../Player/PlayerGlobals.hpp"
@@ -26,6 +27,7 @@
 #include "../ImGui/imgui_impl_dx11.h"
 #include "../ImGui/imgui_impl_win32.h"
 #include "../Renderer/WindowGlobals.hpp"
+#include "../Map/Water.h"
 
 
 GameScene::GameScene(IRenderer& renderer)
@@ -42,6 +44,11 @@ GameScene::GameScene(IRenderer& renderer)
 	ID3D11Buffer* vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
 	ID3D11Buffer* vertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
+	
+	ID3D11Buffer* waterVertexBuffer = concreteRenderer.CreateVertexBuffer(water_quad_vertices, sizeof(water_quad_vertices));
+	UINT waterNumVertices = static_cast<UINT>(std::size(water_quad_vertices));
+	mWater = std::make_unique<Water>(waterVertexBuffer, waterNumVertices);
+
 
 	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
 
@@ -109,7 +116,7 @@ GameScene::GameScene(IRenderer& renderer)
 	mPlatformManager.Init(concreteRenderer, "Asset/stage1_collision_mask_1536x3000.png", { "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" });
 	mSRVPlatform = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Platform.png");
 
-	mCamera.SetPosition(Vector3{0.0f, 0.0f, 0.0f});
+	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 
 	GameScene::CreatePrimitive<Ball>(vertexBufferSphere, static_cast<UINT>(sizeof(sphere_vertices) / sizeof(sphere_vertices[0])));
 
@@ -123,12 +130,12 @@ GameScene::GameScene(IRenderer& renderer)
 			player->GetRigidBody().ApplyImpulse((player->GetLocation() - ReleasePoint) * PlayerGlobals::PLAYER_DRAG_IMPULSE_MULTIPLIER, player->GetLocation());
 		});
 
-	
+
 }
 
 GameScene::~GameScene()
 {
-	if(mSamplerState) 
+	if (mSamplerState)
 	{
 		mSamplerState->Release();
 		mSamplerState = nullptr;
@@ -158,7 +165,7 @@ GameScene::~GameScene()
 		mTexturePixelShader = nullptr;
 	}
 
-	
+
 }
 
 void GameScene::Reset()
@@ -317,7 +324,10 @@ void GameScene::Tick(float dt)
 		}
 	}
 
-	mInput.Update(); 
+	mWater->Tick(dt);
+
+
+	mInput.Update();
 
 	float MoveSpeed = 15.0f * dt;
 	Vector3 CamPos = mCamera.GetPosition();
@@ -356,5 +366,7 @@ void GameScene::Render(IRenderer& renderer)
 	{
 		Primitive->Render(renderer);
 	}
+	mWater->Render(renderer);
+
 	mInput.DragBall();
 }
