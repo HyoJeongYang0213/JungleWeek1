@@ -117,7 +117,7 @@ void PlatformManager::LoadFloor(int FloorIndex)
 
     if (!TargetTemplates) return;
 
-    float FloorOffsetY = static_cast<float>(FloorIndex) * Globals::CHUNK_HEIGHT;
+    float FloorOffsetY = static_cast<float>(FloorIndex) * MapGlobals::CHUNK_HEIGHT;
 
     for (const auto& Tmpl : *TargetTemplates)
     {
@@ -152,8 +152,8 @@ void PlatformManager::Update(float CameraCenterY)
         mLoadedFloors.insert(Plat.mFloorIndex);
     }
 
-    int MinFloor = static_cast<int>(std::floor(ActiveMinY / Globals::CHUNK_HEIGHT));
-    int MaxFloor = static_cast<int>(std::floor(ActiveMaxY / Globals::CHUNK_HEIGHT));
+    int MinFloor = static_cast<int>(std::floor(ActiveMinY / MapGlobals::CHUNK_HEIGHT));
+    int MaxFloor = static_cast<int>(std::floor(ActiveMaxY / MapGlobals::CHUNK_HEIGHT));
     if (MinFloor < 0) MinFloor = 0;
 
     for (int F = MinFloor; F <= MaxFloor; ++F)

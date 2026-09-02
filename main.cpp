@@ -27,6 +27,7 @@
 #include "Physics/CollisionManifold.hpp"
 #include "Physics/CollisionDetector.h"
 #include "Physics/CollisionResolver.h"
+#include "Physics/Pick.h"
 
 #include "Resource/vertexSimple.hpp" 
 
@@ -100,10 +101,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 윈도우 클래스 등록
 	RegisterClassW(&wndclass);
 
-	// 1024 x 1024 크기에 윈도우 생성
+	// WindowGlobals::SCREENSIZE 크기의 윈도우 생성
 	HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, static_cast<int>(WindowGlobals::SCREENSIZE.Width), static_cast<int>(WindowGlobals::SCREENSIZE.Height),
 		nullptr, nullptr, hInstance, nullptr);
+
+	RECT clientRect;
+	GetClientRect(hWnd, &clientRect);
+	WindowGlobals::SCREENSIZE.Width = static_cast<float>(clientRect.right - clientRect.left);
+	WindowGlobals::SCREENSIZE.Height = static_cast<float>(clientRect.bottom - clientRect.top);
 
 	srand((UINT)GetTickCount64());
 
@@ -266,9 +272,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		float MoveSpeed = 15.0f * static_cast<float>(elapsedTime);
 		Vector3 CamPos = renderer.GetCamera().GetPosition();
 
-		if (GetAsyncKeyState(VK_UP) & 0x8000)   CamPos.y += MoveSpeed;
-		if (GetAsyncKeyState(VK_DOWN) & 0x8000) CamPos.y -= MoveSpeed;
-
 		if (CamPos.y < 0.0f) CamPos.y = 0.0f;
 
 		renderer.SetCameraPosition(CamPos);
@@ -305,6 +308,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
+
+		input.DragBall();
 
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
