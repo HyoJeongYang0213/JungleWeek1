@@ -173,38 +173,37 @@ void PlatformManager::Update(float CameraCenterY)
         Plat.mIsVisible = (PlatBottom <= ViewTopY && PlatTop >= ViewBottomY);
     }
 
-    if (mRenderer && mRenderer->PrimitiveCount > 0)
+  
+    Ball* Player = PlayerGlobals::PLAYERBALL;
+    if (Player)
     {
-        Ball* Player = dynamic_cast<Ball*>(mRenderer->PrimitiveList[0]);
-        if (Player)
+        SphereCollider* Sphere = dynamic_cast<SphereCollider*>(&Player->GetCollider());
+        if (Sphere)
         {
-            SphereCollider* Sphere = dynamic_cast<SphereCollider*>(&Player->GetCollider());
-            if (Sphere)
+            for (auto& Plat : mActivePlatforms)
             {
-                for (auto& Plat : mActivePlatforms)
+                Vector3 PlatPos = Plat.mPhysicsCenter;
+                Vector3 PlatVel(0.0f, 0.0f, 0.0f);
+                float PlatMass = 0.0f;
+                Vector3 HalfExtents = Plat.mPhysicsHalfExtents;
+
+                RigidBody PlatRB(PlatPos, PlatVel, PlatMass, 0.0f);
+                BoxCollider PlatBox(PlatRB, HalfExtents);
+
+                CollisionManifold Manifold;
+                if (CollisionDetector::FindCollision(*Sphere, PlatBox, Manifold))
                 {
-                    Vector3 PlatPos = Plat.mPhysicsCenter;
-                    Vector3 PlatVel(0.0f, 0.0f, 0.0f);
-                    float PlatMass = 0.0f;
-                    Vector3 HalfExtents = Plat.mPhysicsHalfExtents;
+                    CollisionResolver::PrepareConstraints(Manifold);
+                    CollisionResolver::ResolveRestitution(Manifold);
+                    CollisionResolver::ResolveFriction(Manifold);
+                    CollisionResolver::ResolvePosition(Manifold);
 
-                    RigidBody PlatRB(PlatPos, PlatVel, PlatMass, 0.0f);
-                    BoxCollider PlatBox(PlatRB, HalfExtents);
-
-                    CollisionManifold Manifold;
-                    if (CollisionDetector::FindCollision(*Sphere, PlatBox, Manifold))
-                    {
-                        CollisionResolver::PrepareConstraints(Manifold);
-                        CollisionResolver::ResolveRestitution(Manifold);
-                        CollisionResolver::ResolveFriction(Manifold);
-                        CollisionResolver::ResolvePosition(Manifold);
-
-                        PlayerGlobals::PLAYERLOCATION = Player->GetRigidBody().GetPosition();
-                    }
+                    PlayerGlobals::PLAYERLOCATION = Player->GetRigidBody().GetPosition();
                 }
             }
         }
     }
+    
 }
 
 void PlatformManager::Render(Renderer& renderer, ID3D11ShaderResourceView* srv)

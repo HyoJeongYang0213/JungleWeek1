@@ -28,6 +28,9 @@
     <Filter Include="Main">
       <UniqueIdentifier>{c7d80af0-fb03-4b75-87ac-099004adb77c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{a158f4f4-0679-4095-a9d2-07c331647788}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImGui\imgui.cpp">

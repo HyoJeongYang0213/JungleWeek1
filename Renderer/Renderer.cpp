@@ -426,7 +426,6 @@ void Renderer::Tick(float dt)
 		{
 			&LeftWall,
 			&RightWall,
-			&TopWall,
 			&BottomWall
 		};
 
@@ -435,7 +434,7 @@ void Renderer::Tick(float dt)
 			ICollider& collider{ PrimitiveList[PrimitiveIndex]->GetCollider() };
 
 
-			for (size_t WallIndex{ 0 }; WallIndex < 4; ++WallIndex)
+			for (size_t WallIndex{ 0 }; WallIndex < 3; ++WallIndex)
 			{
 				CollisionManifold Manifold{};
 
