@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -142,6 +142,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\MapGenerator.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="Map\PlatformTileManager.cpp" />
     <ClCompile Include="Map\Polygon.cpp" />
     <ClCompile Include="Map\PlatformManager.cpp" />
     <ClCompile Include="Map\Water.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Map\MapGenerator.h" />
     <ClInclude Include="Map\MapGlobals.hpp" />
     <ClInclude Include="Map\Platform.h" />
+    <ClInclude Include="Map\PlatformTileManager.h" />
     <ClInclude Include="Map\Polygon.h" />
     <ClInclude Include="Map\PlatformManager.h" />
     <ClInclude Include="Map\TextureLoader.hpp" />
