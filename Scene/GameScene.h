@@ -21,6 +21,8 @@
 
 #include "../Renderer/IRenderer.hpp"
 
+#include "../Effect/MiniBallSystem.h"
+
 class GameScene : public IScene {
 public:
 	GameScene(IRenderer& renderer);
@@ -79,10 +81,5 @@ private:
 
 	std::unique_ptr<Water> mWater;
 
-private:
-	ID3D11Buffer* vertexBufferTriangle;
-	ID3D11Buffer* vertexBufferSphere;
-	ID3D11Buffer* vertexBufferCube;
-
-	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> mPolygonVertexBuffers;
+	MiniBallSystem mMiniBallSystem{};
 };

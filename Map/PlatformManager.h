@@ -6,6 +6,7 @@
 #include <d3d11.h>
 #include "../Resource/vertexSimple.hpp"
 #include "../Utils/Math.hpp"
+#include <functional>
 
 class Renderer;
 
@@ -24,6 +25,9 @@ struct PlatformData
 class PlatformManager
 {
 public:
+    using BallSpawnCallback = std::function<void(const Vector3&, const Vector3&)>;
+
+public:
     PlatformManager() = default;
     ~PlatformManager();
 
@@ -36,6 +40,8 @@ public:
     void Render(Renderer& Renderer, ID3D11ShaderResourceView* PlatformTexture);
 
     const std::vector<PlatformData>& GetActivePlatforms() const { return mActivePlatforms; }
+
+    void SetBallSpawnCallback(const BallSpawnCallback& Callback) { mBallSpawnCallback = Callback; }
 
 private:
     std::vector<PlatformData> LoadMaskTemplate(const std::string& FilePath);
@@ -53,4 +59,6 @@ private:
 
     const float BUFFER_DISTANCE = 5000.0f;
     bool mCanPlayHitSound = true;
+
+    BallSpawnCallback mBallSpawnCallback{};
 };

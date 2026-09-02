@@ -5,6 +5,7 @@
     <FxCompile Include="Resource\Shader\SSQuad.hlsl" />
     <FxCompile Include="Resource\Shader\TextureShader.hlsl" />
     <FxCompile Include="Resource\Shader\Water.hlsl" />
+    <FxCompile Include="Resource\Shader\TransitionPixelShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio\SoundManager.cpp" />
@@ -39,6 +40,7 @@
     <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="UI\GameButtonUI.hpp" />
     <ClCompile Include="Map\Water.cpp" />
+    <ClCompile Include="Effect\MiniBallSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\SoundManager.h" />
@@ -90,6 +92,8 @@
     <ClInclude Include="Utils\Math.hpp" />
     <ClInclude Include="Utils\Rnd.hpp" />
     <ClInclude Include="Map\Water.h" />
+    <ClInclude Include="Map\WaterGlobals.hpp" />
+    <ClInclude Include="Effect\MiniBallSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="Asset\magic-forest.wav" />
