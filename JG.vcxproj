@@ -139,7 +139,7 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="ImGui\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MapGenerator.cpp" />
+    <ClCompile Include="Map\MapGenerator.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Map\Polygon.cpp" />
     <ClCompile Include="Map\PlatformManager.cpp" />

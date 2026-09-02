@@ -182,10 +182,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11PixelShader* TexturePixelShader = nullptr;
 	ID3D11InputLayout* TextureLayout = nullptr;
 
-	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderBlob, nullptr);
+	D3DCompileFromFile(L"Resource/Shader/TextureShader.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &VertexShaderBlob, nullptr);
 	renderer.Device->CreateVertexShader(VertexShaderBlob->GetBufferPointer(), VertexShaderBlob->GetBufferSize(), nullptr, &TextureVertexShader);
 
-	D3DCompileFromFile(L"TextureShader.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
+	D3DCompileFromFile(L"Resource/Shader/TextureShader.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
 	renderer.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &TexturePixelShader);
 
 	D3D11_INPUT_ELEMENT_DESC TextureLayoutDesc[] = {
