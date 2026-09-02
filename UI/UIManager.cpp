@@ -1,4 +1,4 @@
-#include "UIManager.h"
+﻿#include "UIManager.h"
 #include "../Map/TextureLoader.hpp"
 
 void UIManager::Init(ID3D11Device* InDevice, SceneManager* InSceneManager)
