@@ -30,7 +30,7 @@
 #include "../Map/Water.h"
 
 
-GameScene::GameScene(IRenderer& renderer)
+GameScene::GameScene(IRenderer& renderer) : mWater(renderer, 0.0f)
 {
 	VertexSimple triangle_vertices[] =
 	{
@@ -131,6 +131,7 @@ GameScene::GameScene(IRenderer& renderer)
 		});
 
 
+	mWater.Start(); 
 }
 
 GameScene::~GameScene()
@@ -342,6 +343,8 @@ void GameScene::Tick(float dt)
 	mPlatformManager.Update(CameraCenterY);
 	PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 	PlayerGlobals::HIGH_SCORE = std::max(PlayerGlobals::HIGH_SCORE, player->GetLocation().y);
+
+	mWater.Tick(dt);
 }
 
 void GameScene::Render(IRenderer& renderer)
@@ -356,8 +359,8 @@ void GameScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->PSSetSamplers(0, 1, &mSamplerState);
 	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 
-	mBackGround.Render(static_cast<Renderer&>(renderer), mSamplerState, mCamera.GetPosition().y);
-	mPlatformManager.Render(static_cast<Renderer&>(renderer), mSRVPlatform);
+	mBackGround.Render(concreteRenderer, mSamplerState, mCamera.GetPosition().y);
+	mPlatformManager.Render(concreteRenderer, mSRVPlatform);
 
 	concreteRenderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 
@@ -366,6 +369,15 @@ void GameScene::Render(IRenderer& renderer)
 		Primitive->Render(renderer);
 	}
 	mWater->Render(renderer);
+
+
+	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
+	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);
+	concreteRenderer.DeviceContext->IASetInputLayout(mTextureLayout);
+	concreteRenderer.DeviceContext->PSSetSamplers(0, 1, &mSamplerState);
+	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
+
+	mWater.Render(concreteRenderer);
 
 	mInput.DragBall();
 }

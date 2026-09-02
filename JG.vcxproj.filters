@@ -1,286 +1,97 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{d8287b0d-c6be-44ef-be16-cac9b3f98db0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGui">
-      <UniqueIdentifier>{34417ae2-a56c-4dbb-bbb6-04bb7dd8cdbd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics">
-      <UniqueIdentifier>{e9eb066b-83c0-4baa-bd05-a30adaf1cefb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Renderer">
-      <UniqueIdentifier>{97148cfd-13ef-476b-89dc-4d8d8513a481}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{1ba39d9a-bf8d-4611-aec8-0fd6a0bf8b77}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Map">
-      <UniqueIdentifier>{e8a29fd6-9d18-4f93-83b8-d96d425f477d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Player">
-      <UniqueIdentifier>{c453d4b1-12a7-42a9-ba13-b92724118331}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utils">
-      <UniqueIdentifier>{3aac128d-a48f-4ab4-af13-3c64b591ab45}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main">
-      <UniqueIdentifier>{c7d80af0-fb03-4b75-87ac-099004adb77c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene">
-      <UniqueIdentifier>{4de232d4-a46a-4b07-ae55-4806d6fc79a5}</UniqueIdentifier>
-    </Filter>
+    <FxCompile Include="Resource\Shader\ShaderW0.hlsl" />
+    <FxCompile Include="Resource\Shader\SSQuad.hlsl" />
+    <FxCompile Include="Resource\Shader\TextureShader.hlsl" />
+    <FxCompile Include="Resource\Shader\Water.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ImGui\imgui.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_demo.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_draw.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_impl_dx11.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_tables.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_widgets.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Player\Ball.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer\Renderer.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics\Collider.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics\CollisionDetector.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics\CollisionResolver.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics\RigidBody.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics\Pick.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Player\Input.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="Audio\SoundManager.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="ImGui\stb_image.cpp" />
-    <ClCompile Include="Physics\CollisionMask.cpp" />
-    <ClCompile Include="Player\Camera.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\MapGenerator.cpp" />
+    <ClCompile Include="Map\Platform.cpp" />
     <ClCompile Include="Map\Polygon.cpp" />
     <ClCompile Include="Map\PlatformManager.cpp" />
+    <ClCompile Include="Physics\Collider.cpp" />
+    <ClCompile Include="Physics\CollisionDetector.cpp" />
+    <ClCompile Include="Physics\CollisionMask.cpp" />
+    <ClCompile Include="Physics\CollisionResolver.cpp" />
+    <ClCompile Include="Physics\Pick.cpp" />
+    <ClCompile Include="Physics\RigidBody.cpp" />
+    <ClCompile Include="Player\Ball.cpp" />
+    <ClCompile Include="Player\Camera.cpp" />
+    <ClCompile Include="Player\Input.cpp" />
+    <ClCompile Include="Renderer\Renderer.cpp" />
     <ClCompile Include="Scene\EndingScene.cpp" />
     <ClCompile Include="Scene\GameScene.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
     <ClCompile Include="UI\GameButtonUI.hpp" />
-=======
-    <ClCompile Include="Player\Camera.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
-    <ClCompile Include="Map\MapGenerator.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Map\PlatformManager.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Map\Polygon.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\stb_image.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics\CollisionMask.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="Map\Platform.cpp">
-      <Filter>Map</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\EndingScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\GameScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\TitleScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\SceneManager.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
->>>>>>> origin/development
+    <ClCompile Include="Map\Water.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderW0.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="TextureShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ImGui\imconfig.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui_impl_dx11.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui_impl_win32.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui_internal.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imstb_rectpack.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imstb_textedit.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imstb_truetype.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Map\MapGlobals.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Rnd.hpp">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Player\Ball.h">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\IRenderer.hpp">
-      <Filter>Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\Renderer.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\Sphere.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\Square.hpp">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\vertexSimple.hpp">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\Collider.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\CollisionDetector.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\CollisionManifold.hpp">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\CollisionResolver.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\PhysicsGlobals.hpp">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\RigidBody.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\ColliderType.hpp">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\Pick.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Map\Platform.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Math.hpp">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Player\CameraGlobals.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Player\Input.h">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\WindowGlobals.hpp">
-      <Filter>Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Player\PlayerGlobals.hpp">
-      <Filter>Player</Filter>
-    </ClInclude>
-<<<<<<< HEAD
+    <ClInclude Include="Audio\SoundManager.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="ImGui\stb_image.h" />
+    <ClInclude Include="Map\MapGenerator.h" />
+    <ClInclude Include="Map\MapGlobals.hpp" />
+    <ClInclude Include="Map\Platform.h" />
     <ClInclude Include="Map\Polygon.h" />
     <ClInclude Include="Map\PlatformManager.h" />
+    <ClInclude Include="Map\TextureLoader.hpp" />
+    <ClInclude Include="Physics\Collider.h" />
+    <ClInclude Include="Physics\ColliderType.hpp" />
+    <ClInclude Include="Physics\CollisionDetector.h" />
+    <ClInclude Include="Physics\CollisionManifold.hpp" />
+    <ClInclude Include="Physics\CollisionMask.h" />
+    <ClInclude Include="Physics\CollisionResolver.h" />
+    <ClInclude Include="Physics\PhysicsGlobals.hpp" />
+    <ClInclude Include="Physics\Pick.h" />
+    <ClInclude Include="Physics\RigidBody.h" />
+    <ClInclude Include="Player\Ball.h" />
+    <ClInclude Include="Player\Camera.h" />
+    <ClInclude Include="Player\CameraGlobals.hpp" />
+    <ClInclude Include="Player\Input.h" />
+    <ClInclude Include="Player\PlayerGlobals.hpp" />
+    <ClInclude Include="Player\Primitive.hpp" />
+    <ClInclude Include="Renderer\IRenderer.hpp" />
+    <ClInclude Include="Renderer\Renderer.h" />
+    <ClInclude Include="Renderer\WindowGlobals.hpp" />
     <ClInclude Include="Resource\PolygonGeometry.hpp" />
+    <ClInclude Include="Resource\Sphere.h" />
+    <ClInclude Include="Resource\Square.hpp" />
+    <ClInclude Include="Resource\vertexSimple.hpp" />
     <ClInclude Include="Scene\EndingScene.h" />
     <ClInclude Include="Scene\GameScene.h" />
     <ClInclude Include="Scene\IScene.hpp" />
+    <ClInclude Include="Scene\SceneManager.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="UI\GameState.hpp" />
-=======
-    <ClInclude Include="Player\Camera.h">
-      <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="Map\MapGenerator.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Map\PlatformManager.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Map\Polygon.h">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\stb_image.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\CollisionMask.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource\PolygonGeometry.hpp">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Player\Primitive.hpp">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Map\TextureLoader.hpp">
-      <Filter>Map</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\EndingScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\GameScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\IScene.hpp">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\TitleScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\SceneManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
->>>>>>> origin/development
+    <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="Utils\Math.hpp" />
+    <ClInclude Include="Utils\Rnd.hpp" />
+    <ClInclude Include="Map\Water.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Asset\magic-forest.wav" />
+    <Media Include="Asset\metallic-ball.wav" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
