@@ -1,4 +1,4 @@
-﻿cbuffer constants : register(b0)
+cbuffer constants : register(b0)
 {
     float3 Offset;
     float3 scale;

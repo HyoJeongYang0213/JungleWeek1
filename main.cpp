@@ -263,19 +263,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		input.Update();
 
-		float moveSpeed = 15.0f * static_cast<float>(elapsedTime);
-		Vector3 camPos = renderer.GetCamera().GetPosition();
+		float MoveSpeed = 15.0f * static_cast<float>(elapsedTime);
+		Vector3 CamPos = renderer.GetCamera().GetPosition();
 
-		if (camPos.y < 0.0f) camPos.y = 0.0f;
+		if (GetAsyncKeyState(VK_UP) & 0x8000)   CamPos.y += MoveSpeed;
+		if (GetAsyncKeyState(VK_DOWN) & 0x8000) CamPos.y -= MoveSpeed;
 
-		renderer.SetCameraPosition(camPos);
+		if (CamPos.y < 0.0f) CamPos.y = 0.0f;
+
+		renderer.SetCameraPosition(CamPos);
 
 		renderer.Tick(static_cast<float>(elapsedTime));
 
-		float cameraBottomY = camPos.y;
-		float cameraCenterY = cameraBottomY + 15.0f;
+		float CameraBottomY = CamPos.y;
+		float CameraCenterY = CameraBottomY + 15.0f;
 
-		PlatformManager.Update(cameraCenterY);
+		PlatformManager.Update(CameraCenterY);
 
 		Ball* player = dynamic_cast<Ball*>(renderer.PrimitiveList[0]);
 		PlayerGlobals::PLAYERLOCATION = player->GetLocation();
@@ -289,7 +292,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.DeviceContext->PSSetSamplers(0, 1, &MapSampler);
 		renderer.DeviceContext->VSSetConstantBuffers(0, 1, &renderer.ConstantBuffer);
 
-		InfiniteMap.Render(renderer, MapSampler, camPos.y);
+		InfiniteMap.Render(renderer, MapSampler, CamPos.y);
 
 		PlatformManager.Render(renderer, ShaderResourceViewPlatform);
 
