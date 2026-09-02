@@ -28,4 +28,5 @@ private:
 	ID3D11Buffer* mQuadVertexBuffer = nullptr;
 	ID3D11ShaderResourceView* mSRVEndingBG = nullptr;
 	ID3D11ShaderResourceView* mSRVEndingText = nullptr;
+	ID3D11ShaderResourceView* mScore = nullptr;
 };

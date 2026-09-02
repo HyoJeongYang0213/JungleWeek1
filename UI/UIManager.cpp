@@ -227,7 +227,7 @@ void UIManager::RenderEndingUI()
     ImVec2 DisplaySize = ImGui::GetIO().DisplaySize;
     float ModalW = 340.0f;
     float ModalH = 220.0f;
-    ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ModalW) * 0.5f, (DisplaySize.y - ModalH) * 0.5f), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ModalW) * 0.5f, (DisplaySize.y - ModalH) * 0.80f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(ModalW, ModalH), ImGuiCond_Always);
 
     ImGuiWindowFlags Flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
@@ -257,6 +257,7 @@ void UIManager::RenderEndingUI()
 
     if (ImageTextButton("##BtnEndingExit", u8"게임 종료", mBtnFrameSRV, ImVec2(320.0f, 45.0f)))
     {
+        exit(0);
         mBIsExit = true;
     }
 

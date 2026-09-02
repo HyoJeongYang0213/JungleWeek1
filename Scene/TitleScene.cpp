@@ -26,7 +26,7 @@ TitleScene::TitleScene(IRenderer& renderer)
 
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
-	mSRVTitle = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/main.png");
+	mSRVTitle = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/Title.png");
 
     VertexTexture quad[6] = {
     { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },

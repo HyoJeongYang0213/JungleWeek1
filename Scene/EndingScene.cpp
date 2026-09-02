@@ -31,8 +31,9 @@ EndingScene::EndingScene(IRenderer& renderer)
 
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
-	mSRVEndingBG = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/end_bg.png");
-	mSRVEndingText = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/EndingLogo.png");
+	mSRVEndingBG = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/Ending_BackGround.png");
+	mSRVEndingText = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/EndingLogo.png");
+	mScore = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/Score.png");
 
 	VertexTexture quad[6] = {
 	{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
@@ -85,10 +86,15 @@ void EndingScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->IASetVertexBuffers(0, 1, &mQuadVertexBuffer, &Stride, &Offset);
 	concreteRenderer.DeviceContext->Draw(6, 0);
 
-	Center = { 7.5f, 25.f, 0.f };
+	Center = { 7.5f, 24.f, 0.f };
 	HalfExtents = { 6.f, 3.f, 0.f };		
 	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVEndingText);
+	concreteRenderer.DeviceContext->Draw(6, 0);
 
+	Center = { 7.5f, 15.f, 0.f };
+	HalfExtents = { 4.f * 1.5f, 4.f, 0.f };
+	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
+	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mScore);
 	concreteRenderer.DeviceContext->Draw(6, 0);
 }
