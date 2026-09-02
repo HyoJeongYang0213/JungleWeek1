@@ -104,6 +104,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)Player;$(ProjectDir)Libs</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -118,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Audio\SoundManager.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -134,15 +138,50 @@
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\imgui_tables.cpp" />
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="ImGui\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map\MapGenerator.cpp" />
+    <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="Map\Polygon.cpp" />
+    <ClCompile Include="Map\PlatformManager.cpp" />
+    <ClCompile Include="Map\Water.cpp" />
+    <ClCompile Include="Physics\Collider.cpp" />
+    <ClCompile Include="Physics\CollisionDetector.cpp" />
+    <ClCompile Include="Physics\CollisionMask.cpp" />
+    <ClCompile Include="Physics\CollisionResolver.cpp" />
+    <ClCompile Include="Physics\Pick.cpp" />
+    <ClCompile Include="Physics\RigidBody.cpp" />
+    <ClCompile Include="Player\Ball.cpp" />
+    <ClCompile Include="Player\Camera.cpp" />
+    <ClCompile Include="Player\Input.cpp" />
+    <ClCompile Include="Renderer\Renderer.cpp" />
+    <ClCompile Include="Scene\EndingScene.cpp" />
+    <ClCompile Include="Scene\GameScene.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
+    <ClCompile Include="UI\GameButtonUI.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderW0.hlsl">
+    <FxCompile Include="Resource\Shader\ShaderW0.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resource\Shader\SSQuad.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resource\Shader\TextureShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resource\Shader\Water.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Audio\SoundManager.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
@@ -151,10 +190,53 @@
     <ClInclude Include="ImGui\imstb_rectpack.h" />
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
-    <ClInclude Include="Sphere.h" />
+    <ClInclude Include="ImGui\stb_image.h" />
+    <ClInclude Include="Map\MapGenerator.h" />
+    <ClInclude Include="Map\MapGlobals.hpp" />
+    <ClInclude Include="Map\Platform.h" />
+    <ClInclude Include="Map\Polygon.h" />
+    <ClInclude Include="Map\PlatformManager.h" />
+    <ClInclude Include="Map\TextureLoader.hpp" />
+    <ClInclude Include="Map\Water.h" />
+    <ClInclude Include="Map\WaterGlobals.hpp" />
+    <ClInclude Include="Physics\Collider.h" />
+    <ClInclude Include="Physics\ColliderType.hpp" />
+    <ClInclude Include="Physics\CollisionDetector.h" />
+    <ClInclude Include="Physics\CollisionManifold.hpp" />
+    <ClInclude Include="Physics\CollisionMask.h" />
+    <ClInclude Include="Physics\CollisionResolver.h" />
+    <ClInclude Include="Physics\PhysicsGlobals.hpp" />
+    <ClInclude Include="Physics\Pick.h" />
+    <ClInclude Include="Physics\RigidBody.h" />
+    <ClInclude Include="Player\Ball.h" />
+    <ClInclude Include="Player\Camera.h" />
+    <ClInclude Include="Player\CameraGlobals.hpp" />
+    <ClInclude Include="Player\Input.h" />
+    <ClInclude Include="Player\PlayerGlobals.hpp" />
+    <ClInclude Include="Player\Primitive.hpp" />
+    <ClInclude Include="Renderer\IRenderer.hpp" />
+    <ClInclude Include="Renderer\Renderer.h" />
+    <ClInclude Include="Renderer\WindowGlobals.hpp" />
+    <ClInclude Include="Resource\PolygonGeometry.hpp" />
+    <ClInclude Include="Resource\Sphere.h" />
+    <ClInclude Include="Resource\Square.hpp" />
+    <ClInclude Include="Resource\vertexSimple.hpp" />
+    <ClInclude Include="Scene\EndingScene.h" />
+    <ClInclude Include="Scene\GameScene.h" />
+    <ClInclude Include="Scene\IScene.hpp" />
+    <ClInclude Include="Scene\SceneManager.h" />
+    <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="UI\GameState.hpp" />
+    <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="Utils\Math.hpp" />
+    <ClInclude Include="Utils\Rnd.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Asset\magic-forest.wav" />
+    <Media Include="Asset\metallic-ball.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

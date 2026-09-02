@@ -1,84 +1,97 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{d8287b0d-c6be-44ef-be16-cac9b3f98db0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGui">
-      <UniqueIdentifier>{34417ae2-a56c-4dbb-bbb6-04bb7dd8cdbd}</UniqueIdentifier>
-    </Filter>
+    <FxCompile Include="Resource\Shader\ShaderW0.hlsl" />
+    <FxCompile Include="Resource\Shader\SSQuad.hlsl" />
+    <FxCompile Include="Resource\Shader\TextureShader.hlsl" />
+    <FxCompile Include="Resource\Shader\Water.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_demo.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_draw.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_impl_dx11.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_tables.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_widgets.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
+    <ClCompile Include="Audio\SoundManager.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="ImGui\stb_image.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map\MapGenerator.cpp" />
+    <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="Map\Polygon.cpp" />
+    <ClCompile Include="Map\PlatformManager.cpp" />
+    <ClCompile Include="Physics\Collider.cpp" />
+    <ClCompile Include="Physics\CollisionDetector.cpp" />
+    <ClCompile Include="Physics\CollisionMask.cpp" />
+    <ClCompile Include="Physics\CollisionResolver.cpp" />
+    <ClCompile Include="Physics\Pick.cpp" />
+    <ClCompile Include="Physics\RigidBody.cpp" />
+    <ClCompile Include="Player\Ball.cpp" />
+    <ClCompile Include="Player\Camera.cpp" />
+    <ClCompile Include="Player\Input.cpp" />
+    <ClCompile Include="Renderer\Renderer.cpp" />
+    <ClCompile Include="Scene\EndingScene.cpp" />
+    <ClCompile Include="Scene\GameScene.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
+    <ClCompile Include="UI\GameButtonUI.hpp" />
+    <ClCompile Include="Map\Water.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ShaderW0.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
+    <ClInclude Include="Audio\SoundManager.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
+    <ClInclude Include="ImGui\stb_image.h" />
+    <ClInclude Include="Map\MapGenerator.h" />
+    <ClInclude Include="Map\MapGlobals.hpp" />
+    <ClInclude Include="Map\Platform.h" />
+    <ClInclude Include="Map\Polygon.h" />
+    <ClInclude Include="Map\PlatformManager.h" />
+    <ClInclude Include="Map\TextureLoader.hpp" />
+    <ClInclude Include="Physics\Collider.h" />
+    <ClInclude Include="Physics\ColliderType.hpp" />
+    <ClInclude Include="Physics\CollisionDetector.h" />
+    <ClInclude Include="Physics\CollisionManifold.hpp" />
+    <ClInclude Include="Physics\CollisionMask.h" />
+    <ClInclude Include="Physics\CollisionResolver.h" />
+    <ClInclude Include="Physics\PhysicsGlobals.hpp" />
+    <ClInclude Include="Physics\Pick.h" />
+    <ClInclude Include="Physics\RigidBody.h" />
+    <ClInclude Include="Player\Ball.h" />
+    <ClInclude Include="Player\Camera.h" />
+    <ClInclude Include="Player\CameraGlobals.hpp" />
+    <ClInclude Include="Player\Input.h" />
+    <ClInclude Include="Player\PlayerGlobals.hpp" />
+    <ClInclude Include="Player\Primitive.hpp" />
+    <ClInclude Include="Renderer\IRenderer.hpp" />
+    <ClInclude Include="Renderer\Renderer.h" />
+    <ClInclude Include="Renderer\WindowGlobals.hpp" />
+    <ClInclude Include="Resource\PolygonGeometry.hpp" />
+    <ClInclude Include="Resource\Sphere.h" />
+    <ClInclude Include="Resource\Square.hpp" />
+    <ClInclude Include="Resource\vertexSimple.hpp" />
+    <ClInclude Include="Scene\EndingScene.h" />
+    <ClInclude Include="Scene\GameScene.h" />
+    <ClInclude Include="Scene\IScene.hpp" />
+    <ClInclude Include="Scene\SceneManager.h" />
+    <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="UI\GameState.hpp" />
+    <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="Utils\Math.hpp" />
+    <ClInclude Include="Utils\Rnd.hpp" />
+    <ClInclude Include="Map\Water.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ImGui\imconfig.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui_impl_dx11.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui_impl_win32.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui_internal.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imstb_rectpack.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imstb_textedit.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imstb_truetype.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
+    <Media Include="Asset\magic-forest.wav" />
+    <Media Include="Asset\metallic-ball.wav" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme.txt" />
