@@ -1,6 +1,7 @@
 ﻿#pragma once 
 #include <Windows.h>
 #include <vector>
+#include <functional>
 
 enum class KEY_TYPE{
 	LBUTTON = VK_LBUTTON,
@@ -31,6 +32,7 @@ public:
 	void Update();
 	void DragBall();
 
+	void RegisterDragCallback(std::function<void(POINT)> callback) { _mDragCallback = callback; }
 private:
 	inline KEY_STATE GetKeyState(KEY_TYPE key)
 	{
@@ -42,4 +44,6 @@ private:
 	POINT _mMousePos = {};
 	POINT _mTargetPos = {};
 	bool _mIsDragging = false;
+
+	std::function<void(POINT)> _mDragCallback;
 };

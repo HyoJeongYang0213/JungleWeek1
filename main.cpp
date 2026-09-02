@@ -230,18 +230,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		collisionMask.BuildPlatformsNDC();
 
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
-	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	
+
 
 	// 실제 Platform 생성
 	for (const PlatformCollisionData& data :
@@ -256,10 +246,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 
-	for (auto& pbuffer : polygonVertexBuffers)
-	{
-		renderer.CreatePrimitive<PPolygon>(std::get<0>(pbuffer), std::get<1>(pbuffer), Vector3{Rnd::GetRandom(0.f, 15.f), Rnd::GetRandom(0.f, 30.f), 0.f}, std::get<2>(pbuffer));
-	}
+	//for (auto& pbuffer : polygonVertexBuffers)
+	//{
+	//	renderer.CreatePrimitive<PPolygon>(std::get<0>(pbuffer), std::get<1>(pbuffer), Vector3{Rnd::GetRandom(0.f, 15.f), Rnd::GetRandom(0.f, 30.f), 0.f}, std::get<2>(pbuffer));
+	//}
 
 
 	Input input; 
@@ -276,6 +266,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	InfiniteMap.Init(renderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
 
 	float cameraCenterY = MapGlobals::MAP_HEIGHT - (MapGlobals::VIEW_HEIGHT_PX * 0.5f);
+
+
+	input.RegisterDragCallback([&](POINT targetPos)
+		{
+			Ball* player = static_cast<Ball*>(renderer.PrimitiveList[0]);
+			Vector3 ReleasePoint {Vector3(static_cast<float>(targetPos.x), static_cast<float>(targetPos.y), 0.0f)};
+			player->GetRigidBody().ApplyImpulse((player->GetLocation() - ReleasePoint) * PlayerGlobals::PLAYER_DRAG_IMPULSE_MULTIPLIER, player->GetLocation());
+		});
 
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
@@ -325,7 +323,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.DeviceContext->PSSetShader(TexturePixelShader, nullptr, 0);
 		renderer.DeviceContext->IASetInputLayout(TextureLayout);
 
-		//InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
+		InfiniteMap.Render(renderer, MapSampler, cameraCenterY);
 
 		renderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 		for (size_t i = 0; i < renderer.PrimitiveCount; ++i)

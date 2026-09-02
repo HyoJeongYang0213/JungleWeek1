@@ -33,7 +33,7 @@ void Input::Update()
 			OutputDebugStringA("Ball Released!\n");
 			// 공발사 함수 여기서 호출하시면 됩니당~~~ 
 			
-
+			std::invoke(_mDragCallback, _mTargetPos);
 
 			_mIsDragging = false;
 			return;
