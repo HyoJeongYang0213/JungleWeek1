@@ -333,7 +333,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		input.Update();
 
 
-		float MoveSpeed = 15.0f * static_cast<float>(elapsedTime);
+		float MoveSpeed = 15.0f * static_cast<float>(static_cast<float>(FixedPhysicsStep));
 		Vector3 CamPos = renderer.GetCamera().GetPosition();
 
 		if (CamPos.y < 0.0f) CamPos.y = 0.0f;
