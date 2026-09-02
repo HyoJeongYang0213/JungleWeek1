@@ -26,6 +26,5 @@ public:
 
 private:
     ID3D11ShaderResourceView* GetOrCreateFloorTexture(int floorIndex);
-
     void DrawChunk(Renderer& renderer, int floorIndex);
 };
