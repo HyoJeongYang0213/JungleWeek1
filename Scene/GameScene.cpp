@@ -177,6 +177,7 @@ void GameScene::Reset()
 
 	WaterGlobals::WATER_Y_SCALE = 0.f;
 	WaterGlobals::B_GAME_OVER = false;
+	mInput.Reset();
 }
 
 void GameScene::Tick(float dt)

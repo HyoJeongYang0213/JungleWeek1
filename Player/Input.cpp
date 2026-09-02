@@ -75,4 +75,3 @@ void Input::DragBall()
 		3.0f
 	);
 }
-
