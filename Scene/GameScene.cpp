@@ -177,6 +177,8 @@ void GameScene::Reset()
 
 	WaterGlobals::WATER_Y_SCALE = 0.f;
 	WaterGlobals::B_GAME_OVER = false;
+	mWater->Reset();
+	mInput.Reset();
 }
 
 void GameScene::Tick(float dt)
@@ -326,8 +328,6 @@ void GameScene::Tick(float dt)
 			CollisionResolver::ResolveFriction(manifold);
 		}
 	}
-
-	mWater->Tick(dt);
 
 	mInput.Update();
 
