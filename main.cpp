@@ -1,4 +1,5 @@
 ﻿#include <windows.h>
+#include <algorithm>
 // 여기에 아래 코드를 추가 합니다.
 
 // D3D 사용에 필요한 라이브러리들을 링크합니다.
@@ -30,18 +31,20 @@
 #include "Physics/Pick.h"
 
 #include "Resource/vertexSimple.hpp" 
-
-
 #include "Resource/Sphere.h"
 #include "Resource/Square.hpp"
+#include "Resource/PolygonGeometry.hpp"
 
 #include "Player/Ball.h"
 #include "Player/Input.h"
 #include "PlayerGlobals.hpp"
+
 #include "Map/Platform.h"
+#include "Map/Polygon.h"
 
 #include "Renderer/Renderer.h"
 #include "Renderer/WindowGlobals.hpp"
+
 
 // 삼각형을 하드 코딩
 VertexSimple triangle_vertices[] =
@@ -134,6 +137,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11Buffer* vertexBufferTriangle = renderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
 	ID3D11Buffer* vertexBufferCube = renderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
+	
+	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
+
+	{
+		auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
+			{
+				polygonVertexBuffers.emplace_back(
+					renderer.CreateVertexBuffer(
+						vertices,
+						sizeof(vertices)
+					),
+					static_cast<UINT>(std::size(vertices)),
+					positions
+				);
+			};
+
+		// Convex
+		AddPolygonVertexBuffer(convex_triangle_vertices, convex_triangle_positions);
+		AddPolygonVertexBuffer(convex_quad_vertices, convex_quad_positions);
+		AddPolygonVertexBuffer(convex_trapezoid_vertices, convex_trapezoid_positions);
+		AddPolygonVertexBuffer(convex_pentagon_vertices, convex_pentagon_positions);
+		AddPolygonVertexBuffer(convex_hexagon_vertices, convex_hexagon_positions);
+		AddPolygonVertexBuffer(convex_octagon_vertices, convex_octagon_positions);
+		AddPolygonVertexBuffer(convex_dodecagon_vertices, convex_dodecagon_positions);
+
+		// Concave
+		AddPolygonVertexBuffer(concave_arrow_vertices, concave_arrow_positions);
+		AddPolygonVertexBuffer(concave_l_vertices, concave_l_positions);
+		AddPolygonVertexBuffer(concave_u_vertices, concave_u_positions);
+		AddPolygonVertexBuffer(concave_plus_vertices, concave_plus_positions);
+		AddPolygonVertexBuffer(concave_c_vertices, concave_c_positions);
+		AddPolygonVertexBuffer(concave_star_vertices, concave_star_positions);
+		AddPolygonVertexBuffer(concave_lightning_vertices, concave_lightning_positions);
+		AddPolygonVertexBuffer(concave_comb_vertices, concave_comb_positions);
+		AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
+		AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
+	}
+
+
 
 	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
 	ID3D11VertexShader* TextureVertexShader = nullptr;
@@ -169,8 +211,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
 
-	LARGE_INTEGER startTime, endTime;
-	double elapsedTime = 0.0;
+	LARGE_INTEGER previousTime;
+	QueryPerformanceCounter(&previousTime);
+
+	constexpr double FixedPhysicsStep = 1.0 / 120.0;
+	constexpr double MaxFrameTime = 0.05;
+	double physicsAccumulator = 0.0;
 
 	// Collision Mask 추가 부분
 
@@ -198,6 +244,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		collisionMask.BuildPlatformsNDC();
 
 	renderer.CreatePrimitive<Ball>(vertexBufferSphere, numVerticesSphere);
+	
+
 
 	// 실제 Platform 생성
 	/*for (const PlatformCollisionData& data :
@@ -212,13 +260,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}*/
 
 
+	//for (auto& pbuffer : polygonVertexBuffers)
+	//{
+	//	renderer.CreatePrimitive<PPolygon>(std::get<0>(pbuffer), std::get<1>(pbuffer), Vector3{Rnd::GetRandom(0.f, 15.f), Rnd::GetRandom(0.f, 30.f), 0.f}, std::get<2>(pbuffer));
+	//}
+
+
 	Input input; 
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
-	//renderer.CreatePrimitive<Platform>(vertexBufferCube, numVerticesCube);
 
 	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_Ground.png");
 	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(renderer.Device, L"Asset/Stage_A.png");
@@ -243,11 +291,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	renderer.SetCameraPosition(Vector3(0.0f, 0.0f, 0.0f));
 
+
+	input.RegisterDragCallback([&](POINT targetPos)
+		{
+			Ball* player = static_cast<Ball*>(renderer.PrimitiveList[0]);
+			Vector3 ReleasePoint {Vector3(static_cast<float>(targetPos.x), static_cast<float>(targetPos.y), 0.0f)};
+			player->GetRigidBody().ApplyImpulse((player->GetLocation() - ReleasePoint) * PlayerGlobals::PLAYER_DRAG_IMPULSE_MULTIPLIER, player->GetLocation());
+		});
+
 	// Main Loop (Quit Message가 들어오기 전까지 아래 Loop를 무한히 실행하게 됨)
 	while (bIsExit == false)
 	{
-		QueryPerformanceCounter(&startTime);
-
 		MSG msg;
 
 		// 처리할 메시지가 더 이상 없을때 까지 수행
@@ -267,7 +321,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 
+		LARGE_INTEGER currentTime;
+		QueryPerformanceCounter(&currentTime);
+
+		double frameTime = static_cast<double>(currentTime.QuadPart - previousTime.QuadPart) /
+			static_cast<double>(frequency.QuadPart);
+		previousTime = currentTime;
+		frameTime = (std::min)(frameTime, MaxFrameTime);
+		physicsAccumulator += frameTime;
+
 		input.Update();
+
 
 		float MoveSpeed = 15.0f * static_cast<float>(elapsedTime);
 		Vector3 CamPos = renderer.GetCamera().GetPosition();
@@ -276,7 +340,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		renderer.SetCameraPosition(CamPos);
 
-		renderer.Tick(static_cast<float>(elapsedTime));
+    while (physicsAccumulator >= FixedPhysicsStep)
+		{
+			renderer.Tick(static_cast<float>(FixedPhysicsStep));
+			physicsAccumulator -= FixedPhysicsStep;
+		}
+    
+    
 
 		float CameraBottomY = CamPos.y;
 		float CameraCenterY = CameraBottomY + 15.0f;
@@ -316,11 +386,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		renderer.SwapBuffer();
 
-
-		QueryPerformanceCounter(&endTime);
-		elapsedTime = static_cast<double>(endTime.QuadPart - startTime.QuadPart) / static_cast<double>(frequency.QuadPart);
-
-		////////////////////////////////////////////
 	}
 
 	// 소멸하는 코드를 여기에 추가합니다.

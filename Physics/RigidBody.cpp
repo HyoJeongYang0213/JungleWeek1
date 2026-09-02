@@ -46,7 +46,7 @@ void RigidBody::Integrate(float dt)
 
 void RigidBody::ApplyImpulse(const Vector3& Impulse, const Vector3& ContactPoint)
 {
-	const Vector3 Offset{ ContactPoint.x - Position.x, ContactPoint.y - Position.y, ContactPoint.z - Position.z };
+	const Vector3 Offset{ ContactPoint.x - Position.x, ContactPoint.y - Position.y, 0.f };
 	const float InverseMass{ GetInverseMass() };
 	const float InverseMomentOfInertia{ GetInverseMomentOfInertia() };
 

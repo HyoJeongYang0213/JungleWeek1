@@ -26,24 +26,37 @@ void Input::Update()
 
 	if (GetKeyState(KEY_TYPE::LBUTTON) == KEY_STATE::DOWN) {
 		Pick pick;
-		POINT mTargetPos = GetMousePos();
+		POINT _mScreenPos = GetMousePos();
+		_mTargetPos = GetWorldPos(_mScreenPos);
 
 		if (_mIsDragging) {
 			OutputDebugStringA("Ball Released!\n");
 			// 공발사 함수 여기서 호출하시면 됩니당~~~ 
 			
-
+			std::invoke(_mDragCallback, _mTargetPos);
 
 			_mIsDragging = false;
 			return;
 		}
 		else {
-			if (pick.IsBallClicked(mTargetPos.x, mTargetPos.y) == true) {
+			if (pick.IsBallClicked(_mMousePos.x, _mMousePos.y) == true) {
 				OutputDebugStringA("Ball Clicked!\n");
 				_mIsDragging = !_mIsDragging;
 			}
 		}
 	}
+}
+
+POINT Input::GetWorldPos(POINT screenPos) const
+{
+	Pick pick;
+	return pick.ScreenToWorld(screenPos);
+}
+
+POINT Input::GetTargetPos() const
+{
+	Pick pick;
+	return pick.ScreenToWorld(_mMousePos);
 }
 
 void Input::DragBall()

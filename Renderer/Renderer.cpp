@@ -119,7 +119,7 @@ void Renderer::CreateRasterizerState()
 {
 	D3D11_RASTERIZER_DESC rasterizerdesc = {};
 	rasterizerdesc.FillMode = D3D11_FILL_SOLID; // 채우기 모드
-	rasterizerdesc.CullMode = D3D11_CULL_BACK; // 백 페이스 컬링
+	rasterizerdesc.CullMode = D3D11_CULL_NONE; // 백 페이스 컬링
 
 	Device->CreateRasterizerState(&rasterizerdesc, &RasterizerState);
 }
@@ -389,6 +389,33 @@ void Renderer::Tick(float dt)
 				}
 			}
 
+			// 3. 원 - 다각형 충돌 
+			if (PrimitiveList[i]->GetCollider().GetColliderType() == ColliderType_Sphere && PrimitiveList[j]->GetCollider().GetColliderType() == ColliderType_Polygon)
+			{
+				if (CollisionDetector::FindCollision(static_cast<SphereCollider&>(PrimitiveList[i]->GetCollider()), static_cast<PolygonCollider&>(PrimitiveList[j]->GetCollider()), manifold))
+				{
+					Manifolds.emplace_back(manifold);
+				}
+			}
+
+			// 4. 사각형 - 다각형 충돌
+			if (PrimitiveList[i]->GetCollider().GetColliderType() == ColliderType_Box && PrimitiveList[j]->GetCollider().GetColliderType() == ColliderType_Polygon)
+			{
+				if (CollisionDetector::FindCollision(static_cast<BoxCollider&>(PrimitiveList[i]->GetCollider()), static_cast<PolygonCollider&>(PrimitiveList[j]->GetCollider()), manifold))
+				{
+					Manifolds.emplace_back(manifold);
+				}
+			}
+
+			// 5. 다각형 - 다각형 충돌
+			if (PrimitiveList[i]->GetCollider().GetColliderType() == ColliderType_Polygon && PrimitiveList[j]->GetCollider().GetColliderType() == ColliderType_Polygon)
+			{
+				if (CollisionDetector::FindCollision(static_cast<PolygonCollider&>(PrimitiveList[i]->GetCollider()), static_cast<PolygonCollider&>(PrimitiveList[j]->GetCollider()), manifold))
+				{
+					Manifolds.emplace_back(manifold);
+				}
+			}
+
 		}
 	}
 
@@ -427,6 +454,16 @@ void Renderer::Tick(float dt)
 				{
 					// BoxCollider& Box{ static_cast<BoxCollider&>(collider) };
 				}
+				break;
+				case  ColliderType_Polygon:
+				{
+					PolygonCollider& Polygon{ static_cast<PolygonCollider&>(collider) };
+					if (CollisionDetector::FindCollision(Polygon, *Walls[WallIndex], Manifold))
+					{
+						Manifolds.emplace_back(Manifold);
+					}
+				}
+				break;
 				default:
 					break;
 				}

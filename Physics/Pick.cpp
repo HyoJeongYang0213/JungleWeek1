@@ -42,6 +42,13 @@ WindowSize Pick::ScreenToWorld(__int32 screenX, __int32 screenY) {
 	return { worldX, worldY };
 }
 
+POINT Pick::ScreenToWorld(POINT screenPos)
+{
+	WindowSize worldPos = ScreenToWorld(screenPos.x, screenPos.y);
+
+	return { LONG(worldPos.Width), LONG(worldPos.Height) };
+}
+
 WindowSize Pick::WorldToScreen(Vector3 worldPos)
 {
 	float width = WindowGlobals::SCREENSIZE.Width;
