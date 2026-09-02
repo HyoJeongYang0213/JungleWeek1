@@ -18,6 +18,7 @@
 #include "Map/PlatformManager.h"
 #include "Map/TextureLoader.hpp"
 #include "Map/MapGenerator.h"
+#include "Map/WaterGlobals.hpp"
 
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
@@ -303,6 +304,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			sceneManager.Tick(static_cast<float>(FixedPhysicsStep));
 			physicsAccumulator -= FixedPhysicsStep;
+		}
+		if (sceneManager.GetCurrentSceneIndex() == 1 && WaterGlobals::B_GAME_OVER)
+		{
+			WaterGlobals::B_GAME_OVER = false;
+			sceneManager.NextScene();
 		}
 		soundManager.Update();
 

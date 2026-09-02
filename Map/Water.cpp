@@ -19,9 +19,7 @@ void Water::Tick(float t)
 	WaterGlobals::WATER_Y_SCALE += WaterGlobals::WATER_SPEED * t;
 	if (IsGameOver())
 	{
-		// ------------------------
-		//  게임오버 관련 로직 추가
-		// ------------------------
+		WaterGlobals::B_GAME_OVER = true;
 		OutputDebugStringA("게임오버!\n");
 	}
 } 
