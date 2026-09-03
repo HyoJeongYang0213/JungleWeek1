@@ -39,6 +39,7 @@ public:
 	// 매우 위험. 복사된 RigidBody 인 경우에 한해 사용 할 것. 원본 침해의 가능성 있음. 
 	void SetPosition(const Vector3& position) { Position = position; }
 
+	void ApplyRotateResistance(const Vector3& SurfaceNormal, float resistanceCoefficient, float dt);
 private:
 	Vector3& Position;
 	Vector3& Velocity;

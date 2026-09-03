@@ -304,7 +304,7 @@ void GameScene::Tick(float dt)
 		mPrimitives[i]->Tick(dt);
 	}
 
-	mPlatformTileManager.Update(mCamera.GetPosition().y + MapGlobals::VIEW_HEIGHT * 0.5f);
+	//mPlatformTileManager.Update(mCamera.GetPosition().y + MapGlobals::VIEW_HEIGHT * 0.5f);
 
 	std::vector<CollisionManifold> Manifolds{};
 
@@ -361,9 +361,7 @@ void GameScene::Tick(float dt)
 		}
 	}
 
-	mPlatformTileManager.FindCollisions(
-		static_cast<SphereCollider&>(mPrimitives[0]->GetCollider()),
-		Manifolds);
+	mPlatformTileManager.FindCollisions(static_cast<SphereCollider&>(mPrimitives[0]->GetCollider()), Manifolds);
 
 
 	if (MapGlobals::BOUND_BALL_TO_SCREEN)
@@ -432,6 +430,18 @@ void GameScene::Tick(float dt)
 		{
 			CollisionResolver::ResolveRestitution(manifold);
 			CollisionResolver::ResolveFriction(manifold);
+		}
+	}
+
+	for (CollisionManifold& manifold : Manifolds)
+	{
+		if (manifold.ColliderA.Type == ColliderType_Polygon and manifold.ColliderB.Type == ColliderType_Sphere)
+		{
+			manifold.ColliderB.RigidBody->ApplyRotateResistance(manifold.Normal, PhysicsGlobals::PLATFORM_ROTATION_RESISTANCE_COEFFICIENT, dt);
+		}
+		else if (manifold.ColliderA.Type == ColliderType_Sphere and manifold.ColliderB.Type == ColliderType_Polygon)
+		{
+			manifold.ColliderA.RigidBody->ApplyRotateResistance(manifold.Normal, PhysicsGlobals::PLATFORM_ROTATION_RESISTANCE_COEFFICIENT, dt);
 		}
 	}
 

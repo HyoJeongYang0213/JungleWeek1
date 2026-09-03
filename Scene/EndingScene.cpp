@@ -125,8 +125,8 @@ void EndingScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVEndingText);
 	concreteRenderer.DeviceContext->Draw(6, 0);
 
-	Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 2.f, 0.f };
-	HalfExtents = { MapGlobals::RIGHT_BORDER / 4.0f, MapGlobals::TOP_BORDER / 8.0f, 0.f };
+	Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 1.9f, 0.f };
+	HalfExtents = { MapGlobals::RIGHT_BORDER * 1.5f / 6.0f, MapGlobals::TOP_BORDER / 6.0f, 0.f };
 	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mScore);
 	concreteRenderer.DeviceContext->Draw(6, 0);
