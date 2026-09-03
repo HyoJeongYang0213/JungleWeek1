@@ -25,4 +25,5 @@ namespace MapGlobals {
 	constexpr float WORLD_WIDTH = 40.0f;
 	constexpr float VIEW_HEIGHT = 40.0f;
 	constexpr float CHUNK_HEIGHT = 30.0f;
+	constexpr int FLOORS_PER_THEME = 1;
 }

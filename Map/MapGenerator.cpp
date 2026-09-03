@@ -4,10 +4,11 @@
 #include "../Resource/vertexSimple.hpp"
 #include <cmath>
 
-void InfiniteMap::Init(Renderer& renderer, ID3D11ShaderResourceView* groundmShaderResourceView, const std::vector<ID3D11ShaderResourceView*>& pattermShaderResourceViews)
+void InfiniteMap::Init(Renderer& renderer, ID3D11ShaderResourceView* groundmShaderResourceView, const std::vector<ID3D11ShaderResourceView*>& pattermShaderResourceViews, const std::vector<ID3D11ShaderResourceView*>& transitionShaderResourceViews)
 {
     mShaderResourceViewGround = groundmShaderResourceView;
     mShaderResourceViewPatterns = pattermShaderResourceViews;
+    mShaderResourceViewTransitions = transitionShaderResourceViews;
 
     mFloorTextures[0] = mShaderResourceViewGround;
 
@@ -47,6 +48,17 @@ InfiniteMap::~InfiniteMap()
             ShaderResourceView = nullptr;
         }
     }
+
+    for (auto* srv : mShaderResourceViewTransitions)
+    {
+        if (srv)
+        {
+            srv->Release();
+        }
+    }
+    mShaderResourceViewTransitions.clear();
+
+    mFloorTextures.clear();
 }
 
 ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
@@ -63,19 +75,29 @@ ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
         return mShaderResourceViewGround;
     }
 
+    if (floorIndex % MapGlobals::FLOORS_PER_THEME == 0)
+    {
+        int transitionIndex = (floorIndex / MapGlobals::FLOORS_PER_THEME) - 1;
+
+        if (transitionIndex < static_cast<int>(mShaderResourceViewTransitions.size()))
+        {
+            ID3D11ShaderResourceView* transTexture = mShaderResourceViewTransitions[transitionIndex];
+            mFloorTextures[floorIndex] = transTexture;
+            return transTexture;
+        }
+    }
+
     if (!mShaderResourceViewPatterns.empty() && floorIndex > 0)
     {
-        constexpr int FLOORS_PER_STAGE = 5;
-
-        int patternIndex = (floorIndex - 1) / FLOORS_PER_STAGE;
-
+        int themeIndex = (floorIndex - 1) / MapGlobals::FLOORS_PER_THEME;
         int maxIndex = static_cast<int>(mShaderResourceViewPatterns.size()) - 1;
-        if (patternIndex > maxIndex)
+
+        if (themeIndex > maxIndex)
         {
-            patternIndex = maxIndex;
+            themeIndex = maxIndex;
         }
 
-        ID3D11ShaderResourceView* selectedTexture = mShaderResourceViewPatterns[patternIndex];
+        ID3D11ShaderResourceView* selectedTexture = mShaderResourceViewPatterns[themeIndex];
         mFloorTextures[floorIndex] = selectedTexture;
         return selectedTexture;
     }
