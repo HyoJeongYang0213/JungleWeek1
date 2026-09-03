@@ -126,6 +126,7 @@ GameScene::GameScene(IRenderer& renderer)
 
 	mSRVBall = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Ball/Ball.png");
 
+	// Sky BackGround Loading
 	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Stage_Ground.png");
 	ID3D11ShaderResourceView* ShaderResourceViewMorning = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Morning.png");
 	ID3D11ShaderResourceView* ShaderResourceViewNoon = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Noon.png");
@@ -135,17 +136,19 @@ GameScene::GameScene(IRenderer& renderer)
 	ID3D11ShaderResourceView* ShaderResourceViewSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Space.png");
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
+	// Transition BackGround Textures Loading
 	ID3D11ShaderResourceView* srvTransMorningToNoon = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_MorningToNoon.png");
 	ID3D11ShaderResourceView* srvTransNoonToSunset = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NoonToSunset.png");
 	ID3D11ShaderResourceView* srvTransSunsetToEvening = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_SunsetToEvening.png");
 	ID3D11ShaderResourceView* srvTransEveningToNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_EveningToNight.png");
 	ID3D11ShaderResourceView* srvTransNightToSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NightToSpace.png");
 
-	ID3D11ShaderResourceView* decoBird = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Bird.png");
-	ID3D11ShaderResourceView* decoCloud1 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Cloud1.png");
-	ID3D11ShaderResourceView* decoCloud2 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Cloud2.png");
-	ID3D11ShaderResourceView* decoStar = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Star.png");
-	ID3D11ShaderResourceView* decoMeteor = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Meteor.png");
+	// Deco Textures Loading
+	ID3D11ShaderResourceView* decoBird = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Bird.png");
+	ID3D11ShaderResourceView* decoCloud1 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Cloud1.png");
+	ID3D11ShaderResourceView* decoCloud2 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Cloud2.png");
+	ID3D11ShaderResourceView* decoStar = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Str.png");
+	ID3D11ShaderResourceView* decoMeteor = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Meteor.png");
 
 	std::vector<std::vector<ID3D11ShaderResourceView*>> themeDecos = {
 	{ decoBird, decoCloud1 },
