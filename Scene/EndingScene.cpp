@@ -52,8 +52,40 @@ EndingScene::EndingScene(IRenderer& renderer)
 
 EndingScene::~EndingScene()
 {
+	if (mTextureVertexShader != nullptr) {
+		mTextureVertexShader->Release();
+		mTextureVertexShader = nullptr;
+	}
+	if (mTexturePixelShader != nullptr) {
+		mTexturePixelShader->Release();
+		mTexturePixelShader = nullptr;
+	}
+	if (mTextureLayout != nullptr) {
+		mTextureLayout->Release();
+		mTextureLayout = nullptr;
+	}
+	if (mSamplerState != nullptr) {
+		mSamplerState->Release();
+		mSamplerState = nullptr;
+	}
+	
+	if (mQuadVertexBuffer != nullptr) {
+		mQuadVertexBuffer->Release();
+		mQuadVertexBuffer = nullptr;
+	}
+	if (mSRVEndingBG != nullptr) {
+		mSRVEndingBG->Release();
+		mSRVEndingBG = nullptr;
+	}
+	if (mSRVEndingText != nullptr) {
+		mSRVEndingText->Release();
+		mSRVEndingText = nullptr;
+	}
+	if (mScore != nullptr) {
+		mScore->Release();
+		mScore = nullptr;
+	}
 }
-
 void EndingScene::Reset()
 {
 }

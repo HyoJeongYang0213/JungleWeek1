@@ -25,6 +25,23 @@ Water::Water(IRenderer& renderer, float Initheight)
 
 Water::~Water()
 {
+	if (mVertexBuffer != nullptr) {
+		mVertexBuffer->Release();
+		mVertexBuffer = nullptr;
+
+	}
+	if (mSRVWater != nullptr) {
+		mSRVWater->Release();
+		mSRVWater = nullptr;
+	}
+	if (mWaterVertexShader != nullptr) {
+		mWaterVertexShader->Release();
+		mWaterVertexShader = nullptr;
+	}
+	if (mWaterPixelShader != nullptr) {
+		mWaterPixelShader->Release();
+		mWaterPixelShader = nullptr;
+	}
 }
 
 void Water::Tick(float dt)

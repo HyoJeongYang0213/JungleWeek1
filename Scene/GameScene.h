@@ -78,4 +78,11 @@ private:
 	Input mInput{};
 
 	std::unique_ptr<Water> mWater;
+
+private:
+	ID3D11Buffer* vertexBufferTriangle;
+	ID3D11Buffer* vertexBufferSphere;
+	ID3D11Buffer* vertexBufferCube;
+
+	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> mPolygonVertexBuffers;
 };
