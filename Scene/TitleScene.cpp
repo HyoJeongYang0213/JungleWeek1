@@ -79,7 +79,7 @@ TitleScene::~TitleScene()
 		mSRVTitle->Release();
 		mSRVTitle = nullptr;
 	}
-}
+
 
 	if (mSamplerState)
 	{
