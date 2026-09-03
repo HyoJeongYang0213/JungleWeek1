@@ -110,6 +110,12 @@ TitleScene::~TitleScene()
 		mSRVTitle->Release();
 		mSRVTitle = nullptr;
 	}
+
+	if (mSRVLogo)
+	{
+		mSRVLogo->Release();
+		mSRVLogo = nullptr;
+	}
 }
 
 void TitleScene::Reset()

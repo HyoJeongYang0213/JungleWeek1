@@ -19,6 +19,7 @@ public:
 
 public:
 	void NextScene();
+	void Shutdown();
 
 	void Tick(float dt);
 	void Render(IRenderer& renderer);
