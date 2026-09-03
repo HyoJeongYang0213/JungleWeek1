@@ -307,12 +307,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				break;
 			}
 
-			if (msg.message == WM_KEYDOWN && msg.wParam == VK_LEFT)
-			{
-				sceneManager.NextScene();
-				break;
-			}
-
 			if (UIManager::Get().ShouldExit())
 			{
 				bIsExit = true;
