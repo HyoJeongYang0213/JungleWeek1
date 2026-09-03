@@ -146,10 +146,11 @@ void PlatformTileManager::FindCollisions(SphereCollider& sphere, std::vector<Col
 		CollisionManifold manifold{};
 		PolygonCollider& collider = static_cast<PolygonCollider&>(polygon.Polygon->GetCollider());
 		
-		bIsColliding = true; 
-
+		
 		if (CollisionDetector::FindCollision(sphere, collider, manifold))
 		{
+			bIsColliding = true;
+
 			if (mCanPlayHitSound)
 			{
 				SoundManager::GetInstance().PlaySound("BallHit", 0.5f, false);
