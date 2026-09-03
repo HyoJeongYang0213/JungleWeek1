@@ -48,16 +48,36 @@ TitleScene::TitleScene(IRenderer& renderer)
 
 TitleScene::~TitleScene()
 {
-	if (mQuadVertexBuffer)
+	if(mTextureVertexShader != nullptr)
+	{
+		mTextureVertexShader->Release();
+		mTextureVertexShader = nullptr;
+	}
+	if (mTexturePixelShader != nullptr)
+	{
+		mTexturePixelShader->Release();
+		mTexturePixelShader = nullptr;
+	}
+	if (mTextureLayout != nullptr)
+	{
+		mTextureLayout->Release();
+		mTextureLayout = nullptr;
+	}
+	if (mSamplerState != nullptr)
+	{
+		mSamplerState->Release();
+		mSamplerState = nullptr;
+	}
+
+	if (mQuadVertexBuffer != nullptr)
 	{
 		mQuadVertexBuffer->Release();
 		mQuadVertexBuffer = nullptr;
 	}
-
-	if (mSamplerState)
+	if (mSRVTitle != nullptr)
 	{
-		mSamplerState->Release();
-		mSamplerState = nullptr;
+		mSRVTitle->Release();
+		mSRVTitle = nullptr;
 	}
 
 	if (mTextureLayout)

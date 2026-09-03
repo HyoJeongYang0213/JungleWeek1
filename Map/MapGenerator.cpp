@@ -35,6 +35,24 @@ void InfiniteMap::Init(
 
 InfiniteMap::~InfiniteMap()
 {
+	if (mShaderResourceViewGround)
+	{
+		mShaderResourceViewGround->Release();
+		mShaderResourceViewGround = nullptr;
+	}
+
+    if (!mShaderResourceViewPatterns.empty())
+    {
+        for (auto& pattern : mShaderResourceViewPatterns)
+        {
+            if (pattern)
+            {
+                pattern->Release();
+            }
+        }
+        mShaderResourceViewPatterns.clear();
+    }
+
     if (mVertexBufferChunk)
     {
         mVertexBufferChunk->Release();

@@ -52,52 +52,40 @@ EndingScene::EndingScene(IRenderer& renderer)
 
 EndingScene::~EndingScene()
 {
-	if (mSamplerState)
-	{
-		mSamplerState->Release();
-		mSamplerState = nullptr;
-	}
-
-	if (mQuadVertexBuffer)
-	{
-		mQuadVertexBuffer->Release();
-		mQuadVertexBuffer = nullptr;
-	}
-
-	if (mTextureLayout)
-	{
-		mTextureLayout->Release();
-		mTextureLayout = nullptr;
-	}
-
-	if(mTextureVertexShader) 
-	{
+	if (mTextureVertexShader != nullptr) {
 		mTextureVertexShader->Release();
 		mTextureVertexShader = nullptr;
 	}
-
-	if (mTexturePixelShader)
-	{
+	if (mTexturePixelShader != nullptr) {
 		mTexturePixelShader->Release();
 		mTexturePixelShader = nullptr;
 	}
-	if (mSRVEndingBG)
-	{
+	if (mTextureLayout != nullptr) {
+		mTextureLayout->Release();
+		mTextureLayout = nullptr;
+	}
+	if (mSamplerState != nullptr) {
+		mSamplerState->Release();
+		mSamplerState = nullptr;
+	}
+	
+	if (mQuadVertexBuffer != nullptr) {
+		mQuadVertexBuffer->Release();
+		mQuadVertexBuffer = nullptr;
+	}
+	if (mSRVEndingBG != nullptr) {
 		mSRVEndingBG->Release();
 		mSRVEndingBG = nullptr;
 	}
-	if (mSRVEndingText)
-	{
+	if (mSRVEndingText != nullptr) {
 		mSRVEndingText->Release();
 		mSRVEndingText = nullptr;
 	}
-	if (mScore)
-	{
+	if (mScore != nullptr) {
 		mScore->Release();
 		mScore = nullptr;
 	}
 }
-
 void EndingScene::Reset()
 {
 }

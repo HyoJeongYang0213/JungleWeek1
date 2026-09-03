@@ -149,6 +149,8 @@ void Renderer::Release()
 	ReleaseBendState();
 	ReleaseRasterizerState();
 
+	ReleaseBendState();
+
 	// 렌더 타겟을 초기화
 	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 
