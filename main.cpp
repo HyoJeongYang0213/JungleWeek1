@@ -364,6 +364,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
+	// Renderer가 D3D 장치를 해제하기 전에 씬이 소유한 COM 객체를 먼저 정리합니다.
+	sceneManager.Shutdown();
+
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();
 	renderer.Release();
