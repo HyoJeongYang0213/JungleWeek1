@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <limits>
+#include <chrono>
 
 #include "MapGlobals.hpp"
 #include "TextureLoader.hpp"
@@ -92,6 +93,16 @@ void PlatformTileManager::Update(float cameraCenterY)
 	if (mPolygonImages.empty())
 	{
 		return;
+	}
+
+	static const auto StartTime = std::chrono::steady_clock::now();
+	const auto Now = std::chrono::steady_clock::now();
+
+	for (auto& p : mPolygons)
+	{
+		auto& curr = p.Polygon->GetRigidBody().GetPosition();
+		float second = std::chrono::duration<float>(Now - StartTime).count();
+		p.Polygon->SetPosition({ curr.x, curr.y - sinf(std::chrono::duration<float>(Now - StartTime).count()) * 0.005f, 0.f });
 	}
 
 	const float minimumY = std::max(0.0f, cameraCenterY - LoadDistanceBelow);
@@ -274,6 +285,7 @@ void PlatformTileManager::CreateTileInstance(const TileCoordinate& coordinate)
 		const Vector3 worldCenter = tileCenter + Vector3{ centerX, centerY, 0.0f };
 		auto polygon = std::make_unique<PPolygon>(resource.VertexBuffer, resource.NumVertices, worldCenter, Vector3{ scale, scale, 0.0f }, resource.Positions, true, static_cast<UINT>(sizeof(VertexTexture)));
 		polygon->GetRigidBody().SetRotation(rotation);
+
 		mPolygons.emplace_back(ActivePolygon{ coordinate, resourceIndex, std::move(polygon) });
 	}
 }

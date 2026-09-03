@@ -35,10 +35,13 @@ public:
 	static PolygonImageData CreateGeometryFromImage(const std::string& imagePath, unsigned char alphaThreshold = 128);
 
 	virtual void Tick(float t) override;
+	
 	virtual ICollider& GetCollider() override;
 	virtual RigidBody& GetRigidBody() override;
+
 	virtual void Render(IRenderer& renderer) override;
 
+	void SetPosition(const Vector3& position) { mLocation = position; }	
 private:
 
 	Vector3 mLocation{};
