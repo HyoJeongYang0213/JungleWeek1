@@ -140,20 +140,36 @@ GameScene::GameScene(IRenderer& renderer)
 	ID3D11ShaderResourceView* srvTransEveningToNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_EveningToNight.png");
 	ID3D11ShaderResourceView* srvTransNightToSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NightToSpace.png");
 
+	ID3D11ShaderResourceView* decoBird = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Bird.png");
+	ID3D11ShaderResourceView* decoCloud1 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Cloud1.png");
+	ID3D11ShaderResourceView* decoCloud2 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Cloud2.png");
+	ID3D11ShaderResourceView* decoStar = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Star.png");
+	ID3D11ShaderResourceView* decoMeteor = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Deco_Meteor.png");
+
+	std::vector<std::vector<ID3D11ShaderResourceView*>> themeDecos = {
+	{ decoBird, decoCloud1 },
+	{ decoCloud1, decoCloud2 },
+	{ decoCloud2 },
+	{ decoCloud1, decoStar },
+	{ decoStar },
+	{ decoStar, decoMeteor }
+	};
+
 	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, {
 		ShaderResourceViewMorning,
 		ShaderResourceViewNoon,
 		ShaderResourceViewSunset,
 		ShaderResourceViewEvening,
 		ShaderResourceViewNight,
-		ShaderResourceViewSpace
-		}, {
-			srvTransMorningToNoon,
-			srvTransNoonToSunset,
-			srvTransSunsetToEvening,
-			srvTransEveningToNight,
-			srvTransNightToSpace
-		});
+		ShaderResourceViewSpace}, {
+		srvTransMorningToNoon,
+		srvTransNoonToSunset,
+		srvTransSunsetToEvening,
+		srvTransEveningToNight,
+		srvTransNightToSpace
+		}, themeDecos
+		);
+
 
 	mPlatformTileManager.Init(concreteRenderer);
 
