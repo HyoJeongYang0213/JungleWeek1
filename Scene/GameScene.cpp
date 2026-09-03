@@ -466,6 +466,8 @@ void GameScene::Tick(float dt)
 
 	mPlatformTileManager.Update(CameraCenterY);
 
+	mMiniBallSystem.EmitTrail(player->GetLocation(), player->GetVelocity(),player->GetRadius(),dt);
+
 	mMiniBallSystem.Tick(dt);
 
 	PlayerGlobals::PLAYERLOCATION = player->GetLocation();
