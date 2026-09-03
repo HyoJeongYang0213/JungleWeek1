@@ -28,7 +28,8 @@ TitleScene::TitleScene(IRenderer& renderer)
 
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
-	mSRVTitle = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/Title.png");
+	mSRVTitle = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/Ending_BackGround.png");
+	mSRVLogo = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/StartLogo.png");
 
     VertexTexture quad[6] = {
     { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
@@ -47,16 +48,36 @@ TitleScene::TitleScene(IRenderer& renderer)
 
 TitleScene::~TitleScene()
 {
-	if (mQuadVertexBuffer)
+	if(mTextureVertexShader != nullptr)
+	{
+		mTextureVertexShader->Release();
+		mTextureVertexShader = nullptr;
+	}
+	if (mTexturePixelShader != nullptr)
+	{
+		mTexturePixelShader->Release();
+		mTexturePixelShader = nullptr;
+	}
+	if (mTextureLayout != nullptr)
+	{
+		mTextureLayout->Release();
+		mTextureLayout = nullptr;
+	}
+	if (mSamplerState != nullptr)
+	{
+		mSamplerState->Release();
+		mSamplerState = nullptr;
+	}
+
+	if (mQuadVertexBuffer != nullptr)
 	{
 		mQuadVertexBuffer->Release();
 		mQuadVertexBuffer = nullptr;
 	}
-
-	if (mSamplerState)
+	if (mSRVTitle != nullptr)
 	{
-		mSamplerState->Release();
-		mSamplerState = nullptr;
+		mSRVTitle->Release();
+		mSRVTitle = nullptr;
 	}
 
 	if (mTextureLayout)
@@ -116,4 +137,11 @@ void TitleScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->IASetVertexBuffers(0, 1, &mQuadVertexBuffer, &Stride, &Offset);
 	concreteRenderer.DeviceContext->Draw(6, 0);
 
+	Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 1.3f, 0.0f };
+	HalfExtents = { MapGlobals::RIGHT_BORDER / 4.0f, MapGlobals::TOP_BORDER / 8.0f, 0.0f };
+
+	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
+	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVLogo);
+
+	concreteRenderer.DeviceContext->Draw(6, 0);
 }

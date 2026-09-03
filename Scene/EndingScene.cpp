@@ -52,52 +52,40 @@ EndingScene::EndingScene(IRenderer& renderer)
 
 EndingScene::~EndingScene()
 {
-	if (mSamplerState)
-	{
-		mSamplerState->Release();
-		mSamplerState = nullptr;
-	}
-
-	if (mQuadVertexBuffer)
-	{
-		mQuadVertexBuffer->Release();
-		mQuadVertexBuffer = nullptr;
-	}
-
-	if (mTextureLayout)
-	{
-		mTextureLayout->Release();
-		mTextureLayout = nullptr;
-	}
-
-	if(mTextureVertexShader) 
-	{
+	if (mTextureVertexShader != nullptr) {
 		mTextureVertexShader->Release();
 		mTextureVertexShader = nullptr;
 	}
-
-	if (mTexturePixelShader)
-	{
+	if (mTexturePixelShader != nullptr) {
 		mTexturePixelShader->Release();
 		mTexturePixelShader = nullptr;
 	}
-	if (mSRVEndingBG)
-	{
+	if (mTextureLayout != nullptr) {
+		mTextureLayout->Release();
+		mTextureLayout = nullptr;
+	}
+	if (mSamplerState != nullptr) {
+		mSamplerState->Release();
+		mSamplerState = nullptr;
+	}
+	
+	if (mQuadVertexBuffer != nullptr) {
+		mQuadVertexBuffer->Release();
+		mQuadVertexBuffer = nullptr;
+	}
+	if (mSRVEndingBG != nullptr) {
 		mSRVEndingBG->Release();
 		mSRVEndingBG = nullptr;
 	}
-	if (mSRVEndingText)
-	{
+	if (mSRVEndingText != nullptr) {
 		mSRVEndingText->Release();
 		mSRVEndingText = nullptr;
 	}
-	if (mScore)
-	{
+	if (mScore != nullptr) {
 		mScore->Release();
 		mScore = nullptr;
 	}
 }
-
 void EndingScene::Reset()
 {
 }
@@ -131,14 +119,14 @@ void EndingScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->IASetVertexBuffers(0, 1, &mQuadVertexBuffer, &Stride, &Offset);
 	concreteRenderer.DeviceContext->Draw(6, 0);
 
-	Center = { 7.5f, 24.f, 0.f };
-	HalfExtents = { 6.f, 3.f, 0.f };		
+	Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 1.2f, 0.f };
+	HalfExtents = { MapGlobals::RIGHT_BORDER / 4.0f, MapGlobals::TOP_BORDER / 8.0f, 0.f };		
 	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVEndingText);
 	concreteRenderer.DeviceContext->Draw(6, 0);
 
-	Center = { 7.5f, 15.f, 0.f };
-	HalfExtents = { 4.f * 1.5f, 4.f, 0.f };
+	Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 2.f, 0.f };
+	HalfExtents = { MapGlobals::RIGHT_BORDER / 4.0f, MapGlobals::TOP_BORDER / 8.0f, 0.f };
 	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mScore);
 	concreteRenderer.DeviceContext->Draw(6, 0);

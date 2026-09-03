@@ -3,11 +3,19 @@
 #include "../Utils/Rnd.hpp"
 #include "../Resource/vertexSimple.hpp"
 #include <cmath>
+#include <unordered_set>
 
-void InfiniteMap::Init(Renderer& renderer, ID3D11ShaderResourceView* groundmShaderResourceView, const std::vector<ID3D11ShaderResourceView*>& pattermShaderResourceViews)
+void InfiniteMap::Init(
+    Renderer& renderer,
+    ID3D11ShaderResourceView* groundmShaderResourceView,
+    const std::vector<ID3D11ShaderResourceView*>& pattermShaderResourceViews,
+    const std::vector<ID3D11ShaderResourceView*>& transitionShaderResourceViews,
+    const std::vector<std::vector<ID3D11ShaderResourceView*>>& themeDecoResourceViews)
 {
     mShaderResourceViewGround = groundmShaderResourceView;
     mShaderResourceViewPatterns = pattermShaderResourceViews;
+    mShaderResourceViewTransitions = transitionShaderResourceViews;
+    mThemeDecoPatterns = themeDecoResourceViews;
 
     mFloorTextures[0] = mShaderResourceViewGround;
 
@@ -27,6 +35,24 @@ void InfiniteMap::Init(Renderer& renderer, ID3D11ShaderResourceView* groundmShad
 
 InfiniteMap::~InfiniteMap()
 {
+	if (mShaderResourceViewGround)
+	{
+		mShaderResourceViewGround->Release();
+		mShaderResourceViewGround = nullptr;
+	}
+
+    if (!mShaderResourceViewPatterns.empty())
+    {
+        for (auto& pattern : mShaderResourceViewPatterns)
+        {
+            if (pattern)
+            {
+                pattern->Release();
+            }
+        }
+        mShaderResourceViewPatterns.clear();
+    }
+
     if (mVertexBufferChunk)
     {
         mVertexBufferChunk->Release();
@@ -47,28 +73,79 @@ InfiniteMap::~InfiniteMap()
             ShaderResourceView = nullptr;
         }
     }
+
+    for (auto* srv : mShaderResourceViewTransitions)
+    {
+        if (srv)
+        {
+            srv->Release();
+        }
+    }
+
+    std::unordered_set<ID3D11ShaderResourceView*> uniqueDecoSrvs;
+    for (const auto& pool : mThemeDecoPatterns)
+    {
+        for (auto* srv : pool)
+        {
+            if (srv) uniqueDecoSrvs.insert(srv);
+        }
+    }
+    for (auto* srv : uniqueDecoSrvs)
+    {
+        srv->Release();
+    }
+    mThemeDecoPatterns.clear();
+
+    mFloorTextures.clear();
+    mFloorDecos.clear();
 }
 
-/*ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
+void InfiniteMap::GenerateFloorDecos(int floorIndex)
 {
-    auto it = mFloorTextures.find(floorIndex);
-    if (it != mFloorTextures.end())
+    if (floorIndex <= 0 || mThemeDecoPatterns.empty()) return;
+
+    int themeIndex = (floorIndex - 1) / MapGlobals::FLOORS_PER_THEME;
+    int maxTheme = static_cast<int>(mThemeDecoPatterns.size()) - 1;
+    if (themeIndex > maxTheme) themeIndex = maxTheme;
+
+    const auto& decoPool = mThemeDecoPatterns[themeIndex];
+    if (decoPool.empty()) return;
+
+    int spawnCount = Rnd::GetRandom(3, 6);
+
+    float floorBottomY = static_cast<float>(floorIndex) * MapGlobals::CHUNK_HEIGHT;
+
+    std::vector<SkyDeco> decos;
+    for (int i = 0; i < spawnCount; ++i)
     {
-        return it->second;
+        int decoType = Rnd::GetRandom(0, static_cast<int>(decoPool.size()) - 1);
+
+        float minX = 1.5f;
+        float maxX = MapGlobals::RIGHT_BORDER - 1.5f;
+        float randX = minX + (static_cast<float>(Rnd::GetRandom(0, 1000)) / 1000.0f) * (maxX - minX);
+
+        float randY = floorBottomY + 2.0f + (static_cast<float>(Rnd::GetRandom(0, 1000)) / 1000.0f) * (MapGlobals::CHUNK_HEIGHT - 4.0f);
+
+        SkyDeco deco;
+        deco.texture = decoPool[decoType];
+
+        deco.position = { randX, randY, -0.05f };
+
+        float randScale = 0.8f + (static_cast<float>(Rnd::GetRandom(0, 400)) / 1000.0f);
+        if (themeIndex == 0 && decoType == 0)
+        {
+            deco.halfExtents = { 0.75f, 0.75f, 0.0f };
+        }
+        else
+        {
+            deco.halfExtents = { 2.5f, 1.5f, 0.0f };
+        }
+
+        decos.push_back(deco);
     }
 
-    if (!mShaderResourceViewPatterns.empty())
-    {
-        int MaxIndex = static_cast<int>(mShaderResourceViewPatterns.size()) - 1;
-        int RandIndex = Rnd::GetRandom(0, MaxIndex);
-
-        mFloorTextures[floorIndex] = mShaderResourceViewPatterns[RandIndex];
-        return mShaderResourceViewPatterns[RandIndex];
-    }
-
-    return mShaderResourceViewGround;
-}*/
-
+    mFloorDecos[floorIndex] = decos;
+}
 ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
 {
     auto it = mFloorTextures.find(floorIndex);
@@ -77,25 +154,40 @@ ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
         return it->second;
     }
 
+    if (mFloorDecos.find(floorIndex) == mFloorDecos.end())
+    {
+        GenerateFloorDecos(floorIndex);
+    }
+
     if (floorIndex == 0)
     {
         mFloorTextures[0] = mShaderResourceViewGround;
         return mShaderResourceViewGround;
     }
 
+    if (floorIndex % MapGlobals::FLOORS_PER_THEME == 0)
+    {
+        int transitionIndex = (floorIndex / MapGlobals::FLOORS_PER_THEME) - 1;
+
+        if (transitionIndex < static_cast<int>(mShaderResourceViewTransitions.size()))
+        {
+            ID3D11ShaderResourceView* transTexture = mShaderResourceViewTransitions[transitionIndex];
+            mFloorTextures[floorIndex] = transTexture;
+            return transTexture;
+        }
+    }
+
     if (!mShaderResourceViewPatterns.empty() && floorIndex > 0)
     {
-        constexpr int FLOORS_PER_STAGE = 10;
-
-        int patternIndex = (floorIndex - 1) / FLOORS_PER_STAGE;
-
+        int themeIndex = (floorIndex - 1) / MapGlobals::FLOORS_PER_THEME;
         int maxIndex = static_cast<int>(mShaderResourceViewPatterns.size()) - 1;
-        if (patternIndex > maxIndex)
+
+        if (themeIndex > maxIndex)
         {
-            patternIndex = maxIndex;
+            themeIndex = maxIndex;
         }
 
-        ID3D11ShaderResourceView* selectedTexture = mShaderResourceViewPatterns[patternIndex];
+        ID3D11ShaderResourceView* selectedTexture = mShaderResourceViewPatterns[themeIndex];
         mFloorTextures[floorIndex] = selectedTexture;
         return selectedTexture;
     }
@@ -119,6 +211,19 @@ void InfiniteMap::DrawChunk(Renderer& renderer, int floorIndex)
     UINT Offset = 0;
     renderer.DeviceContext->IASetVertexBuffers(0, 1, &mVertexBufferChunk, &Stride, &Offset);
     renderer.DeviceContext->Draw(6, 0);
+
+    auto decoIt = mFloorDecos.find(floorIndex);
+    if (decoIt != mFloorDecos.end())
+    {
+        for (const auto& deco : decoIt->second)
+        {
+            if (!deco.texture) continue;
+
+            renderer.UpdateConstant(deco.position, deco.halfExtents, 0.0f);
+            renderer.DeviceContext->PSSetShaderResources(0, 1, &deco.texture);
+            renderer.DeviceContext->Draw(6, 0);
+        }
+    }
 }
 
 void InfiniteMap::Render(Renderer& renderer, ID3D11SamplerState* sampler, float cameraY)
@@ -126,8 +231,9 @@ void InfiniteMap::Render(Renderer& renderer, ID3D11SamplerState* sampler, float 
     renderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     renderer.DeviceContext->PSSetSamplers(0, 1, &sampler);
 
-    int MinFloor = static_cast<int>(std::floor(cameraY / 30.0f));
-    int MaxFloor = static_cast<int>(std::floor((cameraY + 30.0f) / 30.0f));
+    // MapGlobals::CHUNK_HEIGHT 상수로 통일
+    int MinFloor = static_cast<int>(std::floor(cameraY / MapGlobals::CHUNK_HEIGHT));
+    int MaxFloor = static_cast<int>(std::floor((cameraY + MapGlobals::CHUNK_HEIGHT + 10.0f) / MapGlobals::CHUNK_HEIGHT));
 
     if (MinFloor < 0) MinFloor = 0;
     for (int f = MinFloor; f <= MaxFloor; ++f)

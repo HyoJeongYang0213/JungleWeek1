@@ -149,6 +149,8 @@ void Renderer::Release()
 	ReleaseBendState();
 	ReleaseRasterizerState();
 
+	ReleaseBendState();
+
 	// 렌더 타겟을 초기화
 	DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -274,8 +276,13 @@ void Renderer::PrepareShader()
 
 void Renderer::RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices)
 {
+	RenderPrimitive(pBuffer, numVertices, Stride);
+}
+
+void Renderer::RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices, UINT vertexStride)
+{
 	UINT offset = 0;
-	DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
+	DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &vertexStride, &offset);
 
 	DeviceContext->Draw(numVertices, 0);
 }

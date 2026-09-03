@@ -1,4 +1,4 @@
-#include "SoundManager.h"
+﻿#include "SoundManager.h"
 
 
 #pragma comment(lib, "xaudio2.lib")
@@ -22,7 +22,7 @@ namespace
 
 SoundManager::~SoundManager()
 {
-	shutdown();
+	Shutdown();
 }
 
 // XAudio2 초기화
@@ -50,7 +50,7 @@ HRESULT SoundManager::Initialize()
 	return S_OK;
 }
 
-void SoundManager::shutdown()
+void SoundManager::Shutdown()
 {
 	// 모든 활성화된 보이스를 정리
 	for (auto& activeVoice : mActiveVoices)
@@ -62,9 +62,10 @@ void SoundManager::shutdown()
 			activeVoice.SourceVoice = nullptr;
 		}
 	}
+
 	mActiveVoices.clear();
-	mSoundMap.clear();
-	
+    mSoundMap.clear();
+
 	// 마스터 보이스 정리
 	if (mMasteringVoice)
 	{

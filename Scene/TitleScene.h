@@ -29,4 +29,6 @@ private:
 
 	ID3D11Buffer* mQuadVertexBuffer = nullptr;
 	ID3D11ShaderResourceView* mSRVTitle = nullptr;
+	
+	ID3D11ShaderResourceView* mSRVLogo = nullptr;
 };

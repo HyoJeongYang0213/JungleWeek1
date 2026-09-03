@@ -51,30 +51,28 @@ GameScene::GameScene(IRenderer& renderer)
 
 	Renderer& concreteRenderer = static_cast<Renderer&>(renderer);
 
-	//ID3D11Buffer* vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
-	mVertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
-	//ID3D11Buffer* vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
+	vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
+	vertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
+	vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 	
 	mBallVertexBuffer = concreteRenderer.CreateVertexBuffer(reinterpret_cast<VertexSimple*>(ball_quad_vertices),sizeof(ball_quad_vertices));
 
 
 	mWater = std::make_unique<Water>(concreteRenderer, 0.0f);
 
-
-	//std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
-
-	//{
-	//	auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
-	//		{
-	//			polygonVertexBuffers.emplace_back(
-	//				concreteRenderer.CreateVertexBuffer(
-	//					vertices,
-	//					sizeof(vertices)
-	//				),
-	//				static_cast<UINT>(std::size(vertices)),
-	//				positions
-	//			);
-	//		};
+	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
+	{
+		auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
+			{
+				polygonVertexBuffers.emplace_back(
+					concreteRenderer.CreateVertexBuffer(
+						vertices,
+						sizeof(vertices)
+					),
+					static_cast<UINT>(std::size(vertices)),
+					positions
+				);
+			};
 
 	//	// Convex
 	//	AddPolygonVertexBuffer(convex_triangle_vertices, convex_triangle_positions);
@@ -85,19 +83,19 @@ GameScene::GameScene(IRenderer& renderer)
 	//	AddPolygonVertexBuffer(convex_octagon_vertices, convex_octagon_positions);
 	//	AddPolygonVertexBuffer(convex_dodecagon_vertices, convex_dodecagon_positions);
 
-	//	// Concave
-	//	AddPolygonVertexBuffer(concave_arrow_vertices, concave_arrow_positions);
-	//	AddPolygonVertexBuffer(concave_l_vertices, concave_l_positions);
-	//	AddPolygonVertexBuffer(concave_u_vertices, concave_u_positions);
-	//	AddPolygonVertexBuffer(concave_plus_vertices, concave_plus_positions);
-	//	AddPolygonVertexBuffer(concave_c_vertices, concave_c_positions);
-	//	AddPolygonVertexBuffer(concave_star_vertices, concave_star_positions);
-	//	AddPolygonVertexBuffer(concave_lightning_vertices, concave_lightning_positions);
-	//	AddPolygonVertexBuffer(concave_comb_vertices, concave_comb_positions);
-	//	AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
-	//	AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
-	//}
-
+		// Concave
+		AddPolygonVertexBuffer(concave_arrow_vertices, concave_arrow_positions);
+		AddPolygonVertexBuffer(concave_l_vertices, concave_l_positions);
+		AddPolygonVertexBuffer(concave_u_vertices, concave_u_positions);
+		AddPolygonVertexBuffer(concave_plus_vertices, concave_plus_positions);
+		AddPolygonVertexBuffer(concave_c_vertices, concave_c_positions);
+		AddPolygonVertexBuffer(concave_star_vertices, concave_star_positions);
+		AddPolygonVertexBuffer(concave_lightning_vertices, concave_lightning_positions);
+		AddPolygonVertexBuffer(concave_comb_vertices, concave_comb_positions);
+		AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
+		AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
+	}
+	mPolygonVertexBuffers = std::move(polygonVertexBuffers);
 
 	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
 
@@ -126,6 +124,7 @@ GameScene::GameScene(IRenderer& renderer)
 
 	mSRVBall = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Ball/Ball.png");
 
+	// Sky BackGround Loading
 	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Stage_Ground.png");
 	ID3D11ShaderResourceView* ShaderResourceViewMorning = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Morning.png");
 	ID3D11ShaderResourceView* ShaderResourceViewNoon = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Noon.png");
@@ -135,16 +134,46 @@ GameScene::GameScene(IRenderer& renderer)
 	ID3D11ShaderResourceView* ShaderResourceViewSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Space.png");
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
+	// Transition BackGround Textures Loading
+	ID3D11ShaderResourceView* srvTransMorningToNoon = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_MorningToNoon.png");
+	ID3D11ShaderResourceView* srvTransNoonToSunset = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NoonToSunset.png");
+	ID3D11ShaderResourceView* srvTransSunsetToEvening = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_SunsetToEvening.png");
+	ID3D11ShaderResourceView* srvTransEveningToNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_EveningToNight.png");
+	ID3D11ShaderResourceView* srvTransNightToSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NightToSpace.png");
+
+	// Deco Textures Loading
+	ID3D11ShaderResourceView* decoBird = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Bird.png");
+	ID3D11ShaderResourceView* decoCloud1 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Cloud1.png");
+	ID3D11ShaderResourceView* decoCloud2 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Cloud2.png");
+	ID3D11ShaderResourceView* decoStar = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Str.png");
+	ID3D11ShaderResourceView* decoMeteor = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Meteor.png");
+
+	std::vector<std::vector<ID3D11ShaderResourceView*>> themeDecos = {
+	{ decoBird, decoCloud1 },
+	{ decoCloud1, decoCloud2 },
+	{ decoCloud2 },
+	{ decoCloud1, decoStar },
+	{ decoStar },
+	{ decoStar, decoMeteor }
+	};
+
 	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, {
 		ShaderResourceViewMorning,
 		ShaderResourceViewNoon,
 		ShaderResourceViewSunset,
 		ShaderResourceViewEvening,
 		ShaderResourceViewNight,
-		ShaderResourceViewSpace
-		});
-	mPlatformManager.Init(concreteRenderer, "Asset/stage1_collision_mask_1536x3000.png", { "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" });
-	mSRVPlatform = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Platform.png");
+		ShaderResourceViewSpace}, {
+		srvTransMorningToNoon,
+		srvTransNoonToSunset,
+		srvTransSunsetToEvening,
+		srvTransEveningToNight,
+		srvTransNightToSpace
+		}, themeDecos
+		);
+
+
+	mPlatformTileManager.Init(concreteRenderer);
 
 	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 
@@ -180,12 +209,6 @@ GameScene::~GameScene()
 		mSamplerState = nullptr;
 	}
 
-	if (mSRVPlatform)
-	{
-		mSRVPlatform->Release();
-		mSRVPlatform = nullptr;
-	}
-
 	if (mTextureLayout)
 	{
 		mTextureLayout->Release();
@@ -215,11 +238,38 @@ GameScene::~GameScene()
 		mSRVBall->Release();
 		mSRVBall = nullptr;
 	}
+
+	if (vertexBufferTriangle)
+	{
+		vertexBufferTriangle->Release();
+		vertexBufferTriangle = nullptr;
+	}
+	if (vertexBufferSphere)
+	{
+		vertexBufferSphere->Release();
+		vertexBufferSphere = nullptr;
+	}
+	if (vertexBufferCube)
+	{
+		vertexBufferCube->Release();
+		vertexBufferCube = nullptr;
+	}
+	for (auto& [vertexBuffer, numVertices, positions] : mPolygonVertexBuffers)
+	{
+		if (vertexBuffer)
+		{
+			vertexBuffer->Release();
+			vertexBuffer = nullptr;
+		}
+	}
+	mPolygonVertexBuffers.clear();
 }
 
 void GameScene::Reset()
 {
 	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
+	mPlatformTileManager.Reset();
+	mPlatformTileManager.Update(MapGlobals::VIEW_HEIGHT * 0.5f);
 
 	auto ball = static_cast<Ball*>(mPrimitives[0].get());
 	ball->GetRigidBody().SetPosition(Vector3{ 0.0f, 5.0f, 0.0f });
@@ -252,6 +302,8 @@ void GameScene::Tick(float dt)
 
 		mPrimitives[i]->Tick(dt);
 	}
+
+	mPlatformTileManager.Update(mCamera.GetPosition().y + MapGlobals::VIEW_HEIGHT * 0.5f);
 
 	std::vector<CollisionManifold> Manifolds{};
 
@@ -307,6 +359,10 @@ void GameScene::Tick(float dt)
 
 		}
 	}
+
+	mPlatformTileManager.FindCollisions(
+		static_cast<SphereCollider&>(mPrimitives[0]->GetCollider()),
+		Manifolds);
 
 
 	if (MapGlobals::BOUND_BALL_TO_SCREEN)
@@ -391,7 +447,7 @@ void GameScene::Tick(float dt)
 	const float CameraBottomY = CamPos.y;
 	const float CameraCenterY = CameraBottomY + 15.0f;
 
-	mPlatformManager.Update(CameraCenterY);
+	mPlatformTileManager.Update(CameraCenterY);
 	PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 	PlayerGlobals::HIGH_SCORE = std::max(PlayerGlobals::HIGH_SCORE, player->GetLocation().y);
 
@@ -411,7 +467,18 @@ void GameScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 
 	mBackGround.Render(concreteRenderer, mSamplerState, mCamera.GetPosition().y);
-	mPlatformManager.Render(concreteRenderer, mSRVPlatform);
+
+	concreteRenderer.SetAlphaBlendState(true);
+	mPlatformTileManager.Render(renderer);
+	concreteRenderer.SetAlphaBlendState(false);
+	
+	concreteRenderer.PrepareShader();
+
+	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
+	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);
+	concreteRenderer.DeviceContext->IASetInputLayout(mTextureLayout);
+	concreteRenderer.DeviceContext->PSSetSamplers(0, 1, &mSamplerState);
+	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 
 	if (mSRVBall && mBallVertexBuffer)
 	{

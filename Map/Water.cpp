@@ -29,23 +29,20 @@ Water::Water(IRenderer& renderer, float Initheight)
 
 Water::~Water()
 {
-	if (mVertexBuffer)
-	{
+	if (mVertexBuffer != nullptr) {
 		mVertexBuffer->Release();
 		mVertexBuffer = nullptr;
+
 	}
-	if (mSRVWater)
-	{
+	if (mSRVWater != nullptr) {
 		mSRVWater->Release();
 		mSRVWater = nullptr;
 	}
-	if (mWaterVertexShader)
-	{
+	if (mWaterVertexShader != nullptr) {
 		mWaterVertexShader->Release();
 		mWaterVertexShader = nullptr;
 	}
-	if (mWaterPixelShader)
-	{
+	if (mWaterPixelShader != nullptr) {
 		mWaterPixelShader->Release();
 		mWaterPixelShader = nullptr;
 	}

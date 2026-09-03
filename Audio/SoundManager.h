@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <windows.h> 
 #include <xaudio2.h>
@@ -24,7 +24,7 @@ public :
 
 public :
 	HRESULT Initialize();
-	void shutdown();
+	void Shutdown();
 
 	HRESULT LoadSound(const std::filesystem::path& FilePath, const std::string& SoundName);
 	HRESULT PlaySound(const std::string& SoundName, float Volume = 1.0f, bool Loop = false);
