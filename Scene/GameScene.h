@@ -1,13 +1,13 @@
 ﻿#pragma once 
 
+#include <d3d11.h>
 #include <vector>
 #include <memory>
-#include <d3d11.h>
 
 #include "IScene.hpp"
 
 #include "../Map/MapGlobals.hpp"
-#include "../Map/PlatformManager.h"
+#include "../Map/PlatformTileManager.h"
 
 #include "../Resource/Primitive.hpp"
 
@@ -20,6 +20,8 @@
 #include "../Map/Water.h"
 
 #include "../Renderer/IRenderer.hpp"
+
+#include "../Effect/MiniBallSystem.h"
 
 class GameScene : public IScene {
 public:
@@ -52,6 +54,8 @@ public:
 		return true;
 	}
 
+	void SetTransparentBallMode(bool enabled) { mTransparentBallMode = enabled; }
+
 private:
 	std::vector<std::unique_ptr<Primitive>> mPrimitives{};
 
@@ -63,16 +67,23 @@ private:
 	Camera mCamera{ Vector3(0.0f, 0.0f, 0.0f) };
 
 	InfiniteMap mBackGround{};
-	PlatformManager mPlatformManager{};
+	PlatformTileManager mPlatformTileManager{};
 
-	ID3D11ShaderResourceView* mSRVPlatform = nullptr;
+	ID3D11Buffer* mVertexBufferSphere = nullptr;
 
 	ID3D11VertexShader* mTextureVertexShader = nullptr;
 	ID3D11PixelShader* mTexturePixelShader = nullptr;
 	ID3D11InputLayout* mTextureLayout = nullptr;
 	ID3D11SamplerState* mSamplerState = nullptr;
 
+	ID3D11Buffer* mBallVertexBuffer = nullptr;
+	ID3D11ShaderResourceView* mSRVBall = nullptr;
+
 	Input mInput{};
 
 	std::unique_ptr<Water> mWater;
+
+	MiniBallSystem mMiniBallSystem{};
+
+	bool mTransparentBallMode = false; 
 };

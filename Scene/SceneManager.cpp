@@ -15,6 +15,12 @@ SceneManager::SceneManager(IRenderer& renderer)
 
 SceneManager::~SceneManager()
 {
+	Shutdown();
+}
+
+void SceneManager::Shutdown()
+{
+	mScenes.clear();
 }
 
 void SceneManager::NextScene()

@@ -25,6 +25,10 @@ PlatformManager::~PlatformManager()
         mVertexBuffer->Release();
         mVertexBuffer = nullptr;
     }
+	if (mRenderer)
+	{
+		mRenderer = nullptr;
+	}
 }
 
 void PlatformManager::Init(Renderer& Renderer,
@@ -205,6 +209,16 @@ void PlatformManager::Update(float CameraCenterY)
                     if(mCanPlayHitSound)
                     {
                         SoundManager::GetInstance().PlaySound("BallHit", 0.5f, false);
+
+                        // 접촉 위치에서 작은 공 생성 요청
+                        if (mBallSpawnCallback &&
+                            Manifold.ContactCount > 0)
+                        {
+                            mBallSpawnCallback(
+                                Manifold.Contacts[0].Point,
+                                Manifold.Normal
+                            );
+                        }
 
                         mCanPlayHitSound = false;
                     }

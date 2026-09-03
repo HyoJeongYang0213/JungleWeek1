@@ -55,6 +55,14 @@
 
 #include "Audio/SoundManager.h"
 
+#include "UI/UIManager.h"
+
+
+#include <iostream>
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 // 삼각형을 하드 코딩
 VertexSimple triangle_vertices[] =
 {
@@ -100,6 +108,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	// 윈도우 클래스 이름
 	WCHAR WindowClass[] = L"JungleWindowClass";
@@ -171,6 +181,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		return -1;
 	}
+	hr = soundManager.LoadSound(L"Asset\\game-over.wav", "GameOver");
+	if (FAILED(hr))
+	{
+		MessageBoxA(
+			hWnd,
+			"GameOver Load Failed",
+			"Audio Error",
+			MB_OK | MB_ICONERROR
+		);
+
+		return -1;
+	}
+
 
 
 	// 각종 생성하는 코드를 여기에 추가합니다.
@@ -265,7 +288,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//메인 bgm play
 	soundManager.PlaySound("BGM", 0.5f, true);
-	while (bIsExit == false)
+	while (bIsExit == false and not UIManager::Get().ShouldExit())
 	{
 		MSG msg;
 
@@ -284,10 +307,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				break;
 			}
 
-			if (msg.message == WM_KEYDOWN && msg.wParam == VK_LEFT)
+
+			if (msg.message == WM_KEYDOWN && msg.wParam == VK_SPACE)
 			{
-				sceneManager.NextScene();
-				break;
+				auto currentScene = sceneManager.GetCurrentScene();
+
+				if (currentScene->GetSceneType() == SceneType::Game)
+				{
+					auto gameScene = static_cast<GameScene*>(currentScene);
+					gameScene->SetTransparentBallMode(true);
+				}
+			}
+
+			if (msg.message == WM_KEYUP && msg.wParam == VK_SPACE)
+			{
+				auto currentScene = sceneManager.GetCurrentScene();
+
+				if (currentScene->GetSceneType() == SceneType::Game)
+				{
+					auto gameScene = static_cast<GameScene*>(currentScene);
+					gameScene->SetTransparentBallMode(false);
+				}
+			}
+
+			if (UIManager::Get().ShouldExit())
+			{
+				bIsExit = true;
 			}
 		}
 
@@ -329,14 +374,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.SwapBuffer();
 	}
 
+
 	UIManager::Get().Shutdown();
+	SoundManager::GetInstance().Shutdown();
 	// 소멸하는 코드를 여기에 추가합니다.
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
+	// Renderer가 D3D 장치를 해제하기 전에 씬이 소유한 COM 객체를 먼저 정리합니다.
+	sceneManager.Shutdown();
+
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();
 	renderer.Release();
+
 	return 0;
 }

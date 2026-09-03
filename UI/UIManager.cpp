@@ -25,6 +25,14 @@ void UIManager::Shutdown()
         mSettingsBtnSRV->Release();
         mSettingsBtnSRV = nullptr;
     }
+
+	if (mScoreBannerSRV)
+	{
+		mScoreBannerSRV->Release();
+		mScoreBannerSRV = nullptr;
+	}
+
+    mSceneManager = nullptr;
 }
 
 void UIManager::DrawBoldText(const char* Text, float PosX, float PosY,
@@ -266,7 +274,7 @@ void UIManager::RenderEndingUI()
         float ScoreBoxW = 450.0f;
         float ScoreBoxH = 150.0f;
 
-        ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ScoreBoxW) * 0.5f, DisplaySize.y * 0.43f), ImGuiCond_Always);
+        ImGui::SetNextWindowPos(ImVec2((DisplaySize.x - ScoreBoxW) * 0.5f, DisplaySize.y * 0.40f), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(ScoreBoxW, ScoreBoxH), ImGuiCond_Always);
 
         ImGuiWindowFlags ScoreFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
@@ -285,7 +293,7 @@ void UIManager::RenderEndingUI()
 
         ImVec4 TextCol = ImVec4(74.0f / 255.0f, 35.0f / 255.0f, 6.0f / 255.0f, 1.0f);
 
-        DrawBoldText(ScoreBuf, BasePosX, 10.0f, TextCol, TextCol, 1.5f);
+        DrawBoldText(ScoreBuf, BasePosX, 0.0f, TextCol, TextCol, 1.5f);
 
         ImGui::SetWindowFontScale(1.0f);
         ImGui::End();
@@ -315,7 +323,6 @@ void UIManager::RenderEndingUI()
 
         if(ImageTextButton("##BtnEndingExit", u8"게임 종료", mBtnFrameSRV, ImVec2(320.0f, 45.0f)))
         {
-            exit(0);
             mBIsExit = true;
         }
 

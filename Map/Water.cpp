@@ -2,6 +2,9 @@
 
 #include "../Renderer/Renderer.h"
 #include "../Map/TextureLoader.hpp"
+#include "../Audio/SoundManager.h"
+
+#include "../Map/MapGlobals.hpp"
 
 Water::Water(IRenderer& renderer, float Initheight)
 {
@@ -19,11 +22,30 @@ Water::Water(IRenderer& renderer, float Initheight)
 
 	D3DCompileFromFile(L"Resource/Shader/Water.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &psBlob, nullptr);
 	concreteRenderer.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &mWaterPixelShader);
+	VertexShaderBlob->Release();
+	psBlob->Release();
 
 }
 
 Water::~Water()
 {
+	if (mVertexBuffer != nullptr) {
+		mVertexBuffer->Release();
+		mVertexBuffer = nullptr;
+
+	}
+	if (mSRVWater != nullptr) {
+		mSRVWater->Release();
+		mSRVWater = nullptr;
+	}
+	if (mWaterVertexShader != nullptr) {
+		mWaterVertexShader->Release();
+		mWaterVertexShader = nullptr;
+	}
+	if (mWaterPixelShader != nullptr) {
+		mWaterPixelShader->Release();
+		mWaterPixelShader = nullptr;
+	}
 }
 
 void Water::Tick(float dt)
@@ -34,6 +56,7 @@ void Water::Tick(float dt)
 		WaterGlobals::WATER_Y_SCALE += WaterGlobals::WATER_SPEED * dt;
 		if (IsGameOver())
 		{
+			SoundManager::GetInstance().PlaySound("GameOver");
 			WaterGlobals::B_GAME_OVER = true;
 			OutputDebugStringA("게임오버!\n");
 		}
@@ -41,8 +64,11 @@ void Water::Tick(float dt)
 }
 void Water::Reset()
 {
+	mHeight = 0.0f;
+	mIsActive = false;
 	t = -10.f;
 	WaterGlobals::WATER_Y_SCALE = 0.f;
+	WaterGlobals::B_GAME_OVER = false;
 }
 
 
@@ -76,8 +102,8 @@ void Water::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->PSSetShader(mWaterPixelShader, nullptr, 0);
 
 	concreteRenderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Vector3 Center = { 7.5f, 0.f, 0.0f };
-	Vector3 HalfExtents = { 8.5f ,WaterGlobals::WATER_Y_SCALE, t };
+	Vector3 Center = { MapGlobals::RIGHT_BORDER / 2.0f, 0.f, 0.0f };
+	Vector3 HalfExtents = { MapGlobals::RIGHT_BORDER / 2.0f ,WaterGlobals::WATER_Y_SCALE, t };
 	
 	concreteRenderer.UpdateConstant(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVWater);

@@ -29,6 +29,11 @@
 #include "../Renderer/WindowGlobals.hpp"
 #include "../Map/Water.h"
 
+namespace
+{
+	constexpr Vector3 InitialBallPosition{ 2.0f, 5.0f, 0.0f };
+}
+
 
 GameScene::GameScene(IRenderer& renderer) 
 {
@@ -39,53 +44,75 @@ GameScene::GameScene(IRenderer& renderer)
 		{ -1.0f, -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f }  // Bottom-left vertex (blue)
 	};
 
+	VertexTexture ball_quad_vertices[] = {
+		{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+		{  1.0f,  1.0f, 0.0f,  1.0f, 0.0f },
+		{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+
+		{ -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
+		{  1.0f, -1.0f, 0.0f,  1.0f, 1.0f },
+		{ -1.0f, -1.0f, 0.0f,  0.0f, 1.0f }
+	};
+
 	Renderer& concreteRenderer = static_cast<Renderer&>(renderer);
 
-	ID3D11Buffer* vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
-	ID3D11Buffer* vertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
-	ID3D11Buffer* vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
+	for (VertexSimple& Vertex : sphere_vertices)
+	{
+		Vertex.r = 0.2f;
+		Vertex.g = 0.2f;
+		Vertex.b = 0.2f;
+		Vertex.a = 1.0f;
+	}
+
+	//ID3D11Buffer* vertexBufferTriangle = concreteRenderer.CreateVertexBuffer(triangle_vertices, sizeof(triangle_vertices));
+	mVertexBufferSphere = concreteRenderer.CreateVertexBuffer(sphere_vertices, sizeof(sphere_vertices));
+	//ID3D11Buffer* vertexBufferCube = concreteRenderer.CreateVertexBuffer(cube_vertices, sizeof(cube_vertices));
 	
+	mMiniBallSystem.Init(mVertexBufferSphere, static_cast<UINT>(sizeof(sphere_vertices) / sizeof(sphere_vertices[0])));
+
+
+	mBallVertexBuffer = concreteRenderer.CreateVertexBuffer(reinterpret_cast<VertexSimple*>(ball_quad_vertices),sizeof(ball_quad_vertices));
+
 
 	mWater = std::make_unique<Water>(concreteRenderer, 0.0f);
 
 
-	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
+	//std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> polygonVertexBuffers{};
 
-	{
-		auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
-			{
-				polygonVertexBuffers.emplace_back(
-					concreteRenderer.CreateVertexBuffer(
-						vertices,
-						sizeof(vertices)
-					),
-					static_cast<UINT>(std::size(vertices)),
-					positions
-				);
-			};
+	//{
+	//	auto AddPolygonVertexBuffer = [&](auto& vertices, const auto& positions)
+	//		{
+	//			polygonVertexBuffers.emplace_back(
+	//				concreteRenderer.CreateVertexBuffer(
+	//					vertices,
+	//					sizeof(vertices)
+	//				),
+	//				static_cast<UINT>(std::size(vertices)),
+	//				positions
+	//			);
+	//		};
 
-		// Convex
-		AddPolygonVertexBuffer(convex_triangle_vertices, convex_triangle_positions);
-		AddPolygonVertexBuffer(convex_quad_vertices, convex_quad_positions);
-		AddPolygonVertexBuffer(convex_trapezoid_vertices, convex_trapezoid_positions);
-		AddPolygonVertexBuffer(convex_pentagon_vertices, convex_pentagon_positions);
-		AddPolygonVertexBuffer(convex_hexagon_vertices, convex_hexagon_positions);
-		AddPolygonVertexBuffer(convex_octagon_vertices, convex_octagon_positions);
-		AddPolygonVertexBuffer(convex_dodecagon_vertices, convex_dodecagon_positions);
+	//	// Convex
+	//	AddPolygonVertexBuffer(convex_triangle_vertices, convex_triangle_positions);
+	//	AddPolygonVertexBuffer(convex_quad_vertices, convex_quad_positions);
+	//	AddPolygonVertexBuffer(convex_trapezoid_vertices, convex_trapezoid_positions);
+	//	AddPolygonVertexBuffer(convex_pentagon_vertices, convex_pentagon_positions);
+	//	AddPolygonVertexBuffer(convex_hexagon_vertices, convex_hexagon_positions);
+	//	AddPolygonVertexBuffer(convex_octagon_vertices, convex_octagon_positions);
+	//	AddPolygonVertexBuffer(convex_dodecagon_vertices, convex_dodecagon_positions);
 
-		// Concave
-		AddPolygonVertexBuffer(concave_arrow_vertices, concave_arrow_positions);
-		AddPolygonVertexBuffer(concave_l_vertices, concave_l_positions);
-		AddPolygonVertexBuffer(concave_u_vertices, concave_u_positions);
-		AddPolygonVertexBuffer(concave_plus_vertices, concave_plus_positions);
-		AddPolygonVertexBuffer(concave_c_vertices, concave_c_positions);
-		AddPolygonVertexBuffer(concave_star_vertices, concave_star_positions);
-		AddPolygonVertexBuffer(concave_lightning_vertices, concave_lightning_positions);
-		AddPolygonVertexBuffer(concave_comb_vertices, concave_comb_positions);
-		AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
-		AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
-	}
-
+	//	// Concave
+	//	AddPolygonVertexBuffer(concave_arrow_vertices, concave_arrow_positions);
+	//	AddPolygonVertexBuffer(concave_l_vertices, concave_l_positions);
+	//	AddPolygonVertexBuffer(concave_u_vertices, concave_u_positions);
+	//	AddPolygonVertexBuffer(concave_plus_vertices, concave_plus_positions);
+	//	AddPolygonVertexBuffer(concave_c_vertices, concave_c_positions);
+	//	AddPolygonVertexBuffer(concave_star_vertices, concave_star_positions);
+	//	AddPolygonVertexBuffer(concave_lightning_vertices, concave_lightning_positions);
+	//	AddPolygonVertexBuffer(concave_comb_vertices, concave_comb_positions);
+	//	AddPolygonVertexBuffer(concave_spiral_vertices, concave_spiral_positions);
+	//	AddPolygonVertexBuffer(concave_star16_vertices, concave_star16_positions);
+	//}
 
 	ID3DBlob* VertexShaderBlob = nullptr, * psBlob = nullptr;
 
@@ -104,20 +131,83 @@ GameScene::GameScene(IRenderer& renderer)
 	psBlob->Release();
 
 
-	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_Ground.png");
+	/*ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_Ground.png");
 	ID3D11ShaderResourceView* ShaderResourceViewA = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_A.png");
 	ID3D11ShaderResourceView* ShaderResourceViewB = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_B.png");
 	ID3D11ShaderResourceView* ShaderResourceViewC = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Stage_C.png");
-
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
-	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });
-	mPlatformManager.Init(concreteRenderer, "Asset/stage1_collision_mask_1536x3000.png", { "Asset/stage1_collision_mask_1536x3000.png","Asset/stage1_collision_mask_1536x3000_2.png" });
-	mSRVPlatform = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Platform.png");
+	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, { ShaderResourceViewA, ShaderResourceViewB, ShaderResourceViewC });*/
+
+	mSRVBall = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Ball/Ball.png");
+
+	// Sky BackGround Loading
+	ID3D11ShaderResourceView* ShaderResourceViewGround = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Stage_Ground.png");
+	ID3D11ShaderResourceView* ShaderResourceViewMorning = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Morning.png");
+	ID3D11ShaderResourceView* ShaderResourceViewNoon = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Noon.png");
+	ID3D11ShaderResourceView* ShaderResourceViewSunset = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Sunset.png");
+	ID3D11ShaderResourceView* ShaderResourceViewEvening = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Evening.png");
+	ID3D11ShaderResourceView* ShaderResourceViewNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Night.png");
+	ID3D11ShaderResourceView* ShaderResourceViewSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Space.png");
+	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
+
+	// Transition BackGround Textures Loading
+	ID3D11ShaderResourceView* srvTransMorningToNoon = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_MorningToNoon.png");
+	ID3D11ShaderResourceView* srvTransNoonToSunset = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NoonToSunset.png");
+	ID3D11ShaderResourceView* srvTransSunsetToEvening = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_SunsetToEvening.png");
+	ID3D11ShaderResourceView* srvTransEveningToNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_EveningToNight.png");
+	ID3D11ShaderResourceView* srvTransNightToSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NightToSpace.png");
+
+	// Deco Textures Loading
+	ID3D11ShaderResourceView* decoBird = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Bird.png");
+	ID3D11ShaderResourceView* decoCloud1 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Cloud1.png");
+	ID3D11ShaderResourceView* decoCloud2 = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Cloud2.png");
+	ID3D11ShaderResourceView* decoStar = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Str.png");
+	ID3D11ShaderResourceView* decoMeteor = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Deco/Deco_Meteor.png");
+
+	std::vector<std::vector<ID3D11ShaderResourceView*>> themeDecos = {
+	{ decoBird, decoCloud1 },
+	{ decoCloud1, decoCloud2 },
+	{ decoCloud2 },
+	{ decoCloud1, decoStar },
+	{ decoStar },
+	{ decoStar, decoMeteor }
+	};
+
+	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, {
+		ShaderResourceViewMorning,
+		ShaderResourceViewNoon,
+		ShaderResourceViewSunset,
+		ShaderResourceViewEvening,
+		ShaderResourceViewNight,
+		ShaderResourceViewSpace}, {
+		srvTransMorningToNoon,
+		srvTransNoonToSunset,
+		srvTransSunsetToEvening,
+		srvTransEveningToNight,
+		srvTransNightToSpace
+		}, themeDecos
+	);
+
+
+	mPlatformTileManager.Init(concreteRenderer);
+
+	mPlatformTileManager.SetBallSpawnCallback(
+		[this](
+			const Vector3& ContactPoint,
+			const Vector3& CollisionNormal)
+		{
+			mMiniBallSystem.Spawn(
+				ContactPoint,
+				CollisionNormal
+			);
+		}
+	);
+
 
 	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 
-	GameScene::CreatePrimitive<Ball>(vertexBufferSphere, static_cast<UINT>(sizeof(sphere_vertices) / sizeof(sphere_vertices[0])));
+	GameScene::CreatePrimitive<Ball>(mVertexBufferSphere, static_cast<UINT>(sizeof(sphere_vertices) / sizeof(sphere_vertices[0])));
 
 	PlayerGlobals::PLAYERLOCATION = static_cast<Ball*>(mPrimitives[0].get())->GetLocation();
 	PlayerGlobals::PLAYERBALL = static_cast<Ball*>(mPrimitives[0].get());
@@ -127,7 +217,8 @@ GameScene::GameScene(IRenderer& renderer)
 			Ball* player = static_cast<Ball*>(mPrimitives[0].get());
 			Vector3 ReleasePoint{ Vector3(static_cast<float>(targetPos.x), static_cast<float>(targetPos.y), 0.0f) };
 			player->GetRigidBody().ApplyImpulse((player->GetLocation() - ReleasePoint) * PlayerGlobals::PLAYER_DRAG_IMPULSE_MULTIPLIER, player->GetLocation());
-		});
+		}
+	);
 
 
 	mWater->Start(); 
@@ -135,16 +226,18 @@ GameScene::GameScene(IRenderer& renderer)
 
 GameScene::~GameScene()
 {
+	mPrimitives.clear();
+
+	if (mVertexBufferSphere)
+	{
+		mVertexBufferSphere->Release();
+		mVertexBufferSphere = nullptr;
+	}
+
 	if (mSamplerState)
 	{
 		mSamplerState->Release();
 		mSamplerState = nullptr;
-	}
-
-	if (mSRVPlatform)
-	{
-		mSRVPlatform->Release();
-		mSRVPlatform = nullptr;
 	}
 
 	if (mTextureLayout)
@@ -165,18 +258,38 @@ GameScene::~GameScene()
 		mTexturePixelShader = nullptr;
 	}
 
+	if (mBallVertexBuffer)
+	{
+		mBallVertexBuffer->Release();
+		mBallVertexBuffer = nullptr;
+	}
+
+	if (mSRVBall)
+	{
+		mSRVBall->Release();
+		mSRVBall = nullptr;
+	}
+
 
 }
 
 void GameScene::Reset()
 {
 	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
+	mPlatformTileManager.Reset();
+	mPlatformTileManager.Update(MapGlobals::VIEW_HEIGHT * 0.5f);
 
 	auto ball = static_cast<Ball*>(mPrimitives[0].get());
-	ball->GetRigidBody().SetPosition(Vector3{ 0.0f, 5.0f, 0.0f });
+	ball->GetRigidBody().Reset(InitialBallPosition);
+	PlayerGlobals::PLAYERLOCATION = InitialBallPosition;
+	PlayerGlobals::PLAYERBALL = ball;
+	PlayerGlobals::HIGH_SCORE = 0.0f;
 
-	WaterGlobals::WATER_Y_SCALE = 0.f;
-	WaterGlobals::B_GAME_OVER = false;
+	mMiniBallSystem.Clear();
+	mWater->Reset();
+	mWater->Start();
+	mInput.Reset();
+	mTransparentBallMode = false;
 }
 
 void GameScene::Tick(float dt)
@@ -201,6 +314,8 @@ void GameScene::Tick(float dt)
 
 		mPrimitives[i]->Tick(dt);
 	}
+
+	//mPlatformTileManager.Update(mCamera.GetPosition().y + MapGlobals::VIEW_HEIGHT * 0.5f);
 
 	std::vector<CollisionManifold> Manifolds{};
 
@@ -255,6 +370,10 @@ void GameScene::Tick(float dt)
 			}
 
 		}
+	}
+
+	if (not mTransparentBallMode) {
+		mPlatformTileManager.FindCollisions(static_cast<SphereCollider&>(mPrimitives[0]->GetCollider()), Manifolds);
 	}
 
 
@@ -315,7 +434,7 @@ void GameScene::Tick(float dt)
 		CollisionResolver::PrepareConstraints(manifold);
 	}
 
-
+	
 	constexpr int MaxIterations{ 10 };
 
 	for (int iteration = 0; iteration < MaxIterations; ++iteration)
@@ -327,7 +446,19 @@ void GameScene::Tick(float dt)
 		}
 	}
 
-	mWater->Tick(dt);
+
+
+	for (CollisionManifold& manifold : Manifolds)
+	{
+		if (manifold.ColliderA.Type == ColliderType_Polygon and manifold.ColliderB.Type == ColliderType_Sphere)
+		{
+			manifold.ColliderB.RigidBody->ApplyRotateResistance(manifold.Normal, PhysicsGlobals::PLATFORM_ROTATION_RESISTANCE_COEFFICIENT, dt);
+		}
+		else if (manifold.ColliderA.Type == ColliderType_Sphere and manifold.ColliderB.Type == ColliderType_Polygon)
+		{
+			manifold.ColliderA.RigidBody->ApplyRotateResistance(manifold.Normal, PhysicsGlobals::PLATFORM_ROTATION_RESISTANCE_COEFFICIENT, dt);
+		}
+	}
 
 	mInput.Update();
 
@@ -342,7 +473,12 @@ void GameScene::Tick(float dt)
 	const float CameraBottomY = CamPos.y;
 	const float CameraCenterY = CameraBottomY + 15.0f;
 
-	mPlatformManager.Update(CameraCenterY);
+	mPlatformTileManager.Update(CameraCenterY);
+
+	mMiniBallSystem.EmitTrail(player->GetLocation(), player->GetVelocity(),player->GetRadius(),dt);
+
+	mMiniBallSystem.Tick(dt);
+
 	PlayerGlobals::PLAYERLOCATION = player->GetLocation();
 	PlayerGlobals::HIGH_SCORE = std::max(PlayerGlobals::HIGH_SCORE, player->GetLocation().y);
 
@@ -355,6 +491,7 @@ void GameScene::Render(IRenderer& renderer)
 
 	concreteRenderer.Prepare();
 
+
 	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
 	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);
 	concreteRenderer.DeviceContext->IASetInputLayout(mTextureLayout);
@@ -362,14 +499,51 @@ void GameScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 
 	mBackGround.Render(concreteRenderer, mSamplerState, mCamera.GetPosition().y);
-	mPlatformManager.Render(concreteRenderer, mSRVPlatform);
+
+	concreteRenderer.SetAlphaBlendState(true);
+	mPlatformTileManager.Render(renderer);
+	concreteRenderer.SetAlphaBlendState(false);
+	
+	concreteRenderer.PrepareShader();
+
+	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
+	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);
+	concreteRenderer.DeviceContext->IASetInputLayout(mTextureLayout);
+	concreteRenderer.DeviceContext->PSSetSamplers(0, 1, &mSamplerState);
+	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
+
+	if (mSRVBall && mBallVertexBuffer)
+	{
+		Ball* player = static_cast<Ball*>(mPrimitives[0].get());
+		Vector3 pos = player->GetLocation();
+		float radius = player->GetRadius();
+		float angle = player->GetRigidBody().GetRotation();
+
+		concreteRenderer.UpdateConstant(
+			Vector3{ pos.x, pos.y, 0.0f },
+			Vector3{ radius, radius, 1.0f },
+			angle
+		);
+
+		concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVBall);
+
+		UINT stride = sizeof(VertexTexture);
+		UINT offset = 0;
+		concreteRenderer.DeviceContext->IASetVertexBuffers(0, 1, &mBallVertexBuffer, &stride, &offset);
+		concreteRenderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// 6개 정점 직접 그리기
+		concreteRenderer.DeviceContext->Draw(6, 0);
+	}
 
 	concreteRenderer.PrepareShader(); // 단색 기본 셰이더로 복귀
 
-	for (auto& Primitive : mPrimitives)
+	for (size_t i = 1; i < mPrimitives.size(); ++i)
 	{
-		Primitive->Render(renderer);
+		mPrimitives[i]->Render(renderer);
 	}
+
+	mMiniBallSystem.Render(renderer);
 
 	concreteRenderer.DeviceContext->VSSetShader(mTextureVertexShader, nullptr, 0);
 	concreteRenderer.DeviceContext->PSSetShader(mTexturePixelShader, nullptr, 0);

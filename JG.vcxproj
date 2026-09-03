@@ -131,6 +131,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\SoundManager.cpp" />
+    <ClCompile Include="Effect\MiniBallSystem.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map\MapGenerator.cpp" />
     <ClCompile Include="Map\Platform.cpp" />
+    <ClCompile Include="Map\PlatformTileManager.cpp" />
     <ClCompile Include="Map\Polygon.cpp" />
     <ClCompile Include="Map\PlatformManager.cpp" />
     <ClCompile Include="Map\Water.cpp" />
@@ -182,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\SoundManager.h" />
+    <ClInclude Include="Effect\MiniBallSystem.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
@@ -194,6 +197,7 @@
     <ClInclude Include="Map\MapGenerator.h" />
     <ClInclude Include="Map\MapGlobals.hpp" />
     <ClInclude Include="Map\Platform.h" />
+    <ClInclude Include="Map\PlatformTileManager.h" />
     <ClInclude Include="Map\Polygon.h" />
     <ClInclude Include="Map\PlatformManager.h" />
     <ClInclude Include="Map\TextureLoader.hpp" />
