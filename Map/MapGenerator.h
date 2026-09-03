@@ -20,11 +20,13 @@ public:
     InfiniteMap() = default;
     ~InfiniteMap();
 
-    void Init(Renderer& renderer, ID3D11ShaderResourceView* groundSrv, const std::vector<ID3D11ShaderResourceView*>& patternSrvs);
+    void Init(Renderer& renderer, ID3D11ShaderResourceView* groundSrv, const std::vector<ID3D11ShaderResourceView*>& patternSrvs, const std::vector<ID3D11ShaderResourceView*>& transitionShaderResourceViews = {});
 
     void Render(Renderer& renderer, ID3D11SamplerState* sampler, float cameraY);
 
 private:
     ID3D11ShaderResourceView* GetOrCreateFloorTexture(int floorIndex);
     void DrawChunk(Renderer& renderer, int floorIndex);
+
+    std::vector<ID3D11ShaderResourceView*> mShaderResourceViewTransitions{};
 };

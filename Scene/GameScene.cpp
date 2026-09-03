@@ -132,8 +132,13 @@ GameScene::GameScene(IRenderer& renderer)
 	ID3D11ShaderResourceView* ShaderResourceViewEvening = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Evening.png");
 	ID3D11ShaderResourceView* ShaderResourceViewNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Night.png");
 	ID3D11ShaderResourceView* ShaderResourceViewSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Space.png");
-	ID3D11ShaderResourceView* srvCloud = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Cloudy.png");
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
+
+	ID3D11ShaderResourceView* srvTransMorningToNoon = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_MorningToNoon.png");
+	ID3D11ShaderResourceView* srvTransNoonToSunset = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NoonToSunset.png");
+	ID3D11ShaderResourceView* srvTransSunsetToEvening = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_SunsetToEvening.png");
+	ID3D11ShaderResourceView* srvTransEveningToNight = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_EveningToNight.png");
+	ID3D11ShaderResourceView* srvTransNightToSpace = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/Sky/Sky_Trans/Sky_Trans_NightToSpace.png");
 
 	mBackGround.Init(concreteRenderer, ShaderResourceViewGround, {
 		ShaderResourceViewMorning,
@@ -141,9 +146,15 @@ GameScene::GameScene(IRenderer& renderer)
 		ShaderResourceViewSunset,
 		ShaderResourceViewEvening,
 		ShaderResourceViewNight,
-		ShaderResourceViewSpace,
-		srvCloud
+		ShaderResourceViewSpace
+		}, {
+			srvTransMorningToNoon,
+			srvTransNoonToSunset,
+			srvTransSunsetToEvening,
+			srvTransEveningToNight,
+			srvTransNightToSpace
 		});
+
 	mPlatformTileManager.Init(concreteRenderer);
 
 	mCamera.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
