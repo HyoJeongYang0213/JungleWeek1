@@ -15,4 +15,5 @@ public:
 	static void ResolveFriction(CollisionManifold& Manifold);
 
 	static float ResolveFrictionCoefficient(CollisionManifold& Manifold);
+	static float ResolveRestitutionCoefficient(CollisionManifold& Manifold);
 };
