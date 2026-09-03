@@ -42,7 +42,7 @@
 
 #include "Player/Ball.h"
 #include "Player/Input.h"
-#include "PlayerGlobals.hpp"
+#include "Player/PlayerGlobals.hpp"
 
 #include "Map/Platform.h"
 #include "Map/Polygon.h"

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <iostream>
-#include "Ball.h"
+#include "../Player/Ball.h"
 #include "../Renderer/WindowGlobals.hpp"
 #include <Windows.h>
 
