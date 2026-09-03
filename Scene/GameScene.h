@@ -7,7 +7,7 @@
 #include "IScene.hpp"
 
 #include "../Map/MapGlobals.hpp"
-#include "../Map/PlatformManager.h"
+#include "../Map/PlatformTileManager.h"
 
 #include "../Resource/Primitive.hpp"
 
@@ -20,6 +20,8 @@
 #include "../Map/Water.h"
 
 #include "../Renderer/IRenderer.hpp"
+
+#include "../Effect/MiniBallSystem.h"
 
 class GameScene : public IScene {
 public:
@@ -63,9 +65,9 @@ private:
 	Camera mCamera{ Vector3(0.0f, 0.0f, 0.0f) };
 
 	InfiniteMap mBackGround{};
-	PlatformManager mPlatformManager{};
+	PlatformTileManager mPlatformTileManager{};
 
-	ID3D11ShaderResourceView* mSRVPlatform = nullptr;
+	ID3D11Buffer* mVertexBufferSphere = nullptr;
 
 	ID3D11VertexShader* mTextureVertexShader = nullptr;
 	ID3D11PixelShader* mTexturePixelShader = nullptr;
@@ -79,10 +81,5 @@ private:
 
 	std::unique_ptr<Water> mWater;
 
-private:
-	ID3D11Buffer* vertexBufferTriangle;
-	ID3D11Buffer* vertexBufferSphere;
-	ID3D11Buffer* vertexBufferCube;
-
-	std::vector<std::tuple<ID3D11Buffer*, UINT, std::vector<Vector3>>> mPolygonVertexBuffers;
+	MiniBallSystem mMiniBallSystem{};
 };

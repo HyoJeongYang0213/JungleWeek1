@@ -4,6 +4,8 @@
 #include "../Map/TextureLoader.hpp"
 #include "../UI/GameButtonUI.hpp"
 
+#include "../Map/MapGlobals.hpp"
+
 TitleScene::TitleScene(IRenderer& renderer)
 {
 	Renderer& concreteRenderer = static_cast<Renderer&>(renderer);
@@ -27,6 +29,7 @@ TitleScene::TitleScene(IRenderer& renderer)
 	mSamplerState = TextureLoader::CreateSamplerState(concreteRenderer.Device);
 
 	mSRVTitle = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/Title.png");
+	mSRVLogo = TextureLoader::CreateTextureFromFile(concreteRenderer.Device, L"Asset/UI/StartLogo.png");
 
     VertexTexture quad[6] = {
     { -1.0f,  1.0f, 0.0f,  0.0f, 0.0f },
@@ -76,6 +79,43 @@ TitleScene::~TitleScene()
 		mSRVTitle->Release();
 		mSRVTitle = nullptr;
 	}
+
+
+	if (mSamplerState)
+	{
+		mSamplerState->Release();
+		mSamplerState = nullptr;
+	}
+
+	if (mTextureLayout)
+	{
+		mTextureLayout->Release();
+		mTextureLayout = nullptr;
+	}
+	
+	if (mTextureVertexShader)
+	{
+		mTextureVertexShader->Release();
+		mTextureVertexShader = nullptr;
+	}
+
+	if (mTexturePixelShader)
+	{
+		mTexturePixelShader->Release();
+		mTexturePixelShader = nullptr;
+	}
+
+	if (mSRVTitle)
+	{
+		mSRVTitle->Release();
+		mSRVTitle = nullptr;
+	}
+
+	if (mSRVLogo)
+	{
+		mSRVLogo->Release();
+		mSRVLogo = nullptr;
+	}
 }
 
 void TitleScene::Reset()
@@ -99,8 +139,8 @@ void TitleScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->VSSetConstantBuffers(0, 1, &concreteRenderer.ConstantBuffer);
 	concreteRenderer.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	Vector3 Center = { 7.5f,15.f, 0.0f };
-	Vector3 HalfExtents = { 7.5f ,15.f, 0.0f };
+	Vector3 Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 2.0f, 0.0f };
+	Vector3 HalfExtents = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 2.0f, 0.0f };
 
 	concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
 	concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVTitle);
@@ -110,4 +150,11 @@ void TitleScene::Render(IRenderer& renderer)
 	concreteRenderer.DeviceContext->IASetVertexBuffers(0, 1, &mQuadVertexBuffer, &Stride, &Offset);
 	concreteRenderer.DeviceContext->Draw(6, 0);
 
+	//Center = { MapGlobals::RIGHT_BORDER / 2.0f, MapGlobals::TOP_BORDER / 1.3f, 0.0f };
+	//HalfExtents = { MapGlobals::RIGHT_BORDER / 4.0f, MapGlobals::TOP_BORDER / 8.0f, 0.0f };
+
+	//concreteRenderer.UpdateConstantIgnoreCamera(Center, HalfExtents, 0.0f);
+	//concreteRenderer.DeviceContext->PSSetShaderResources(0, 1, &mSRVLogo);
+
+	//concreteRenderer.DeviceContext->Draw(6, 0);
 }

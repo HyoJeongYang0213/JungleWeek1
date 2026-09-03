@@ -103,3 +103,20 @@ float RigidBody::GetMass() const
 {
 	return Mass;
 }
+
+void RigidBody::ApplyRotateResistance(const Vector3& SurfaceNormal, float resistanceCoefficient, float dt)
+{
+	const Vector3 tangent{ -SurfaceNormal.y, SurfaceNormal.x, 0.0f };
+
+	const float damping = std::clamp(resistanceCoefficient * dt, 0.0f, 1.0f);
+	const float tangentSpeed = Velocity.Dot(tangent);
+
+	Velocity -= tangent * tangentSpeed * damping;
+	AngularVelocity -= AngularVelocity * damping;
+
+	if (std::abs(tangentSpeed) < 0.05f)
+	{
+		Velocity -= tangent * tangentSpeed;
+		AngularVelocity = 0.0f;
+	}
+}

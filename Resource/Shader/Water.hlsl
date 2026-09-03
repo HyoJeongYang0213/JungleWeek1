@@ -63,5 +63,5 @@ float4 mainPS(PS_INPUT input) : SV_TARGET
 {
     float4 color = gTexture.Sample(gSampler, input.texCoord);
 
-    return color;
+    return float4(0.9f, 0.1f, 0.1f, color.a);
 }
