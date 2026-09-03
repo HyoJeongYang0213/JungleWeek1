@@ -111,7 +111,8 @@ void InfiniteMap::GenerateFloorDecos(int floorIndex)
     const auto& decoPool = mThemeDecoPatterns[themeIndex];
     if (decoPool.empty()) return;
 
-    int spawnCount = Rnd::GetRandom(0, 2);
+    int spawnCount = Rnd::GetRandom(3, 6);
+
     float floorBottomY = static_cast<float>(floorIndex) * MapGlobals::CHUNK_HEIGHT;
 
     std::vector<SkyDeco> decos;
@@ -119,20 +120,25 @@ void InfiniteMap::GenerateFloorDecos(int floorIndex)
     {
         int decoType = Rnd::GetRandom(0, static_cast<int>(decoPool.size()) - 1);
 
-        float randX = 2.0f + (static_cast<float>(Rnd::GetRandom(0, static_cast<int>((MapGlobals::RIGHT_BORDER - 4.0f) * 100.0f))) / 100.0f);
-        float randY = floorBottomY + 4.0f + (static_cast<float>(Rnd::GetRandom(0, static_cast<int>((MapGlobals::CHUNK_HEIGHT - 8.0f) * 100.0f))) / 100.0f);
+        float minX = 1.5f;
+        float maxX = MapGlobals::RIGHT_BORDER - 1.5f;
+        float randX = minX + (static_cast<float>(Rnd::GetRandom(0, 1000)) / 1000.0f) * (maxX - minX);
+
+        float randY = floorBottomY + 2.0f + (static_cast<float>(Rnd::GetRandom(0, 1000)) / 1000.0f) * (MapGlobals::CHUNK_HEIGHT - 4.0f);
 
         SkyDeco deco;
         deco.texture = decoPool[decoType];
-        deco.position = { randX, randY, 0.0f };
-        deco.halfExtents = { 2.5f, 1.5f, 0.0f };
+
+        deco.position = { randX, randY, -0.05f };
+
+        float randScale = 0.8f + (static_cast<float>(Rnd::GetRandom(0, 400)) / 1000.0f);
+        deco.halfExtents = { 2.5f * randScale, 1.5f * randScale, 0.0f };
 
         decos.push_back(deco);
     }
 
     mFloorDecos[floorIndex] = decos;
 }
-
 ID3D11ShaderResourceView* InfiniteMap::GetOrCreateFloorTexture(int floorIndex)
 {
     auto it = mFloorTextures.find(floorIndex);

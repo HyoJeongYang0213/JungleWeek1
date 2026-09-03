@@ -42,7 +42,6 @@ private:
     void DrawChunk(Renderer& renderer, int floorIndex);
 
     std::vector<std::vector<ID3D11ShaderResourceView*>> mThemeDecoPatterns{};
-    std::unordered_map<int, ID3D11ShaderResourceView*> mFloorTextures{};
     std::unordered_map<int, std::vector<SkyDeco>> mFloorDecos{};
 
     std::vector<ID3D11ShaderResourceView*> mShaderResourceViewTransitions{};
