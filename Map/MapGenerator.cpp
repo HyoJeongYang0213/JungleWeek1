@@ -114,7 +114,14 @@ void InfiniteMap::GenerateFloorDecos(int floorIndex)
         deco.position = { randX, randY, -0.05f };
 
         float randScale = 0.8f + (static_cast<float>(Rnd::GetRandom(0, 400)) / 1000.0f);
-        deco.halfExtents = { 2.5f * randScale, 1.5f * randScale, 0.0f };
+        if (themeIndex == 0 && decoType == 0)
+        {
+            deco.halfExtents = { 0.75f, 0.75f, 0.0f };
+        }
+        else
+        {
+            deco.halfExtents = { 2.5f, 1.5f, 0.0f };
+        }
 
         decos.push_back(deco);
     }
