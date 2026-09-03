@@ -29,6 +29,11 @@
 #include "../Renderer/WindowGlobals.hpp"
 #include "../Map/Water.h"
 
+namespace
+{
+	constexpr Vector3 InitialBallPosition{ 2.0f, 5.0f, 0.0f };
+}
+
 
 GameScene::GameScene(IRenderer& renderer) 
 {
@@ -275,14 +280,16 @@ void GameScene::Reset()
 	mPlatformTileManager.Update(MapGlobals::VIEW_HEIGHT * 0.5f);
 
 	auto ball = static_cast<Ball*>(mPrimitives[0].get());
-	ball->GetRigidBody().SetPosition(Vector3{ 0.0f, 5.0f, 0.0f });
-
-	WaterGlobals::WATER_Y_SCALE = 0.f;
-	WaterGlobals::B_GAME_OVER = false;
+	ball->GetRigidBody().Reset(InitialBallPosition);
+	PlayerGlobals::PLAYERLOCATION = InitialBallPosition;
+	PlayerGlobals::PLAYERBALL = ball;
+	PlayerGlobals::HIGH_SCORE = 0.0f;
 
 	mMiniBallSystem.Clear();
 	mWater->Reset();
+	mWater->Start();
 	mInput.Reset();
+	mTransparentBallMode = false;
 }
 
 void GameScene::Tick(float dt)
@@ -365,7 +372,9 @@ void GameScene::Tick(float dt)
 		}
 	}
 
-	mPlatformTileManager.FindCollisions(static_cast<SphereCollider&>(mPrimitives[0]->GetCollider()), Manifolds);
+	if (not mTransparentBallMode) {
+		mPlatformTileManager.FindCollisions(static_cast<SphereCollider&>(mPrimitives[0]->GetCollider()), Manifolds);
+	}
 
 
 	if (MapGlobals::BOUND_BALL_TO_SCREEN)

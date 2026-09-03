@@ -104,6 +104,21 @@ float RigidBody::GetMass() const
 	return Mass;
 }
 
+void RigidBody::Reset(const Vector3& position, const Vector3& velocity)
+{
+	Position = position;
+	Velocity = velocity;
+	ClearForces();
+	Rotation = 0.0f;
+	AngularVelocity = 0.0f;
+}
+
+void RigidBody::ClearForces()
+{
+	AccumulatedForce = {};
+	AccumulatedTorque = {};
+}
+
 void RigidBody::ApplyRotateResistance(const Vector3& SurfaceNormal, float resistanceCoefficient, float dt)
 {
 	const Vector3 tangent{ -SurfaceNormal.y, SurfaceNormal.x, 0.0f };

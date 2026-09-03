@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <chrono>
 #include <d3d11.h>
 #include <memory>
 #include <unordered_set>
@@ -87,6 +88,7 @@ private:
 	Vector3 mPolygonLocalHalfExtents{ 1.0f, 1.0f, 0.0f };
 	int mLastMinRow = 1;
 	int mLastMaxRow = 0;
+	std::chrono::steady_clock::time_point mAnimationStartTime{ std::chrono::steady_clock::now() };
 
 	BallSpawnCallback mBallSpawnCallback{};
 	bool mCanPlayHitSound = true;

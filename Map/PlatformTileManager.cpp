@@ -97,14 +97,13 @@ void PlatformTileManager::Update(float cameraCenterY)
 		return;
 	}
 
-	static const auto StartTime = std::chrono::steady_clock::now();
 	const auto Now = std::chrono::steady_clock::now();
+	const float animationTime = std::chrono::duration<float>(Now - mAnimationStartTime).count();
 
 	for (auto& p : mPolygons)
 	{
 		auto& curr = p.Polygon->GetRigidBody().GetPosition();
-		float second = std::chrono::duration<float>(Now - StartTime).count();
-		p.Polygon->SetPosition({ curr.x, curr.y - sinf(std::chrono::duration<float>(Now - StartTime).count()) * 0.005f, 0.f });
+		p.Polygon->SetPosition({ curr.x, curr.y - sinf(animationTime) * 0.005f, 0.f });
 	}
 
 	const float minimumY = std::max(0.0f, cameraCenterY - LoadDistanceBelow);
@@ -195,6 +194,8 @@ void PlatformTileManager::Reset()
 	mActiveTiles.clear();
 	mLastMinRow = 1;
 	mLastMaxRow = 0;
+	mAnimationStartTime = std::chrono::steady_clock::now();
+	mCanPlayHitSound = true;
 }
 
 std::size_t PlatformTileManager::TileCoordinateHash::operator()(const TileCoordinate& coordinate) const

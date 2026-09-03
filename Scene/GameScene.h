@@ -54,6 +54,8 @@ public:
 		return true;
 	}
 
+	void SetTransparentBallMode(bool enabled) { mTransparentBallMode = enabled; }
+
 private:
 	std::vector<std::unique_ptr<Primitive>> mPrimitives{};
 
@@ -82,4 +84,6 @@ private:
 	std::unique_ptr<Water> mWater;
 
 	MiniBallSystem mMiniBallSystem{};
+
+	bool mTransparentBallMode = false; 
 };

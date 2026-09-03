@@ -64,8 +64,11 @@ void Water::Tick(float dt)
 }
 void Water::Reset()
 {
+	mHeight = 0.0f;
+	mIsActive = false;
 	t = -10.f;
 	WaterGlobals::WATER_Y_SCALE = 0.f;
+	WaterGlobals::B_GAME_OVER = false;
 }
 
 

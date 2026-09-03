@@ -35,6 +35,8 @@ public:
 	const Vector3& GetVelocity() const;
 	float GetMass() const;
 
+	void Reset(const Vector3& position, const Vector3& velocity = {});
+	void ClearForces();
 
 	// 매우 위험. 복사된 RigidBody 인 경우에 한해 사용 할 것. 원본 침해의 가능성 있음. 
 	void SetPosition(const Vector3& position) { Position = position; }

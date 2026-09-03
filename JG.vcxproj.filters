@@ -5,7 +5,6 @@
     <FxCompile Include="Resource\Shader\SSQuad.hlsl" />
     <FxCompile Include="Resource\Shader\TextureShader.hlsl" />
     <FxCompile Include="Resource\Shader\Water.hlsl" />
-    <FxCompile Include="Resource\Shader\TransitionPixelShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio\SoundManager.cpp" />

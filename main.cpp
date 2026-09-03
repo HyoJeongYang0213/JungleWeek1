@@ -307,6 +307,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				break;
 			}
 
+
+			if (msg.message == WM_KEYDOWN && msg.wParam == VK_SPACE)
+			{
+				auto currentScene = sceneManager.GetCurrentScene();
+
+				if (currentScene->GetSceneType() == SceneType::Game)
+				{
+					auto gameScene = static_cast<GameScene*>(currentScene);
+					gameScene->SetTransparentBallMode(true);
+				}
+			}
+
+			if (msg.message == WM_KEYUP && msg.wParam == VK_SPACE)
+			{
+				auto currentScene = sceneManager.GetCurrentScene();
+
+				if (currentScene->GetSceneType() == SceneType::Game)
+				{
+					auto gameScene = static_cast<GameScene*>(currentScene);
+					gameScene->SetTransparentBallMode(false);
+				}
+			}
+
 			if (UIManager::Get().ShouldExit())
 			{
 				bIsExit = true;

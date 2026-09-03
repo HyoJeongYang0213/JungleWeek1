@@ -25,6 +25,8 @@ public:
 	void Render(IRenderer& renderer);
 
 	int GetCurrentSceneIndex() const { return mCurrentSceneIndex; }
+
+	IScene* GetCurrentScene() const { return mScenes[mCurrentSceneIndex].get(); }
 private:
 	std::vector<std::unique_ptr<IScene>> mScenes;
 	UINT mCurrentSceneIndex;
